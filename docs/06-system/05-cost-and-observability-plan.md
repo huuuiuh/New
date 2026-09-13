@@ -23,10 +23,11 @@ boundary with `paused_budget`. Reservations are released on completion with the 
 | Classification, summaries, promise/repetition/voice/pacing checks, JSON repair | C | high volume, low complexity |
 | Embeddings | E | |
 
-Quality tiers change **counts**, not correctness: Economy (single extractor + deterministic cross-check;
-genre judge folded into structure judge and voice judge into prose judge — prose and structure stay separate;
-no candidates; 2 revision rounds), Standard (as pipeline §4.1), Premium (N=2
-candidates; two judge families; 4 rounds; line editor pass).
+Quality tiers change **counts**, not correctness, and each tier is a Production Policy version
+(ADR-0041; `examples/production-policies/{economy,standard,premium}.v1.json`): Economy (single extractor +
+deterministic cross-check; genre judge folded into structure judge and voice judge into prose judge — prose
+and structure stay separate; no candidates), Standard (as pipeline §4.1), Premium (N=2 candidates; two
+judge families; line editor pass). Revision limits are `policy.revision.*`.
 
 ## 3. Reference cost model (Standard, ~2,500-word chapter)
 

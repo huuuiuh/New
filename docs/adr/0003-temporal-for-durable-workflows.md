@@ -1,6 +1,6 @@
 # ADR-0003: Temporal for durable, resumable workflows
 
-- **Status:** Accepted
+- **Status:** Accepted — staged: the MVP core loop runs on Postgres-checkpointed idempotent steps first; Temporal is introduced when the loop is proven (ADR-0044)
 - **Date:** 2026-09-13
 - **Deciders:** principal architects (product, software, AI systems, data, Korean webnovel production)
 

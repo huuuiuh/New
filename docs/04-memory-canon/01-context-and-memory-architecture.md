@@ -82,7 +82,7 @@ specification in `04-context-pack-assembly.md`. Summary of the chapter-writer pa
 | Know what each character knows | Knowledge ledger (proposition × knower × stance × validity × source) | `03-character-knowledge-architecture.md` |
 | Truth vs belief vs suspicion vs lie vs secret | Stances + `lie` frame events + secrets with knower sets; objective truth = facts; narrator/reader as knowers | same |
 | Future plans vs completed events | Plans in `plan_*` tables (frame=plan); events only from accepted text; assembler labels plan items "PLANNED" | `02-canon-and-temporal-state.md` §3 |
-| Rejected drafts never enter canon | Only `accepted` manuscript versions feed extraction; quarantine tables excluded by assembler allowlist; tests | `02-…` §7 |
+| Rejected drafts never enter canon | Extraction reads only the approval-locked (`approved`) version; only `accepted` versions feed packs, summaries, indexes and exemplars; quarantine tables excluded by assembler allowlist; tests | `02-…` §7 |
 | Approved chapter updates memory | Extraction → reconciliation → verification → atomic commit | `02-…` §5 |
 | Conflicting extractions | Deterministic match → adjudicator with spans → human queue | `02-…` §5.3 |
 | Earlier chapter changes propagate | Dependency edges (artifact → canon items @ version, material vs contextual) → stale marking on material edges → patch tasks | `02-…` §8 |

@@ -1,5 +1,5 @@
 {
-  "_comment": "Stable fixture UUIDs (v7-shaped, hex-only placeholders) used across all fixture examples so cross-references resolve. Category encoded in the last group: c=character, 1=location, a=item, b=proposition, d=promise, e=arc, f=season, 2=chapter, 3=manuscript version, 4=fact, 5=timeline, 6=narrative identity version, 7=contract, 8=commit, 9=active constraint set.",
+  "_comment": "Stable fixture UUIDs (v7-shaped, hex-only placeholders) used across all fixture examples so cross-references resolve. Category encoded in the last group: c=character, 1=location, a=item, b=proposition, d=promise, e=arc, f=season, 2=chapter, 3=manuscript version, 4=fact, 5=timeline, 6=narrative identity version, 7=contract, 8=commit, 9=active constraint set, e5=relationship state.",
   "project": "0191b2a0-0000-7000-8000-000000000001",
   "workspace": "0191b2a0-0000-7000-8000-000000000000",
   "timeline_main": "0191b2a0-0000-7000-8000-000000050001",
@@ -46,24 +46,38 @@
     "arc2_poison_fog_dungeon": "0191b2a0-0000-7000-8000-0000000e0002",
     "minor_arc2b_new_companions": "0191b2a0-0000-7000-8000-0000000e0022"
   },
-  "seasons": { "s1": "0191b2a0-0000-7000-8000-0000000f0001" },
+  "seasons": {
+    "s1": "0191b2a0-0000-7000-8000-0000000f0001"
+  },
   "chapters": {
     "ch09": "0191b2a0-0000-7000-8000-000000020009",
     "ch11": "0191b2a0-0000-7000-8000-000000020011",
-    "ch12": "0191b2a0-0000-7000-8000-000000020012"
+    "ch12": "0191b2a0-0000-7000-8000-000000020012",
+    "ch14": "0191b2a0-0000-7000-8000-000000020014"
   },
   "manuscript_versions": {
     "ch09_accepted": "0191b2a0-0000-7000-8000-000000030009",
     "ch09_rejected_draft": "0191b2a0-0000-7000-8000-000000030909",
-    "ch11_accepted": "0191b2a0-0000-7000-8000-000000030011"
+    "ch11_accepted": "0191b2a0-0000-7000-8000-000000030011",
+    "ch14_accepted": "0191b2a0-0000-7000-8000-000000030014"
   },
   "facts": {
     "mujin_left_leg_venom": "0191b2a0-0000-7000-8000-000000040001",
     "doyoon_rank_E": "0191b2a0-0000-7000-8000-000000040002",
     "doyoon_holds_compass": "0191b2a0-0000-7000-8000-000000040003",
-    "mujin_location_poison_fog": "0191b2a0-0000-7000-8000-000000040004"
+    "mujin_location_poison_fog": "0191b2a0-0000-7000-8000-000000040004",
+    "mujin_left_leg_scarring_limp": "0191b2a0-0000-7000-8000-000000040005"
   },
-  "contracts": { "ch12": "0191b2a0-0000-7000-8000-000000070012" },
-  "commits": { "ch09": "0191b2a0-0000-7000-8000-000000080009" },
-  "active_constraint_sets": { "ch12": "0191b2a0-0000-7000-8000-000000090012" }
+  "contracts": {
+    "ch12": "0191b2a0-0000-7000-8000-000000070012"
+  },
+  "commits": {
+    "ch09": "0191b2a0-0000-7000-8000-000000080009"
+  },
+  "active_constraint_sets": {
+    "ch12": "0191b2a0-0000-7000-8000-000000090012"
+  },
+  "relationship_states": {
+    "mujin_to_doyoon_ch02": "0191b2a0-0000-7000-8000-0000000e5001"
+  }
 }

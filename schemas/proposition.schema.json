@@ -111,6 +111,17 @@
       }
     },
     "secret": {
+      "$ref": "#/$defs/secret"
+    },
+    "created_commit_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "created_in_chapter_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    }
+  },
+  "$defs": {
+    "secret": {
       "oneOf": [
         {
           "type": "null"
@@ -151,12 +162,6 @@
           }
         }
       ]
-    },
-    "created_commit_id": {
-      "$ref": "common.schema.json#/$defs/uuid"
-    },
-    "created_in_chapter_id": {
-      "$ref": "common.schema.json#/$defs/uuid"
     }
   }
 }

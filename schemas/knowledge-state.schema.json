@@ -50,6 +50,41 @@
       "$ref": "common.schema.json#/$defs/confidence"
     },
     "source": {
+      "$ref": "#/$defs/knowledgeSource"
+    },
+    "valid_from": {
+      "$ref": "common.schema.json#/$defs/storyClock"
+    },
+    "valid_to": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/storyClock"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "asserted_at_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "retracted_at_version": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "commit_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "implied": {
+      "type": "boolean",
+      "description": "Extractor saw action-on-information without an on-page channel; verification demands a channel or flags a leak"
+    }
+  },
+  "$defs": {
+    "knowledgeSource": {
       "type": "object",
       "required": [
         "kind",
@@ -107,37 +142,8 @@
           "chapter_id",
           "informer_id"
         ]
-      }
-    },
-    "valid_from": {
-      "$ref": "common.schema.json#/$defs/storyClock"
-    },
-    "valid_to": {
-      "oneOf": [
-        {
-          "$ref": "common.schema.json#/$defs/storyClock"
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
-    "asserted_at_version": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "retracted_at_version": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "commit_id": {
-      "$ref": "common.schema.json#/$defs/uuid"
-    },
-    "implied": {
-      "type": "boolean",
-      "description": "Extractor saw action-on-information without an on-page channel; verification demands a channel or flags a leak"
+      },
+      "description": "How the knower came to hold this stance (the channel). told requires informer_id; witnessed/overheard/read normally cite event_id; prior_loop_memory/source_story cite the timeline the memory belongs to via the proposition truth entry; narration is used for narrator/reader pseudo-knowers and for explicit unaware records."
     }
   }
 }

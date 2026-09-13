@@ -1,6 +1,6 @@
 # ADR-0021: Repository structure for the implementation
 
-- **Status:** Accepted
+- **Status:** Accepted — amended by ADR-0044: `apps/cli` is the first app; `apps/api`, `apps/web`, `apps/worker` follow the core-loop proof
 - **Date:** 2026-09-13
 - **Deciders:** principal architects (product, software, AI systems, data, Korean webnovel production)
 

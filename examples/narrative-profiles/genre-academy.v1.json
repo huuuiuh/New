@@ -1,0 +1,193 @@
+{
+  "id": "genre/academy",
+  "kind": "genre",
+  "version": 1,
+  "name": "Academy (아카데미) overlay",
+  "genre": {
+    "genre_id": "academy",
+    "reader_fantasy": "Hidden talent among elites; rivalry turning into respect; exam and tournament set pieces with legible stakes.",
+    "vocabulary": {
+      "preferred_terms": [
+        "enrollment",
+        "first-year",
+        "second-year",
+        "practical exam",
+        "theory exam",
+        "professor",
+        "instructor",
+        "dormitory",
+        "student council",
+        "sparring",
+        "duel",
+        "leaderboard",
+        "upperclassman",
+        "underclassman"
+      ],
+      "discouraged_terms": [
+        "freshman",
+        "sophomore",
+        "homeroom",
+        "senpai",
+        "kohai"
+      ],
+      "terminology_defaults": [
+        {
+          "source_term": "선배",
+          "source_language": "ko",
+          "decision": "translate",
+          "english": "upperclassman / senior (address: surname or title)"
+        },
+        {
+          "source_term": "후배",
+          "source_language": "ko",
+          "decision": "translate",
+          "english": "underclassman"
+        },
+        {
+          "source_term": "교수",
+          "source_language": "ko",
+          "decision": "translate",
+          "english": "Professor + surname"
+        },
+        {
+          "source_term": "학생회",
+          "source_language": "ko",
+          "decision": "translate",
+          "english": "student council"
+        }
+      ]
+    },
+    "devices": [
+      {
+        "id": "leaderboard",
+        "description": "Ranking board rendered in the status-window format; every number is a fact with validity.",
+        "format_grammar": "[Leaderboard — <exam name>]\\n1. <Name>  <score>\\n2. <Name>  <score>\\n...",
+        "max_per_chapter": 1
+      },
+      {
+        "id": "exam_arc",
+        "description": "Exam or tournament arc of 3–6 chapters with published rules before the first round; rules are locked world facts."
+      },
+      {
+        "id": "rival_exchange",
+        "description": "Short, sharp exchange between rivals that ends on a line the other cannot answer.",
+        "max_per_chapter": 2
+      }
+    ],
+    "cadence": {
+      "progression_event_every_chapters": 3,
+      "satisfaction_every_chapters": 3,
+      "max_frustration_streak": 3
+    },
+    "structure_overrides": {
+      "opening_types_preferred": [
+        "status_update",
+        "sharp_dialogue"
+      ],
+      "participants_soft_cap": 8
+    },
+    "register_notes": [
+      "Strict seniority: first-years use titles or surnames with upperclassmen; peers in the same year use given names.",
+      "Professors are 'Professor' + surname in every register; instructors may be 'Instructor' + surname.",
+      "Deference is shown through address terms and who speaks first, not through invented honorific grammar."
+    ],
+    "default_relationship_registers": [
+      {
+        "relationship_class": "elder",
+        "register": {
+          "formality": 3,
+          "deference": 3,
+          "familiarity": 1,
+          "directness": 2,
+          "contractions": "neutral",
+          "address_terms": [
+            "Senior"
+          ],
+          "titles": [
+            "Council President",
+            "Captain"
+          ]
+        }
+      },
+      {
+        "relationship_class": "peer",
+        "register": {
+          "formality": 1,
+          "deference": 0,
+          "familiarity": 3,
+          "directness": 4,
+          "contractions": "free",
+          "address_terms": [],
+          "titles": []
+        }
+      },
+      {
+        "relationship_class": "master",
+        "register": {
+          "formality": 4,
+          "deference": 4,
+          "familiarity": 0,
+          "directness": 1,
+          "contractions": "avoid",
+          "address_terms": [
+            "Professor"
+          ],
+          "titles": [
+            "Professor",
+            "Instructor",
+            "Headmaster"
+          ]
+        }
+      }
+    ],
+    "taboos": [
+      "Exam rules changed mid-arc without an in-story reason",
+      "Whole-class reaction shots repeated identically",
+      "Protagonist wins by a power never established"
+    ],
+    "judge_notes": [
+      "Ensemble scenes: no more than the contract's participants speak; extras are background.",
+      "Rank and score changes must be legible and consistent with earlier boards.",
+      "Rivalry beats end on a turn, not on narration explaining who won."
+    ],
+    "lint_thresholds": {
+      "ST-EXP-02": {
+        "warn": 8,
+        "fail": 12
+      }
+    },
+    "rubric": [
+      {
+        "dimension": "Hidden talent, legible stakes",
+        "weight": 0.35,
+        "anchors": {
+          "1": "No sense of what is being tested or risked.",
+          "3": "Stakes stated but not felt.",
+          "5": "The reader knows the rule, the risk and the reveal, and the payoff lands inside the exam or duel."
+        }
+      },
+      {
+        "dimension": "Rivalry with movement",
+        "weight": 0.35,
+        "anchors": {
+          "1": "Rivals trade insults with no shift.",
+          "3": "One-sided rivalry.",
+          "5": "Each exchange moves respect or hostility by a visible step."
+        }
+      },
+      {
+        "dimension": "Seniority rendered naturally",
+        "weight": 0.3,
+        "anchors": {
+          "1": "Everyone sounds the same or honorific grammar is faked.",
+          "3": "Titles present but inconsistent.",
+          "5": "Address terms and speaking order show hierarchy in natural English."
+        }
+      }
+    ]
+  },
+  "calibration": {
+    "status": "uncalibrated",
+    "notes": "Starter profile (ADR-0043)."
+  }
+}

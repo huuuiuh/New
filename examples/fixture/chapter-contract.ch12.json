@@ -17,7 +17,7 @@
     "canon_version": 11,
     "template_version": "pack.chapter_planner@1.0.0"
   },
-  "status": "approved",
+  "status": "locked",
   "purpose": "Han Yu-ri joins the party and starts believing Do-yoon and Seo-ha are siblings, arming the comedy engine; Mu-jin's slow venom recovery plants the ch.14 permanent-limp setup.",
   "reader_experience": "A laugh, then a small unease that stays.",
   "arc_objective_contribution": "Completes party formation for the Poison Fog Dungeon arc; fixes the roster for the ch.13 run.",
@@ -310,9 +310,9 @@
         {
           "manuscript_version_id": "0191b2a0-0000-7000-8000-000000030009",
           "chapter_no": 9,
-          "paragraph_id": "p41",
-          "start": 4120,
-          "end": 4164,
+          "paragraph_id": "p46",
+          "start": 4907,
+          "end": 4951,
           "quote": "Black venom was climbing Mu-jin’s left calf."
         }
       ]

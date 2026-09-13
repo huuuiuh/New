@@ -18,10 +18,11 @@ literary-fiction, or traditionally published novel pacing. See ADR-0026 and
    `docs/adr/` (next number, same template) *before* the deviation lands, and update the affected docs and
    `docs/01-requirements/04-traceability-matrix.md` in the same change.
 2. **Do not weaken the invariants** listed in `docs/08-delivery/05-implementation-handoff-guide.md` §2
-   (canon only from accepted chapters, atomic canon commits, evidence-backed facts, planned ≠ happened,
-   rejected drafts quarantined, Narrative Identity Guard on every style-sensitive call, English output
-   check on manuscript roles, prompt versioning, context-pack snapshots, durable checkpoints). They are
-   the reason the product works.
+   (canon extracted only from approval-locked versions and read only from accepted ones, atomic canon
+   commits that set `accepted`, evidence-backed facts, planned ≠ happened, transitions never retract
+   history, rejected drafts quarantined, Narrative Identity Guard on every style-sensitive call, English
+   output check on manuscript roles, prompt versioning, context-pack snapshots, durable checkpoints,
+   per-dimension gates from the pinned Production Policy). They are the reason the product works.
 3. **Schemas are contracts.** `schemas/*.schema.json` define the wire/storage shape of the core objects.
    Generate types from them (or keep Zod definitions in lockstep and test equivalence); do not fork them.
    Text fields are language-neutral with explicit language metadata; do not reintroduce
@@ -33,22 +34,31 @@ literary-fiction, or traditionally published novel pacing. See ADR-0026 and
 5. **No secrets in the repo.** Provider keys live in the secret manager / `.env` (git-ignored). `.env.example`
    may list variable *names* only.
 6. **Commit per milestone** with focused messages. Never rewrite published history.
-7. **Keep the validator green.** `python tools/validate-planning-package.py` validates schemas and
-   examples and scans for contradictory language-output statements; run it before every commit that
-   touches `docs/`, `schemas/`, or `examples/`.
+7. **Keep the validator green.** `python3 tools/validate-planning-package.py` validates schemas ($ref
+   resolution), examples, the canon-delta union, evidence offsets against fixture manuscripts, cross-file
+   references, stale lifecycle/length terms and truthfulness claims; run it before every commit that touches
+   `docs/`, `schemas/`, `examples/` or `tools/`. CI runs it on every push.
+8. **Numbers live in one place.** Workflow limits, gate thresholds and the override matrix come from the
+   pinned Production Policy (`examples/production-policies/`, ADR-0041); docs quote them as
+   "(starting value, `standard.v1`)" and never define them independently.
+9. **Record status only in `docs/08-delivery/09-progress.md`** (ADR-0043). Design documents describe
+   design; they do not claim what has been built or tested.
 
 ## Where to start implementing
 
-`docs/08-delivery/05-implementation-handoff-guide.md` → `docs/08-delivery/01-implementation-roadmap.md`
-(Phase 0 first) → `docs/08-delivery/02-backlog.md` (P0 items). Use the fixture story in
-`docs/07-quality/02-fixture-story.md` + `examples/fixture/` as the first integration test.
+`docs/08-delivery/09-progress.md` (current state, next tasks) → `docs/08-delivery/05-implementation-handoff-guide.md`
+→ `docs/08-delivery/01-implementation-roadmap.md` (§0 checkpoint order, ADR-0044) → `docs/08-delivery/02-backlog.md`.
+Use the fixture story in `docs/07-quality/02-fixture-story.md` + `examples/fixture/` as the first integration
+test. Work on stacked checkpoint branches and open a PR per checkpoint; never merge without explicit
+user authorization.
 
 ## Repository conventions once code exists (decided in ADR-0001, ADR-0021, ADR-0028)
 
 - pnpm workspace monorepo, TypeScript strict, Node 22 LTS.
-- `apps/web` (Next.js), `apps/api` (Fastify), `apps/worker` (Temporal workers), `packages/*` (domain,
-  db, gateway, prompts, narrative, prose, context, canon, eval, workflows); `services/grammar-service`
-  (optional self-hosted grammar/spelling checker for English).
-- Postgres 16 + pgvector is the single system of record. Temporal orchestrates; Postgres holds truth.
+- `apps/cli` first (ADR-0044), then `apps/web` (Next.js), `apps/api` (Fastify), `apps/worker` (Temporal
+  workers); `packages/*` (domain, db, gateway, prompts, narrative, prose, context, canon, eval, workflows);
+  `services/grammar-service` (optional self-hosted grammar/spelling checker for English).
+- Postgres 16 (+ pgvector when vector retrieval is enabled) is the single system of record. The MVP core loop
+  runs as Postgres-checkpointed idempotent steps; Temporal orchestrates from Checkpoint 7 (ADR-0044).
 - All IDs are UUIDv7; all timestamps UTC; all text UTF-8 NFC-normalized at the boundary; all text
   offsets are Unicode code-point indices into NFC text (ADR-0030).

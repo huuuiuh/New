@@ -31,20 +31,22 @@ draft/version text (English)
   chapter with translation-like English fails A and passes B. The scorecard shows which, and repair
   targets that dimension.
 
-## 2. Scoring and gating (starting values; ADR-0029)
+## 2. Scoring and gating (Production Policy, ADR-0041; starting values, ADR-0029)
 
-| Dimension | Composition | Gate (Economy / Standard / Premium) |
+| Dimension | Composition (`policy.gates.dimensions.<d>.judge_weight`) | Gate `min_score` (starting values, `economy.v1` / `standard.v1` / `premium.v1`) |
 | --- | --- | --- |
-| A `prose_score` | Prose Judge 60% · Prose Lint composite 40% (1 − normalized violation density) | ≥ 70 / 78 / 84 |
-| B `structure_score` | Structure Judge 65% · Structure Lint composite 35% | ≥ 70 / 78 / 84 |
-| C `genre_score` | Genre Judge 80% · terminology/device compliance 20% | ≥ 65 / 72 / 80 |
-| D `voice_score` | Voice Judge 70% · Register check 30% | ≥ 70 / 76 / 82 |
+| A `prose_score` | Prose Judge 0.6 · Prose Lint composite 0.4 (1 − normalized violation density) | 70 / 78 / 84 |
+| B `structure_score` | Structure Judge 0.65 · Structure Lint composite 0.35 | 70 / 78 / 84 |
+| C `genre_score` | Genre Judge 0.8 · terminology/device compliance 0.2 | 65 / 72 / 80 |
+| D `voice_score` | Voice Judge 0.7 · Register check 0.3 | 70 / 76 / 82 |
 
-**Both A and B must pass**; there is no averaged "style score" for gating. Any `blocking` violation
-(`EP-LANG-01` non-English prose, `EP-FMT-01` screenplay/script, `EP-TERM-03` script outside preserve
-contexts, `EP-TRUNC-01`) fails regardless of scores. Drift flags at judge confidence ≥ 0.7 across ≥ 30% of
-paragraphs → `major` chapter-level issue → **scene-level** repair plan for that dimension instead of
-per-paragraph patches:
+The numbers live in `examples/production-policies/*.v1.json`; this table quotes them. **Every gated
+dimension must pass on its own**; there is no averaged "style score" and `scorecard.overall.score` is never
+a gate input. Any `blocking` violation (`EP-LANG-01` non-English prose, `EP-FMT-01` screenplay/script,
+`EP-TERM-03` script outside preserve contexts, `EP-TRUNC-01`) fails regardless of scores and cannot be
+overridden (ADR-0042). Drift flags at judge confidence ≥ `policy.gates.drift_flag_min_confidence` across
+≥ `policy.gates.drift_flag_scene_repair_ratio` of paragraphs → `major` chapter-level issue → **scene-level**
+repair plan for that dimension instead of per-paragraph patches:
 - `translation_like` / `literary` (A) → prose scene rewrite;
 - `western_novel` / `serial` (B) → structure scene rewrite (re-plan beats: hook, payoff, ending).
 
@@ -58,7 +60,7 @@ per-paragraph patches:
 | Structure: weak hook / weak ending / exposition run | `structure_reviser` → opening/ending/paragraph patch | tradition contract + structure rules, scene plan, the opening or closing paragraphs, hook/ending type required by contract |
 | Structure: scene-level drift (≥ 30% of scene paragraphs flagged `western_novel`/`serial`) | `scene_rewriter` (structure mode) | writer block, scene plan with beat tags, previous scene tail, facts-in-scene (must preserve), length target |
 | Prose: scene-level drift (`translation_like`/`literary` ≥ 30%) | `scene_rewriter` (prose mode) | same, emphasis on language contract |
-| Chapter-level drift (> 40% paragraphs) or 2 failed scene rewrites | `chapter_regenerate` (counts against candidate budget) | full writer pack |
+| Chapter-level drift (> `policy.gates.chapter_regenerate_ratio` of paragraphs) or `policy.revision.max_scene_rewrites` failed scene rewrites | `chapter_regenerate` (counts against candidate budget) | full writer pack |
 
 Reviser output is structured: `{ span_id, new_text, changed_claims[], preserved_facts_ack[] }`.
 `changed_claims` non-empty → continuity re-check on the span. Missing acks → patch rejected.
@@ -70,17 +72,20 @@ After applying patches to create version v+1:
 2. Re-lint changed paragraphs ± 1 (EP-* and ST-* as relevant) and chapter metrics.
 3. Register check on changed utterances.
 4. Continuity checker on changed spans if `changed_claims` non-empty or fact-bearing.
-5. After ≥ 3 patches or any scene rewrite: **both** Prose and Structure Judges in smoke mode (cheaper model
-   allowed) on the whole chapter + cross-chapter repetition check.
-6. Compare scorecards v vs v+1: no dimension may regress beyond tolerance (starting: −3 points) and no
+5. After ≥ `policy.revision.smoke_after_patches` patches or any scene rewrite: **both** Prose and Structure
+   Judges in smoke mode (cheaper model allowed) on the whole chapter + cross-chapter repetition check.
+6. Compare scorecards v vs v+1: no dimension may regress beyond `policy.revision.regression_tolerance_points`
+   (starting value 3) and no
    new blocking/major issue; otherwise revert the offending patch and try an alternate repair once, then
    escalate.
 
 ## 5. Escalation & human review
 
-Max repair rounds per chapter: 2 (Standard), 3 (Premium). Beyond: review queue with residual issues per
-dimension, side-by-side original vs patched, and an "accept with notes" override (recorded, feeds
-calibration).
+Repair rounds per chapter are bounded by `policy.revision.max_rounds` (starting value 3 in `standard.v1`;
+see `docs/05-generation/02-evaluation-and-revision-pipeline.md` §4.2 for the full limit set). Beyond: review
+queue with residual issues per dimension, side-by-side original vs patched, and an "approve with overrides"
+action restricted by the override matrix (ADR-0042; `never`-class issues cannot be waived) — recorded,
+feeds calibration.
 
 ## 6. Anti-self-preference and position bias
 
@@ -103,7 +108,7 @@ Requirements: the `kwn_english` version must score **highest on A and B jointly*
 Prose Judge must rank `translation_like` lowest on A in ≥ 90%; the Structure Judge must rank `western_english`
 and `weak_serial` below `kwn_english` on B in ≥ 95%; Prose Lint must produce a higher translation-marker rate on
 `translation_like` than on `kwn_english` in ≥ 90%; Structure Lint must flag `western_english` late hook/weak
-ending in ≥ 80%. MVP seed ≈ 40 sets; Beta ≥ 200. Seed examples: `examples/fixture/contrast-sets.seed.json`.
+ending in ≥ 80%. Today the repository holds **4 starter contrast sets in the repo** (`examples/fixture/contrast-sets.seed.json`, one per MVP genre plus one status-window set); the calibration round requires ≥ 40 (backlog B-6-3) and Beta ≥ 200. Filler sets are not added to reach a number (ADR-0043).
 
 **Reviewer panel:** bilingual reviewers able to judge native-quality English *and* Korean webnovel
 conventions rate 30 sampled chapters monthly on two scales; Spearman ≥ 0.8 between each judge and its

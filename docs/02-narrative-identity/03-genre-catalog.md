@@ -93,17 +93,19 @@ chapters; **H** = dominant hook/ending types.
 
 ### 8. `genre/villainess` — Villainess (악녀)
 - Reader fantasy: rewriting a doomed role; wit and competence. Devices: possession/regression into the
-  villainess; "original story" knowledge as frame `source_story`; divergence tracking; social duels in
+  villainess; "original story" knowledge backed by a `source_story` timeline (ADR-0039); divergence tracking; social duels in
   dialogue. Cadence S=3 (verbal satisfaction), relationship P=4. Judge notes: dialogue wit and register
   precision; heroine's inner voice (blunt, modern) contrasting with her formal public speech.
 
 ### 9. `genre/possession` — Possession (빙의)
-- Knowledge ledger models the possessor's outside knowledge (`source_story`/`prior_life`) vs the body's
-  original memories (`forgot`/`unaware`); identity-slip risk scenes; address-term confusion beats.
+- Knowledge ledger models the possessor's outside knowledge (`source.kind = source_story`, backed by facts
+  on the `source_story` timeline — ADR-0039) vs the body's original memories (`forgot`/`unaware`);
+  identity-slip risk scenes; address-term confusion beats.
 
 ### 10. `genre/reincarnation` — Reincarnation (환생)
-- Previous-life expertise (`prior_life` frame, protagonist only); adult mind in a child's body → register
-  tension is a feature (`intentional_shift` flags frequent).
+- Previous-life expertise lives on a `prior_loop` timeline diverging at rebirth (protagonist-only
+  `prior_loop_memory` knowledge; ADR-0039); adult mind in a child's body → register tension is a feature
+  (`intentional_shift` flags frequent).
 
 ## Production overlays (6)
 

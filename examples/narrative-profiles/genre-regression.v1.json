@@ -1,0 +1,159 @@
+{
+  "id": "genre/regression",
+  "kind": "genre",
+  "version": 1,
+  "name": "Regression (회귀) overlay",
+  "genre": {
+    "genre_id": "regression",
+    "reader_fantasy": "Foreknowledge used decisively; regret repaired; enemies pre-empted before they know there is a fight.",
+    "vocabulary": {
+      "preferred_terms": [
+        "regression",
+        "regressor",
+        "the loop",
+        "the first life",
+        "last time",
+        "this time",
+        "went back"
+      ],
+      "discouraged_terms": [
+        "time travel",
+        "timeline reset",
+        "save point",
+        "respawn"
+      ],
+      "terminology_defaults": [
+        {
+          "source_term": "회귀",
+          "source_language": "ko",
+          "decision": "translate",
+          "english": "regression"
+        },
+        {
+          "source_term": "회귀자",
+          "source_language": "ko",
+          "decision": "translate",
+          "english": "regressor"
+        },
+        {
+          "source_term": "전생",
+          "source_language": "ko",
+          "decision": "translate",
+          "english": "the first life"
+        }
+      ]
+    },
+    "devices": [
+      {
+        "id": "hindsight_monologue",
+        "description": "Italicized inner line contrasting last time with now (*Last time, I died right here.*). Short; never a paragraph-long recap.",
+        "format_grammar": "*<one or two sentences in italics>*",
+        "max_per_chapter": 6
+      },
+      {
+        "id": "countdown",
+        "description": "A known future event named with a date or interval; each mention tightens the clock.",
+        "max_per_chapter": 2
+      },
+      {
+        "id": "divergence_beat",
+        "description": "A moment where the present visibly departs from the remembered future; must be a canonical event on main and is flagged diverged in the ledger.",
+        "max_per_chapter": 2
+      }
+    ],
+    "cadence": {
+      "progression_event_every_chapters": 3,
+      "satisfaction_every_chapters": 2,
+      "max_frustration_streak": 2
+    },
+    "structure_overrides": {
+      "opening_types_preferred": [
+        "continue_cliffhanger",
+        "in_medias_res"
+      ]
+    },
+    "register_notes": [
+      "The regressor often knows more than their rank permits; deference must be rendered as behavior (holding back, deflecting) rather than dropped.",
+      "Foreknowledge is never explained aloud unless the contract plans the reveal."
+    ],
+    "default_relationship_registers": [
+      {
+        "relationship_class": "superior",
+        "register": {
+          "formality": 3,
+          "deference": 3,
+          "familiarity": 1,
+          "directness": 2,
+          "contractions": "neutral",
+          "address_terms": [
+            "sir",
+            "ma'am"
+          ],
+          "titles": []
+        }
+      },
+      {
+        "relationship_class": "peer",
+        "register": {
+          "formality": 1,
+          "deference": 1,
+          "familiarity": 2,
+          "directness": 3,
+          "contractions": "free",
+          "address_terms": [],
+          "titles": []
+        }
+      }
+    ],
+    "taboos": [
+      "Monologue dump of the whole previous life",
+      "'I remember everything' in every chapter",
+      "Foreknowledge claims that do not exist as prior_loop canon",
+      "Divergence that changes nothing"
+    ],
+    "judge_notes": [
+      "Hindsight monologue at most 20% of the chapter (policy key rhythm.hindsight_monologue_max_ratio).",
+      "Every foreknowledge claim must map to a prior_loop fact; every deviation must be a canonical main-timeline event.",
+      "Satisfaction comes from pre-emption paying off on the page, not from the narrator asserting cleverness."
+    ],
+    "lint_thresholds": {
+      "ST-MON-02": {
+        "warn": 0.15,
+        "fail": 0.25
+      }
+    },
+    "rubric": [
+      {
+        "dimension": "Foreknowledge used, not recited",
+        "weight": 0.35,
+        "anchors": {
+          "1": "Recaps the first life instead of acting on it.",
+          "3": "Acts on foreknowledge but explains it to the reader at length.",
+          "5": "Foreknowledge shows in decisions and timing; recap is one italic line."
+        }
+      },
+      {
+        "dimension": "Divergence tension",
+        "weight": 0.35,
+        "anchors": {
+          "1": "The future is fixed and nothing surprises the regressor.",
+          "3": "Divergence noted but without consequence.",
+          "5": "A departure from the remembered future changes what the regressor can rely on, and the chapter makes the reader feel the ground move."
+        }
+      },
+      {
+        "dimension": "Regret repaired / enemy pre-empted",
+        "weight": 0.3,
+        "anchors": {
+          "1": "No payoff of the second-chance premise.",
+          "3": "A payoff exists but is generic competence.",
+          "5": "A specific first-life regret or threat is answered on the page."
+        }
+      }
+    ]
+  },
+  "calibration": {
+    "status": "uncalibrated",
+    "notes": "Starter profile (ADR-0043). Numeric values are starting points."
+  }
+}

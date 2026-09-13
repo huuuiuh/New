@@ -6,8 +6,9 @@ identity, lies and false beliefs, injuries with lasting effects, inventory hand-
 payoffs, divergence from the "known future", and deliberate continuity traps — plus **narrative-identity
 traps**: translation-like English, Western-novel pacing, over-literary prose and weak serialized
 construction. The manuscript is **English, composed directly in English**, in Korean serialized-webnovel
-form (OUTPUT-EN-001, STYLE-KWN-001). Machine-readable parts live in `examples/fixture/`. All names, events
-and prose are original to this repository.
+form (OUTPUT-EN-001, STYLE-KWN-001). Machine-readable parts live in `examples/fixture/`; the accepted text of ch.9 and its rejected draft live in
+`examples/fixture/manuscripts/` so evidence offsets are real and validator-checked. All names, events and
+prose are original to this repository.
 
 ## 1. Premise and spec (abridged)
 
@@ -135,7 +136,11 @@ relationship ledger; the English renderings above are what the writer produces f
 | **T28** | 48 | Honorific suffix as morpheme ("Seo-ha-nim smiled.") | prose/translation_like_english EP-HON-01, major | token |
 | **T29** | 52 | Spelling-locale mix ("colour" in an `en-US` project) | prose/spelling_locale_inconsistency EP-LOC-01, minor | token |
 
-### Retcon / correction / rollback cases
+### Change-class cases (ADR-0038): transition, retcon, correction, rollback, retraction
+- **TR1 (transition):** ch.14 is accepted with "venom cleared". Expected: the ch.9 fact
+  `Mu-jin.status.injury[left_leg_venom]` gets `valid_to = ch.14` and `superseded_by → status.condition
+  (left-leg scarring, permanent limp)`; it is **not** retracted — "state of Mu-jin as of ch.11" still returns
+  the venom; "as of ch.15" returns the limp; "as of canon version at ch.8" returns neither.
 - **R1 (retcon):** after ch.30 is accepted, the user retcons ch.9: injured leg right → left. Expected: new
   version; fact `Mu-jin.status.injury` re-extracted with new evidence; **material** dependents stale:
   ch.14, 22 (limp descriptions), contracts 31–36 referencing the injury; chapters that merely retrieved the
@@ -143,8 +148,12 @@ relationship ledger; the English renderings above are what the writer produces f
   proposes patches.
 - **C1 (correction):** user corrects Yu-ri's age 19 → 20 via the canon inspector; impact report lists ch.12
   (intro) and the register profile note; commit `source=user_correction` with justification.
-- **RB1 (rollback):** rollback of ch.44's commit reopens `Yu-ri believes_false(P6)`; ch.44 returns to
-  `approved`; contracts 45–50 stale.
+- **RB1 (rollback):** rollback of ch.44's commit reopens `Yu-ri believes_false(P6)` (its `valid_to` is
+  restored to null from the commit's `inverse`), retracts the rows ch.44 inserted, bumps the canon version once
+  (`source=rollback`); ch.44 and its version return to `approved`; contracts 45–50 stale.
+- **SR1 (system-time retraction):** two extracted entities "the clerk" and "Association clerk Han" are
+  merged; the duplicate's rows get `retracted_at_version` in a `merge_entities` commit; no story-time
+  validity changes and no chapter becomes stale unless a material edge pointed at the retired entity.
 
 ## 7. Prose samples (original; for exemplars and contrast sets)
 

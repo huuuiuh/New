@@ -1,6 +1,7 @@
 # Yeonjae Studio (연재 스튜디오) — Planning Package
 
-**Status:** Planning complete (revised), implementation not started.
+**Status:** Planning baseline corrected and validated (Checkpoint 0); implementation begins with Checkpoint 1.
+Live status: `docs/08-delivery/09-progress.md`.
 **Purpose of this repository state:** a complete, internally consistent, production-level plan for an AI
 serialized-fiction production studio, written so that an engineering agent can implement it without
 redesigning the system.
@@ -47,6 +48,8 @@ The two problems this plan treats as first-class architecture (not as prompt wor
 | Build the system | `docs/06-system/` + `schemas/` + `docs/08-delivery/05-implementation-handoff-guide.md` |
 | See why decisions were made | `docs/adr/` (ADR-0026 is the governing decision) |
 | Verify the plan answers the hard questions | `docs/08-delivery/07-plan-audit.md` |
+| See what the Checkpoint 0 audit found and changed | `docs/08-delivery/10-baseline-audit-report.md` |
+| Know the current implementation state | `docs/08-delivery/09-progress.md` |
 | Start implementing | `AGENTS.md`, then `docs/08-delivery/01-implementation-roadmap.md` and `02-backlog.md` |
 
 ## Repository layout (planning phase)
@@ -68,7 +71,9 @@ docs/
   adr/                         architecture decision records
 schemas/                       JSON Schema (2020-12) for the core machine-readable objects
 examples/                      example instances of the schemas (English fixture story data, narrative profiles)
-tools/                         planning-package validation script (schemas, examples, contradiction scan)
+tools/                         planning-package validator (schemas + $ref resolution, examples, canon-delta union,
+                               evidence offsets against fixture manuscripts, cross-file references, stale terms,
+                               truthfulness checks) — run in CI
 ```
 
 ## Naming and language conventions
@@ -81,8 +86,15 @@ tools/                         planning-package validation script (schemas, exam
 - Language-bearing text fields in schemas are language-neutral (`text`, `summary`, `statement`) with
   explicit `language` metadata where the language can vary; **manuscript text is English (`en`)**.
 
+## Validation
+
+```
+pip install jsonschema
+python3 tools/validate-planning-package.py        # exit 0 = green; --quiet hides per-file [ok] lines
+```
+
 ## Non-goals of this repository state
 
-- No application code, no placeholder prototypes, no prompt files intended for production use.
+- No application code yet (Checkpoint 1 adds the pnpm workspace; see `docs/08-delivery/01-implementation-roadmap.md` §0).
   Prompt *specifications* and *example* templates appear in docs and `examples/` as design artifacts only.
 - No secrets, keys, or credentials. Provider configuration is described, never populated.

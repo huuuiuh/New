@@ -117,6 +117,10 @@
         "premium"
       ]
     },
+    "production_policy_version": {
+      "type": "string",
+      "description": "Pinned Production Policy id@version (ADR-0041), e.g. policy/standard@1"
+    },
     "operating_mode": {
       "type": "string",
       "enum": [

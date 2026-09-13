@@ -111,13 +111,17 @@ accepted chapter (amortized).
 [6] decision:
       no blocking & no major → [8]
       else → RevisionWorkflow (child): patch-first repair (see 02-evaluation-and-revision-pipeline.md)
-             → re-evaluate affected checks → loop ≤ max_rounds → if still blocking → needs_attention
+             → re-evaluate affected checks → loop ≤ policy.revision.max_rounds → if still blocking → needs_attention
 [7] candidate policy (Premium or on request): steps [1]–[6] run for N candidates (parallel branches with
     the same pack); chapter_comparator pairwise both orders on final versions + scorecards → pick
-[8] gate by mode: Assisted → wait for approval signal; Semi-auto → auto-approve if score ≥ threshold and
-    no major; Autopilot → auto-approve unless escalation criteria
+[8] gate by mode (ADR-0037/0041): Assisted → wait for approval signal; Semi-auto → policy approves when
+    `scorecard.acceptance.auto_approvable` (all deterministic criteria pass, no blocking/major, every gated
+    dimension ≥ its `policy.gates` threshold); Autopilot → policy approves unless escalation criteria.
+    Approval locks the version (`status=approved`); acceptance happens inside [9]'s commit.
 [9] on approve → CanonCommitWorkflow (child): extractor_a ∥ extractor_b ∥ deterministic pre-pass
-    → reconciler → adjudicator (conflicts only) → verifier → atomic commit → post-commit
+    → reconciler (deterministic) → extraction_adjudicator (conflicts only) → verifier (deterministic:
+    evidence, entities, frame × timeline kind, validity, contradictions, leaks) → atomic commit (sets
+    `accepted`) → post-commit
     (summaries L1 now, L2–L4 refresh if arc/season boundary, embeddings, exemplar candidates,
      promise status, dependency edges, PlanningHorizonWorkflow signal)
 [10] release lease; job complete with cost summary

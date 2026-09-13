@@ -1,6 +1,6 @@
 # ADR-0036: MVP re-scoped to a vertical slice with all foundational invariants
 
-- **Status:** Accepted
+- **Status:** Accepted — delivery order re-cut into checkpoints by ADR-0044; gates are per dimension (ADR-0041)
 - **Date:** 2026-09-13
 - **Deciders:** principal architects (product, software, AI systems, data, Korean webnovel production)
 

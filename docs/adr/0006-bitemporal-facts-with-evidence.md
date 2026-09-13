@@ -1,6 +1,6 @@
 # ADR-0006: Bitemporal facts with mandatory evidence spans
 
-- **Status:** Accepted
+- **Status:** Accepted — change classes (transition / correction / retcon / rollback / retraction) defined by ADR-0038
 - **Date:** 2026-09-13
 - **Deciders:** principal architects (product, software, AI systems, data, Korean webnovel production)
 

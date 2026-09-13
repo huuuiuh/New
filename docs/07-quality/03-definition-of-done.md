@@ -28,19 +28,19 @@ script for the phase runs end to end on staging.
   contextual dependents); T16 isolation proven.
 - Live 20-chapter run (Standard tier) completes with: **every accepted chapter passes the output-language
   check (English)**; zero blocking issues at acceptance; median `prose_score` ≥ 78 **and** median
-  `structure_score` ≥ 78 (separately; no averaging); cost per accepted chapter within tier envelope; every
+  `structure_score` ≥ 78 (separately, each against `policy.gates.dimensions.<d>.min_score` of `standard.v1`; no averaging); cost per accepted chapter within tier envelope; every
   accepted fact traceable to evidence.
 - Contrast-set regression green for the pinned prompt set: `kwn_english` ranks highest jointly on prose and
-  structure in ≥ 95% of seed sets.
+  structure in ≥ 95% of the contrast sets, with ≥ 40 sets present (B-6-3; 4 starter sets exist today).
 - Chaos suite green; RLS suite green; prompt regression green for the pinned prompt set.
 - A user can complete UW-1…UW-17 (MVP variants) in the UI without operator help.
 - Runbooks: deploy, restore, rotate secrets, raise budgets, handle `needs_attention`.
 
 ## 4. Review checklist (invariants)
 
-1. Canon only from `accepted` versions; commit atomic; version bump optimistic.
+1. Canon extracted only from approval-locked (`approved`) versions and read only from `accepted` versions; commit atomic; version bump optimistic and exactly once; the version is set `accepted` inside the commit (ADR-0037).
 2. Every fact/event/knowledge change with evidence (or bible source); offsets are code points.
-3. Plans never rendered as facts; frames respected; proposition truth per timeline.
+3. Plans never rendered as facts; frames respected per timeline kind (ADR-0039); proposition truth per timeline; normal transitions close validity and never retract history (ADR-0038).
 4. Rejected drafts quarantined; not reachable by assembler/extractor/exemplar/search.
 5. Narrative Identity Guard enforced for style-sensitive roles with **both** contracts; identity version and
    contract hashes recorded.
@@ -49,6 +49,6 @@ script for the phase runs end to end on staging.
 8. Context packs manifested and hashed; T0 validated; Active Constraint Set bytes verified.
 9. Activities idempotent; budgets checked pre-call.
 10. Dependency edges carry materiality; only material edges mark stale by default.
-11. Numeric thresholds live in profile data with calibration status, never in code.
+11. Numeric thresholds and workflow limits live in profile data and the pinned Production Policy with calibration status, never in code; gates are per dimension (ADR-0041); overrides follow the override matrix (ADR-0042).
 12. Tenancy: `workspace_id` + RLS on every new table.
 13. English fixture prose and Korean terminology entries are never machine-translated or reflowed by tooling.

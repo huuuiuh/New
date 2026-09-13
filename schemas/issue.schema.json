@@ -30,11 +30,14 @@
       "type": "string",
       "enum": [
         "address_term_error",
+        "calendar_incomparable",
         "canon_contradiction",
         "character_inconsistency",
+        "clock_unknown",
         "content_restriction",
         "dialogue_tag_overuse",
         "english_grammar",
+        "evidence_integrity",
         "excessive_exposition",
         "forbidden_development",
         "format_drift",
@@ -54,6 +57,7 @@
         "numeric_inconsistency",
         "other",
         "paragraph_length",
+        "partial_commit",
         "payoff_without_setup",
         "power_rule_violation",
         "promise_forgotten",
@@ -69,6 +73,7 @@
         "resource_impossible",
         "serial_drift",
         "spelling_locale_inconsistency",
+        "stale_canon",
         "terminology_violation",
         "timeline_error",
         "translation_like_english",
@@ -83,6 +88,16 @@
     },
     "severity": {
       "$ref": "common.schema.json#/$defs/severity"
+    },
+    "override_class": {
+      "type": "string",
+      "enum": [
+        "never",
+        "canon_workflow",
+        "reviewer",
+        "advisory"
+      ],
+      "description": "Who may waive this issue (ADR-0042). Assigned from the Production Policy override matrix by kind and severity; the gate enforces it."
     },
     "confidence": {
       "$ref": "common.schema.json#/$defs/confidence"
@@ -209,8 +224,10 @@
         "open",
         "patched",
         "overridden",
-        "dismissed"
-      ]
+        "dismissed",
+        "canon_workflow_opened"
+      ],
+      "description": "canon_workflow_opened = a correction/retcon workflow was opened for a canon_workflow-class issue; the issue closes when the re-run check passes."
     },
     "override_reason": {
       "type": "string"

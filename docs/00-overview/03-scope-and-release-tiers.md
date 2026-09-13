@@ -54,7 +54,7 @@ Legend: ✅ in tier · ◐ partial (noted) · ⏩ later tier · — not planned
 | --- | --- | --- | --- | --- |
 | Output-Language Profile (English; `en-US`/`en-GB` locale) with Output-Language Contract | ✅ | | | |
 | Narrative-Tradition Profile (Korean serialized webnovel) with Narrative-Tradition Contract | ✅ | | | |
-| Genre profiles shipped | 4 core (hunter/gate, regression, academy, romance fantasy) | +6 (system-progression, modern fantasy, murim, villainess, possession, reincarnation) | +6 (dungeon, apocalypse/survival, management, idol/entertainment, game-world, comedy) | custom overlays |
+| Genre profiles shipped (as data in `examples/narrative-profiles/`) | 4 core (hunter/gate, regression, academy, romance fantasy) | +6 (system-progression, modern fantasy, murim, villainess, possession, reincarnation) | +6 (dungeon, apocalypse/survival, management, idol/entertainment, game-world, comedy) | custom overlays |
 | Setting & Cultural Profile; Naming Profile (romanization system, name order, display/native/romanized names) | ✅ | | | |
 | Dialogue-Register Policy (abstract formality → English rendering) | ✅ | | | |
 | Terminology & Romanization Policy (translate / romanize / gloss / preserve) | ✅ | | | |
@@ -65,7 +65,7 @@ Legend: ✅ in tier · ◐ partial (noted) · ⏩ later tier · — not planned
 | Prose Judge, Structure Judge, Genre Judge, Voice Judge with evidence spans (separate dimensions) | ✅ | | | |
 | Passage-level repair | ✅ | | | |
 | Project exemplar bank (from accepted chapters + user-owned) | ✅ | | | |
-| Contrast set (5 classes: KWN-English, Western-English, translation-like, over-literary, weak-serial) | ◐ seed (~40 sets) | ✅ 200+ | ✅ | |
+| Contrast set (5 classes: KWN-English, Western-English, translation-like, over-literary, weak-serial) | ◐ 4 starter contrast sets in the repo today; ≥ 40 required before the calibration round (B-6-3) | ✅ 200+ | ✅ | |
 | Character voice profiles & voice-drift detection | ✅ | | | |
 | Threshold calibration tooling (per-project tuning from contrast sets and reviewer overrides) | ◐ manual | ✅ semi-automatic | ✅ | |
 | User prose preference learning from edits | — | ◐ | ✅ | |

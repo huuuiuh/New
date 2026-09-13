@@ -57,7 +57,8 @@
         {
           "type": "null"
         }
-      ]
+      ],
+      "description": "Story-time end of validity. Closed by a normal state transition (e.g., the injury heals); null = still true."
     },
     "asserted_at_version": {
       "type": "integer",
@@ -68,7 +69,8 @@
         "integer",
         "null"
       ],
-      "minimum": 0
+      "minimum": 0,
+      "description": "Canon version at which this row left canon (correction, retcon, rollback, regeneration). Never used for a normal in-story state change — those close valid_to instead (ADR-0038)."
     },
     "source": {
       "type": "string",
@@ -87,15 +89,7 @@
       "default": false
     },
     "frame": {
-      "type": "string",
-      "enum": [
-        "canonical",
-        "flashback",
-        "prior_loop",
-        "alternate_timeline",
-        "source_story"
-      ],
-      "description": "Facts exist only in reality-bearing frames"
+      "$ref": "#/$defs/factFrame"
     },
     "evidence": {
       "type": "array",
@@ -162,5 +156,18 @@
         ]
       }
     }
-  ]
+  ],
+  "$defs": {
+    "factFrame": {
+      "type": "string",
+      "enum": [
+        "canonical",
+        "flashback",
+        "prior_loop",
+        "alternate_timeline",
+        "source_story"
+      ],
+      "description": "Fact-bearing reality frames (ADR-0007, ADR-0039). prior_loop, alternate_timeline and source_story facts live on their own timeline and reach the main timeline only as knowledge."
+    }
+  }
 }

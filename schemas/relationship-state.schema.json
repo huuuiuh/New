@@ -32,6 +32,61 @@
       "$ref": "common.schema.json#/$defs/uuid"
     },
     "type": {
+      "$ref": "#/$defs/relationshipType"
+    },
+    "axes": {
+      "$ref": "#/$defs/axes"
+    },
+    "power_dynamic": {
+      "type": "string",
+      "enum": [
+        "equal",
+        "from_dominant",
+        "to_dominant",
+        "shifting"
+      ]
+    },
+    "register": {
+      "$ref": "common.schema.json#/$defs/dialogueRegister"
+    },
+    "note": {
+      "type": "string"
+    },
+    "valid_from": {
+      "$ref": "common.schema.json#/$defs/storyClock"
+    },
+    "valid_to": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/storyClock"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "asserted_at_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "retracted_at_version": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/evidenceRef"
+      }
+    },
+    "commit_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    }
+  },
+  "$defs": {
+    "relationshipType": {
       "type": "string",
       "enum": [
         "stranger",
@@ -82,53 +137,6 @@
           "maximum": 5
         }
       }
-    },
-    "power_dynamic": {
-      "type": "string",
-      "enum": [
-        "equal",
-        "from_dominant",
-        "to_dominant",
-        "shifting"
-      ]
-    },
-    "register": {
-      "$ref": "common.schema.json#/$defs/dialogueRegister"
-    },
-    "note": {
-      "type": "string"
-    },
-    "valid_from": {
-      "$ref": "common.schema.json#/$defs/storyClock"
-    },
-    "valid_to": {
-      "oneOf": [
-        {
-          "$ref": "common.schema.json#/$defs/storyClock"
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
-    "asserted_at_version": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "retracted_at_version": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "evidence": {
-      "type": "array",
-      "items": {
-        "$ref": "common.schema.json#/$defs/evidenceRef"
-      }
-    },
-    "commit_id": {
-      "$ref": "common.schema.json#/$defs/uuid"
     }
   }
 }

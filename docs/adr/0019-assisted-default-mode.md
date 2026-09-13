@@ -5,11 +5,11 @@
 - **Deciders:** principal architects (product, software, AI systems, data, Korean webnovel production)
 
 ## Context
-Trust in auto-acceptance must be earned; early bible/plan mistakes are the most expensive.
+Trust in auto-approval must be earned; early bible/plan mistakes are the most expensive.
 
 ## Decision
 Default **Assisted** (human approves assumptions, bible, blueprint, arc 1, and each chapter of arc 1),
-then recommend **Semi-automatic** (auto-accept clean chapters ≥ threshold; queue others). **Autopilot**
+then recommend **Semi-automatic** (policy approves clean chapters that pass every per-dimension gate — ADR-0041; queue others). **Autopilot**
 ships in Beta with hard budgets and escalation rules.
 
 ## Alternatives considered

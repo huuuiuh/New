@@ -110,8 +110,8 @@ Requirements ─► Story Spec (hard / soft / assumptions) ─► Concept candid
 | Mode | Who approves what | When to use |
 | --- | --- | --- |
 | **Assisted (default, MVP)** | Human approves assumptions, bible, series blueprint, each arc plan, and each chapter | First arc of any series; high-stakes chapters |
-| **Semi-automatic (MVP)** | Human approves bible/blueprint/arc plans; chapters auto-accepted when scorecard ≥ tier threshold and no blocking issues; otherwise queued for review | Steady-state production |
-| **Autopilot (Beta)** | Human approves bible/blueprint; arcs and chapters auto-accepted within budget; hard escalation on blocking issues, budget exhaustion, or repeated low quality | Long backlists, trusted configurations |
+| **Semi-automatic (MVP)** | Human approves bible/blueprint/arc plans; chapters are **auto-approved** by policy when every deterministic criterion passes, there are no blocking or major issues, and each gated dimension (prose, structure, genre, voice) meets its own threshold (`policy.gates`, ADR-0041); otherwise queued for review. Acceptance always follows from the atomic canon commit (ADR-0037) | Steady-state production |
+| **Autopilot (Beta)** | Human approves bible/blueprint; arcs and chapters auto-approved by policy within budget; hard escalation on blocking issues, budget exhaustion, or repeated low quality | Long backlists, trusted configurations |
 
 Recommended initial mode: **Assisted for the story bible and the first arc, then Semi-automatic.**
 
@@ -143,7 +143,7 @@ TypeScript monorepo (ADR-0001) · Postgres 16 + pgvector as single system of rec
 for durable workflows (ADR-0003) · provider-independent model gateway (ADR-0004) · fail-closed Narrative
 Identity Guard (ADR-0005, revised by ADR-0027) · bitemporal facts with evidence (ADR-0006) · reality
 frames (ADR-0007) · proposition-centric knowledge ledger with per-timeline truth (ADR-0008, ADR-0031) ·
-accepted-chapter-only canon with two-extractor reconciliation and atomic commit (ADR-0009) · tiered
+canon extracted only from approval-locked manuscripts and accepted on atomic commit, with two-extractor reconciliation (ADR-0009, ADR-0037) · tiered
 context packs with compiled active constraints (ADR-0010, ADR-0033) · hybrid retrieval (ADR-0011) ·
 rolling-horizon hierarchical planning (ADR-0012) · chapter contract as unit of acceptance (ADR-0013) ·
 patch-first revision (ADR-0014) · position-swapped pairwise candidate judging (ADR-0015) · prompt

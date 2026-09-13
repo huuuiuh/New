@@ -1,0 +1,141 @@
+{
+  "id": "policy/economy",
+  "version": 1,
+  "quality_tier": "economy",
+  "name": "Economy tier production policy (starting values)",
+  "content_hash": "sha256:e30fd50065f43e6cf6ee49a390bd9f14141810a2fc34863cef8fac265b37c9a6",
+  "revision": {
+    "max_rounds": 2,
+    "max_patches_per_round": 6,
+    "max_scene_rewrites": 1,
+    "per_span_attempts": 2,
+    "smoke_after_patches": 3,
+    "regression_tolerance_points": 3
+  },
+  "candidates": {
+    "chapter_candidates": 1,
+    "concept_candidates": 2,
+    "arc_candidates": 1,
+    "early_stop_margin_points": 6,
+    "judge_families_differ_from_writer": false
+  },
+  "gates": {
+    "dimensions": {
+      "prose": {
+        "min_score": 70,
+        "judge_weight": 0.6
+      },
+      "structure": {
+        "min_score": 70,
+        "judge_weight": 0.65
+      },
+      "genre": {
+        "min_score": 65,
+        "judge_weight": 0.8
+      },
+      "voice": {
+        "min_score": 70,
+        "judge_weight": 0.7
+      }
+    },
+    "blocking_max": 0,
+    "major_max": 0,
+    "judge_confidence_caps": {
+      "minor_below": 0.5,
+      "note_below": 0.3
+    },
+    "drift_flag_scene_repair_ratio": 0.3,
+    "drift_flag_min_confidence": 0.7,
+    "chapter_regenerate_ratio": 0.4
+  },
+  "context": {
+    "previous_tail_words": 400,
+    "previous_tail_floor_words": 250,
+    "previous_tail_extend_to_scene_below_words": 600,
+    "active_constraints_cap_tokens": 1200,
+    "writer_input_budget_tokens": 18000,
+    "l1_summary_max_words": 120
+  },
+  "extraction": {
+    "passes": 1,
+    "single_source_min_confidence": 0.8,
+    "fuzzy_anchor_min_ratio": 0.98,
+    "major_unresolved_blocks_commit": true,
+    "adjudicate_conflicts": true
+  },
+  "output_language": {
+    "language": "en",
+    "min_english_confidence": 0.99,
+    "regenerate_once_then_reroute": true
+  },
+  "length": {
+    "warn_tolerance_ratio": 0.12,
+    "fail_tolerance_ratio": 0.2
+  },
+  "override_matrix": {
+    "never": [
+      "non_english_output",
+      "truncated_output",
+      "invalid_structured_output",
+      "format_drift",
+      "content_restriction",
+      "evidence_integrity",
+      "partial_commit",
+      "stale_canon",
+      "frame_error",
+      "knowledge_leak"
+    ],
+    "canon_workflow": [
+      "canon_contradiction",
+      "timeline_error",
+      "requirement_violation",
+      "forbidden_development"
+    ],
+    "reviewer": [
+      "register_error",
+      "address_term_error",
+      "voice_drift",
+      "western_novel_drift",
+      "serial_drift",
+      "literary_drift",
+      "translation_like_english",
+      "weak_ending",
+      "weak_pacing",
+      "late_hook",
+      "excessive_exposition",
+      "repeated_paragraph",
+      "repeated_scene",
+      "repetitive_arc",
+      "payoff_without_setup",
+      "promise_forgotten",
+      "length_out_of_range",
+      "numeric_inconsistency",
+      "unapproved_untranslated_term",
+      "terminology_violation",
+      "naming_registry_violation",
+      "relationship_inconsistency",
+      "character_inconsistency",
+      "injury_forgotten",
+      "inventory_impossible",
+      "resource_impossible",
+      "rank_incorrect",
+      "location_error",
+      "power_rule_violation",
+      "world_rule_violation",
+      "knowledge_ignorance",
+      "reader_knowledge_violation",
+      "missing_required_event",
+      "paragraph_length",
+      "repetitive_sentence_openings",
+      "dialogue_tag_overuse",
+      "english_grammar",
+      "spelling_locale_inconsistency",
+      "other"
+    ],
+    "project_escalations": []
+  },
+  "calibration": {
+    "status": "uncalibrated",
+    "notes": "Economy: single extractor pass with deterministic cross-check; genre judge folded into the structure judge and voice judge into the prose judge — prose and structure remain separate calls and separate gates (EVAL-SEPARATION-001)."
+  }
+}
