@@ -8,17 +8,17 @@
 
 ## Commands
 
-| Command | What it does |
-| --- | --- |
-| `pnpm install` | install the workspace |
-| `pnpm gen:types` | regenerate `packages/domain/src/generated` from `schemas/` (commit the result) |
-| `pnpm check:types-fresh` | fail if generated types are stale (CI) |
-| `pnpm typecheck` | `tsc -b` over all packages (strict) |
-| `pnpm lint` / `pnpm format` / `pnpm format:check` | ESLint (type-aware) / Prettier — never touches `examples/`, `docs/`, `schemas/` |
-| `pnpm test` | Vitest unit tests |
-| `pnpm validate:planning` | planning-package validator (schemas, examples, evidence, references, stale terms) |
-| `pnpm check` | everything CI runs |
-| `pnpm cli <command>` | the CLI (`pnpm cli` prints usage) |
+| Command                                           | What it does                                                                      |
+| ------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `pnpm install`                                    | install the workspace                                                             |
+| `pnpm gen:types`                                  | regenerate `packages/domain/src/generated` from `schemas/` (commit the result)    |
+| `pnpm check:types-fresh`                          | fail if generated types are stale (CI)                                            |
+| `pnpm typecheck`                                  | `tsc -b` over all packages (strict)                                               |
+| `pnpm lint` / `pnpm format` / `pnpm format:check` | ESLint (type-aware) / Prettier — never touches `examples/`, `docs/`, `schemas/`   |
+| `pnpm test`                                       | Vitest unit tests                                                                 |
+| `pnpm validate:planning`                          | planning-package validator (schemas, examples, evidence, references, stale terms) |
+| `pnpm check`                                      | everything CI runs                                                                |
+| `pnpm cli <command>`                              | the CLI (`pnpm cli` prints usage)                                                 |
 
 ## Layout (ADR-0021, ADR-0044)
 
