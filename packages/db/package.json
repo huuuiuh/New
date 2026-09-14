@@ -1,0 +1,32 @@
+{
+  "name": "@yeonjae/db",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Postgres access: migration runner, connection helpers, typed queries for canon (facts, events, knowledge, relationships, promises), manuscript versions and commits.",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./testkit": {
+      "types": "./dist/testkit.d.ts",
+      "default": "./dist/testkit.js"
+    }
+  },
+  "files": [
+    "dist",
+    "migrations"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@yeonjae/domain": "workspace:*",
+    "@yeonjae/prose": "workspace:*",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1"
+  }
+}

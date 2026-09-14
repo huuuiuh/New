@@ -1,0 +1,32 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "packages/prose"
+    },
+    {
+      "path": "packages/domain"
+    },
+    {
+      "path": "packages/narrative"
+    },
+    {
+      "path": "packages/prompts"
+    },
+    {
+      "path": "packages/gateway"
+    },
+    {
+      "path": "packages/db"
+    },
+    {
+      "path": "packages/canon"
+    },
+    {
+      "path": "packages/context"
+    },
+    {
+      "path": "apps/cli"
+    }
+  ]
+}
