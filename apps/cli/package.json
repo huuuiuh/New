@@ -17,6 +17,7 @@
     "@yeonjae/db": "workspace:*",
     "@yeonjae/canon": "workspace:*",
     "@yeonjae/narrative": "workspace:*",
-    "@yeonjae/prompts": "workspace:*"
+    "@yeonjae/prompts": "workspace:*",
+    "@yeonjae/context": "workspace:*"
   }
 }
