@@ -1,0 +1,450 @@
+{
+  "version": 1,
+  "entities": [
+    {
+      "id": "0191b2a0-0000-7000-8000-0000000c0001",
+      "type": "character",
+      "display_name": "Kang Do-yoon",
+      "short_forms": [
+        "Do-yoon"
+      ],
+      "aliases": [
+        "Kang"
+      ],
+      "description": "27. Ten years an F-rank porter before dying in the Collapse; wakes on measurement morning with the future in his head and no proof."
+    },
+    {
+      "id": "0191b2a0-0000-7000-8000-0000000c0002",
+      "type": "character",
+      "display_name": "Lee Seo-ha",
+      "short_forms": [
+        "Seo-ha"
+      ],
+      "description": "24, B-rank healer. Hides that she is a conglomerate chairman's illegitimate daughter."
+    },
+    {
+      "id": "0191b2a0-0000-7000-8000-0000000c0003",
+      "type": "character",
+      "display_name": "Park Mu-jin",
+      "short_forms": [
+        "Mu-jin"
+      ],
+      "aliases": [
+        "Mister Park",
+        "old man"
+      ],
+      "description": "45, C-rank veteran hunter. Died shielding Do-yoon in the previous life."
+    },
+    {
+      "id": "0191b2a0-0000-7000-8000-0000000c0004",
+      "type": "character",
+      "display_name": "Choi Hyun-seok",
+      "short_forms": [
+        "Hyun-seok"
+      ],
+      "description": "31, A-rank, Vice-Guildmaster of White Night."
+    },
+    {
+      "id": "0191b2a0-0000-7000-8000-0000000c0007",
+      "type": "character",
+      "display_name": "Yoon Jae-kyung",
+      "aliases": [
+        "the Chairman",
+        "the Watcher"
+      ],
+      "description": "58, Hunter Association Chairman."
+    },
+    {
+      "id": "0191b2a0-0000-7000-8000-0000000c0008",
+      "type": "character",
+      "display_name": "Jung Min-jae",
+      "short_forms": [
+        "Min-jae"
+      ],
+      "description": "Association measurement officer."
+    },
+    {
+      "id": "0191b2a0-0000-7000-8000-000000010001",
+      "type": "location",
+      "display_name": "Association measurement hall",
+      "aliases": [
+        "the measurement hall"
+      ],
+      "description": "Third floor of a glass tower in Mapo."
+    },
+    {
+      "id": "0191b2a0-0000-7000-8000-000000010006",
+      "type": "location",
+      "display_name": "Mapo Gate 3",
+      "aliases": [
+        "Gate 3, Mapo"
+      ],
+      "description": "D-grade gate in Mapo."
+    },
+    {
+      "id": "0191b2a0-0000-7000-8000-000000010004",
+      "type": "location",
+      "display_name": "Gangnam gate",
+      "description": "The gate that breaks in the original history."
+    },
+    {
+      "id": "0191b2a0-0000-7000-8000-000000011001",
+      "type": "organization",
+      "display_name": "Hunter Association",
+      "short_forms": [
+        "the Association"
+      ]
+    },
+    {
+      "id": "0191b2a0-0000-7000-8000-000000012001",
+      "type": "term",
+      "display_name": "Association rank scale",
+      "description": "Ranks F through S read from measurement devices; no status windows."
+    }
+  ],
+  "propositions": [
+    {
+      "local_id": "P1",
+      "statement": "Kang Do-yoon is a regressor.",
+      "kind": "secret",
+      "entity_ids": [
+        "0191b2a0-0000-7000-8000-0000000c0001"
+      ],
+      "secret": {
+        "owner_ids": [
+          "0191b2a0-0000-7000-8000-0000000c0001"
+        ],
+        "allowed_knower_ids": [],
+        "reader_may_know": true,
+        "reveal_not_before_chapter": 58
+      },
+      "truth": "true"
+    },
+    {
+      "local_id": "P2",
+      "statement": "Lee Seo-ha is Chairman Lee Tae-san's illegitimate daughter.",
+      "kind": "secret",
+      "entity_ids": [
+        "0191b2a0-0000-7000-8000-0000000c0002"
+      ],
+      "secret": {
+        "owner_ids": [
+          "0191b2a0-0000-7000-8000-0000000c0002"
+        ],
+        "allowed_knower_ids": [],
+        "reader_may_know": true,
+        "reveal_not_before_chapter": 72
+      },
+      "truth": "true"
+    },
+    {
+      "local_id": "P4",
+      "statement": "Chairman Yoon Jae-kyung is the Watcher.",
+      "kind": "secret",
+      "entity_ids": [
+        "0191b2a0-0000-7000-8000-0000000c0007"
+      ],
+      "secret": {
+        "owner_ids": [
+          "0191b2a0-0000-7000-8000-0000000c0007"
+        ],
+        "allowed_knower_ids": [],
+        "reader_may_know": false,
+        "reveal_not_before_chapter": 120
+      },
+      "truth": "true"
+    }
+  ],
+  "promises": [
+    {
+      "id": "0191b2a0-0000-7000-8000-0000000d0011",
+      "type": "threat",
+      "statement": "The Mapo gate run: last time Mu-jin went in without a porter and came out on a stretcher.",
+      "importance": "core",
+      "due_min_chapter": 2,
+      "due_max_chapter": 3,
+      "related_entity_ids": [
+        "0191b2a0-0000-7000-8000-0000000c0001",
+        "0191b2a0-0000-7000-8000-0000000c0003",
+        "0191b2a0-0000-7000-8000-000000010006"
+      ]
+    },
+    {
+      "id": "0191b2a0-0000-7000-8000-0000000d0001",
+      "type": "chekhov",
+      "statement": "The old compass will lead to a hidden gate.",
+      "importance": "core",
+      "due_min_chapter": 55,
+      "due_max_chapter": 70,
+      "related_entity_ids": [
+        "0191b2a0-0000-7000-8000-0000000c0001"
+      ]
+    },
+    {
+      "id": "0191b2a0-0000-7000-8000-0000000d0003",
+      "type": "mystery",
+      "statement": "Who is the Watcher?",
+      "importance": "core",
+      "due_min_chapter": 100,
+      "due_max_chapter": 120,
+      "related_entity_ids": [
+        "0191b2a0-0000-7000-8000-0000000c0007"
+      ]
+    }
+  ],
+  "commits": [
+    [
+      {
+        "local_id": "rule-ranks",
+        "type": "fact",
+        "op": "assert",
+        "frame": "canonical",
+        "confidence": 1,
+        "importance": "core",
+        "evidence": [],
+        "payload": {
+          "entity_id": "0191b2a0-0000-7000-8000-000000012001",
+          "attribute": "rule.scale",
+          "value": "F-S",
+          "value_text": "Ranks run F through S and are read from measurement devices; no status windows",
+          "valid_from": {
+            "chapter_no": 0,
+            "ordinal": 0,
+            "precision": "exact"
+          },
+          "valid_to": null,
+          "locked": true
+        }
+      },
+      {
+        "local_id": "seoha-rank",
+        "type": "fact",
+        "op": "assert",
+        "frame": "canonical",
+        "confidence": 1,
+        "importance": "major",
+        "evidence": [],
+        "payload": {
+          "entity_id": "0191b2a0-0000-7000-8000-0000000c0002",
+          "attribute": "power.rank",
+          "value": "B",
+          "value_text": "B-rank healer",
+          "valid_from": {
+            "chapter_no": 0,
+            "ordinal": 0,
+            "precision": "exact"
+          },
+          "valid_to": null
+        }
+      },
+      {
+        "local_id": "mujin-rank",
+        "type": "fact",
+        "op": "assert",
+        "frame": "canonical",
+        "confidence": 1,
+        "importance": "major",
+        "evidence": [],
+        "payload": {
+          "entity_id": "0191b2a0-0000-7000-8000-0000000c0003",
+          "attribute": "power.rank",
+          "value": "C",
+          "value_text": "C-rank veteran",
+          "valid_from": {
+            "chapter_no": 0,
+            "ordinal": 0,
+            "precision": "exact"
+          },
+          "valid_to": null
+        }
+      },
+      {
+        "local_id": "r-mujin-doyoon",
+        "type": "relationship_state",
+        "op": "assert",
+        "frame": "canonical",
+        "confidence": 1,
+        "importance": "major",
+        "evidence": [],
+        "payload": {
+          "from_entity_id": "0191b2a0-0000-7000-8000-0000000c0003",
+          "to_entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+          "type": "stranger",
+          "axes": {
+            "trust": 0,
+            "affection": 0,
+            "respect": 0,
+            "hostility": 0,
+            "dependency": 0
+          },
+          "power_dynamic": "from_dominant",
+          "register": {
+            "formality": 1,
+            "deference": 0,
+            "familiarity": 0,
+            "directness": 4,
+            "contractions": "free",
+            "address_terms": [
+              "kid"
+            ]
+          },
+          "valid_from": {
+            "chapter_no": 0,
+            "ordinal": 0,
+            "precision": "exact"
+          },
+          "valid_to": null
+        }
+      },
+      {
+        "local_id": "r-doyoon-mujin",
+        "type": "relationship_state",
+        "op": "assert",
+        "frame": "canonical",
+        "confidence": 1,
+        "importance": "major",
+        "evidence": [],
+        "payload": {
+          "from_entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+          "to_entity_id": "0191b2a0-0000-7000-8000-0000000c0003",
+          "type": "stranger",
+          "axes": {
+            "trust": 3,
+            "affection": 2,
+            "respect": 3,
+            "hostility": 0,
+            "dependency": 0
+          },
+          "power_dynamic": "to_dominant",
+          "register": {
+            "formality": 3,
+            "deference": 3,
+            "familiarity": 0,
+            "directness": 2,
+            "contractions": "neutral",
+            "address_terms": [
+              "Mister Park",
+              "sir"
+            ]
+          },
+          "valid_from": {
+            "chapter_no": 0,
+            "ordinal": 0,
+            "precision": "exact"
+          },
+          "valid_to": null
+        }
+      }
+    ],
+    [
+      {
+        "local_id": "k-doyoon-p1",
+        "type": "knowledge_state",
+        "op": "assert",
+        "frame": "canonical",
+        "confidence": 1,
+        "importance": "core",
+        "evidence": [],
+        "payload": {
+          "knower": {
+            "kind": "character",
+            "entity_id": "0191b2a0-0000-7000-8000-0000000c0001"
+          },
+          "proposition_id": "{{proposition.P1}}",
+          "stance": "knows",
+          "source": {
+            "kind": "prior_loop_memory",
+            "chapter_id": "{{chapter.1}}"
+          },
+          "valid_from": {
+            "chapter_no": 0,
+            "ordinal": 0,
+            "precision": "exact"
+          },
+          "valid_to": null
+        }
+      },
+      {
+        "local_id": "k-doyoon-p4",
+        "type": "knowledge_state",
+        "op": "assert",
+        "frame": "canonical",
+        "confidence": 1,
+        "importance": "core",
+        "evidence": [],
+        "payload": {
+          "knower": {
+            "kind": "character",
+            "entity_id": "0191b2a0-0000-7000-8000-0000000c0001"
+          },
+          "proposition_id": "{{proposition.P4}}",
+          "stance": "knows",
+          "source": {
+            "kind": "prior_loop_memory",
+            "chapter_id": "{{chapter.1}}"
+          },
+          "valid_from": {
+            "chapter_no": 0,
+            "ordinal": 0,
+            "precision": "exact"
+          },
+          "valid_to": null
+        }
+      },
+      {
+        "local_id": "k-mujin-p1",
+        "type": "knowledge_state",
+        "op": "assert",
+        "frame": "canonical",
+        "confidence": 1,
+        "importance": "core",
+        "evidence": [],
+        "payload": {
+          "knower": {
+            "kind": "character",
+            "entity_id": "0191b2a0-0000-7000-8000-0000000c0003"
+          },
+          "proposition_id": "{{proposition.P1}}",
+          "stance": "unaware",
+          "source": {
+            "kind": "narration",
+            "chapter_id": "{{chapter.1}}"
+          },
+          "valid_from": {
+            "chapter_no": 0,
+            "ordinal": 0,
+            "precision": "exact"
+          },
+          "valid_to": null
+        }
+      },
+      {
+        "local_id": "k-seoha-p2",
+        "type": "knowledge_state",
+        "op": "assert",
+        "frame": "canonical",
+        "confidence": 1,
+        "importance": "core",
+        "evidence": [],
+        "payload": {
+          "knower": {
+            "kind": "character",
+            "entity_id": "0191b2a0-0000-7000-8000-0000000c0002"
+          },
+          "proposition_id": "{{proposition.P2}}",
+          "stance": "knows",
+          "source": {
+            "kind": "remembered",
+            "chapter_id": "{{chapter.1}}"
+          },
+          "valid_from": {
+            "chapter_no": 0,
+            "ordinal": 0,
+            "precision": "exact"
+          },
+          "valid_to": null
+        }
+      }
+    ]
+  ]
+}

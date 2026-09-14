@@ -18,6 +18,7 @@ export interface ProjectRow {
   quality_tier: string;
   production_policy_version: string;
   canon_version: number;
+  settings: Record<string, unknown>;
 }
 
 export interface TimelineRow {
@@ -119,17 +120,22 @@ export async function createProject(
     qualityTier?: string;
     policyVersion?: string;
     operatingMode?: string;
+    /** Project-level pins (e.g. the composed Narrative Identity ref + version id the workflows must use). */
+    settings?: Record<string, unknown> | undefined;
+    id?: string | undefined;
   },
 ): Promise<{ projectId: string; mainTimelineId: string }> {
   const r = await db.query<{ id: string }>(
-    `INSERT INTO projects (workspace_id, title, quality_tier, production_policy_version, operating_mode)
-     VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+    `INSERT INTO projects (id, workspace_id, title, quality_tier, production_policy_version, operating_mode, settings)
+     VALUES (coalesce($6::uuid, canon.uuid_v7()), $1, $2, $3, $4, $5, $7::jsonb) RETURNING id`,
     [
       input.workspaceId,
       input.title,
       input.qualityTier ?? 'standard',
       input.policyVersion ?? 'policy/standard@1',
       input.operatingMode ?? 'assisted',
+      input.id ?? null,
+      JSON.stringify(input.settings ?? {}),
     ],
   );
   const projectId = r.rows[0]?.id;
@@ -188,11 +194,12 @@ export async function createEntity(
     shortForms?: string[];
     aliases?: string[];
     fields?: Record<string, unknown>;
+    id?: string | undefined;
   },
 ): Promise<string> {
   const r = await db.query<{ id: string }>(
-    `INSERT INTO entities (workspace_id, project_id, type, display_name, short_forms, aliases, fields)
-     VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+    `INSERT INTO entities (id, workspace_id, project_id, type, display_name, short_forms, aliases, fields)
+     VALUES (coalesce($8::uuid, canon.uuid_v7()), $1, $2, $3, $4, $5, $6, $7) RETURNING id`,
     [
       input.workspaceId,
       input.projectId,
@@ -201,6 +208,7 @@ export async function createEntity(
       input.shortForms ?? [],
       input.aliases ?? [],
       JSON.stringify(input.fields ?? {}),
+      input.id ?? null,
     ],
   );
   return r.rows[0]?.id ?? rethrowCanon(new Error('insert returned no row'));
@@ -208,11 +216,17 @@ export async function createEntity(
 
 export async function createChapter(
   db: Queryable,
-  input: { workspaceId: string; projectId: string; number: number; title?: string },
+  input: {
+    workspaceId: string;
+    projectId: string;
+    number: number;
+    title?: string | undefined;
+    id?: string | undefined;
+  },
 ): Promise<string> {
   const r = await db.query<{ id: string }>(
-    `INSERT INTO chapters (workspace_id, project_id, number, title) VALUES ($1, $2, $3, $4) RETURNING id`,
-    [input.workspaceId, input.projectId, input.number, input.title ?? null],
+    `INSERT INTO chapters (id, workspace_id, project_id, number, title) VALUES (coalesce($5::uuid, canon.uuid_v7()), $1, $2, $3, $4) RETURNING id`,
+    [input.workspaceId, input.projectId, input.number, input.title ?? null, input.id ?? null],
   );
   return r.rows[0]?.id ?? rethrowCanon(new Error('insert returned no row'));
 }

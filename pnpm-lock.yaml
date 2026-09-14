@@ -65,6 +65,9 @@ importers:
       '@yeonjae/prose':
         specifier: workspace:*
         version: link:../../packages/prose
+      '@yeonjae/workflows':
+        specifier: workspace:*
+        version: link:../../packages/workflows
 
   packages/canon:
     dependencies:
@@ -153,6 +156,33 @@ importers:
         version: link:../narrative
 
   packages/prose: {}
+
+  packages/workflows:
+    dependencies:
+      '@yeonjae/canon':
+        specifier: workspace:*
+        version: link:../canon
+      '@yeonjae/context':
+        specifier: workspace:*
+        version: link:../context
+      '@yeonjae/db':
+        specifier: workspace:*
+        version: link:../db
+      '@yeonjae/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@yeonjae/gateway':
+        specifier: workspace:*
+        version: link:../gateway
+      '@yeonjae/narrative':
+        specifier: workspace:*
+        version: link:../narrative
+      '@yeonjae/prompts':
+        specifier: workspace:*
+        version: link:../prompts
+      '@yeonjae/prose':
+        specifier: workspace:*
+        version: link:../prose
 
 packages:
 

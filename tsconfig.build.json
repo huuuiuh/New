@@ -26,6 +26,9 @@
       "path": "packages/context"
     },
     {
+      "path": "packages/workflows"
+    },
+    {
       "path": "apps/cli"
     }
   ]

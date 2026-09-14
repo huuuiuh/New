@@ -68,6 +68,10 @@ export interface ProviderRequest {
   readonly user: string;
   readonly params: ModelParams;
   readonly outputSchema?: Record<string, unknown> | undefined;
+  /** Workflow trace (role + activity + idempotency key); replay providers may key recordings by it. */
+  readonly trace?:
+    | { readonly role: string; readonly activityId: string; readonly idempotencyKey: string }
+    | undefined;
 }
 
 /** Every provider adapter implements exactly this; SDK types never leave the adapter. */

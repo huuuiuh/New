@@ -747,11 +747,12 @@ export async function createPromise(
     relatedEntityIds?: readonly string[] | undefined;
     relatedPropositionIds?: readonly string[] | undefined;
     resolutionHint?: string | undefined;
+    id?: string | undefined;
   },
 ): Promise<string> {
   const r = await db.query<{ id: string }>(
-    `INSERT INTO promises (workspace_id, project_id, type, statement, importance, status, due_min_chapter, due_max_chapter, related_entity_ids, related_proposition_ids, resolution_hint)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
+    `INSERT INTO promises (id, workspace_id, project_id, type, statement, importance, status, due_min_chapter, due_max_chapter, related_entity_ids, related_proposition_ids, resolution_hint)
+     VALUES (coalesce($12::uuid, canon.uuid_v7()), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
     [
       input.workspaceId,
       input.projectId,
@@ -764,6 +765,7 @@ export async function createPromise(
       [...(input.relatedEntityIds ?? [])],
       [...(input.relatedPropositionIds ?? [])],
       input.resolutionHint ?? null,
+      input.id ?? null,
     ],
   );
   return r.rows[0]?.id ?? rethrowCanon(new Error('promise insert returned no row'));

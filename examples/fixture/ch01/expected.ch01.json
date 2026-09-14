@@ -1,0 +1,23 @@
+{
+  "assembled_code_points": 4768,
+  "revised_code_points": 4766,
+  "assembled_paragraphs": 59,
+  "bad_sentence": {
+    "quote": "It was exactly same feeling with ten years ago.",
+    "start": 3212,
+    "end": 3259,
+    "paragraph_id": "p42"
+  },
+  "revised_sentence": "It felt exactly the way it had ten years ago.",
+  "ending_hook": "The first thing on the list was tomorrow.",
+  "words": {
+    "assembled": 888,
+    "revised": 889
+  },
+  "scene_words": [
+    249,
+    306,
+    333
+  ],
+  "delta_items": 11
+}
