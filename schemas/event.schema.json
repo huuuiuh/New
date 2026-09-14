@@ -32,6 +32,10 @@
     "clock_end": {
       "$ref": "common.schema.json#/$defs/storyClock"
     },
+    "narrated_at": {
+      "$ref": "common.schema.json#/$defs/storyClock",
+      "description": "Where in the manuscript the event is narrated when that differs from when it happened (flashbacks, recollections, retellings). Absent = narrated at clock_start."
+    },
     "frame": {
       "$ref": "common.schema.json#/$defs/realityFrame"
     },

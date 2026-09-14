@@ -1,6 +1,6 @@
-# ADR-0009: Accepted-chapter-only canon, two-extractor reconciliation, atomic commit
+# ADR-0009: Canon only from approval-locked extraction and accepted-on-commit; two-extractor reconciliation; atomic commit
 
-- **Status:** Accepted
+- **Status:** Accepted (lifecycle wording clarified by ADR-0037: extraction reads the `approved` version; `accepted` is set inside the commit)
 - **Date:** 2026-09-13
 - **Deciders:** principal architects (product, software, AI systems, data, Korean webnovel production)
 

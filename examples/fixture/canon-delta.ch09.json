@@ -12,9 +12,10 @@
       "frame": "canonical",
       "story_clock": {
         "chapter_no": 9,
-        "ordinal": 40,
-        "world_date": "D+35",
-        "precision": "exact"
+        "ordinal": 46,
+        "precision": "exact",
+        "calendar": "relative_days",
+        "world_date": "D+35"
       },
       "payload": {
         "type": "injury",
@@ -36,10 +37,11 @@
         {
           "manuscript_version_id": "0191b2a0-0000-7000-8000-000000030009",
           "chapter_no": 9,
-          "paragraph_id": "p41",
-          "start": 4120,
-          "end": 4164,
-          "quote": "Black venom was climbing Mu-jin’s left calf."
+          "paragraph_id": "p46",
+          "start": 4907,
+          "end": 4951,
+          "quote": "Black venom was climbing Mu-jin’s left calf.",
+          "quote_hash": "sha256:6a4adbd884e38d079ac8b165e4f6f8ead208bed0cb6ba1f8185f0a8c453c441b"
         }
       ],
       "confidence": 0.97,
@@ -61,9 +63,10 @@
       "frame": "canonical",
       "story_clock": {
         "chapter_no": 9,
-        "ordinal": 40,
-        "world_date": "D+35",
-        "precision": "exact"
+        "ordinal": 46,
+        "precision": "exact",
+        "calendar": "relative_days",
+        "world_date": "D+35"
       },
       "payload": {
         "entity_id": "0191b2a0-0000-7000-8000-0000000c0003",
@@ -78,20 +81,23 @@
         "value_text": "Beast venom in the left calf (serious)",
         "valid_from": {
           "chapter_no": 9,
-          "ordinal": 40,
-          "world_date": "D+35",
-          "precision": "exact"
+          "ordinal": 46,
+          "precision": "exact",
+          "calendar": "relative_days",
+          "world_date": "D+35"
         },
-        "valid_to": null
+        "valid_to": null,
+        "timeline_id": "0191b2a0-0000-7000-8000-000000050001"
       },
       "evidence": [
         {
           "manuscript_version_id": "0191b2a0-0000-7000-8000-000000030009",
           "chapter_no": 9,
-          "paragraph_id": "p41",
-          "start": 4120,
-          "end": 4164,
-          "quote": "Black venom was climbing Mu-jin’s left calf."
+          "paragraph_id": "p46",
+          "start": 4907,
+          "end": 4951,
+          "quote": "Black venom was climbing Mu-jin’s left calf.",
+          "quote_hash": "sha256:6a4adbd884e38d079ac8b165e4f6f8ead208bed0cb6ba1f8185f0a8c453c441b"
         }
       ],
       "confidence": 0.97,
@@ -113,9 +119,10 @@
       "frame": "canonical",
       "story_clock": {
         "chapter_no": 9,
-        "ordinal": 5,
-        "world_date": "D+35",
-        "precision": "exact"
+        "ordinal": 6,
+        "precision": "exact",
+        "calendar": "relative_days",
+        "world_date": "D+35"
       },
       "supersedes_ref": "0191b2a0-0000-7000-8000-000000040004",
       "payload": {
@@ -125,20 +132,23 @@
         "value_text": "Poison Fog Dungeon, second floor",
         "valid_from": {
           "chapter_no": 9,
-          "ordinal": 5,
-          "world_date": "D+35",
-          "precision": "exact"
+          "ordinal": 6,
+          "precision": "exact",
+          "calendar": "relative_days",
+          "world_date": "D+35"
         },
-        "valid_to": null
+        "valid_to": null,
+        "timeline_id": "0191b2a0-0000-7000-8000-000000050001"
       },
       "evidence": [
         {
           "manuscript_version_id": "0191b2a0-0000-7000-8000-000000030009",
           "chapter_no": 9,
           "paragraph_id": "p6",
-          "start": 512,
-          "end": 569,
-          "quote": "Past the second-floor stairs the fog rose to their knees."
+          "start": 488,
+          "end": 545,
+          "quote": "Past the second-floor stairs the fog rose to their knees.",
+          "quote_hash": "sha256:77ec605f5f697fb789727ee88c83249e3abd0c7f5c0c6b1b694ddd90d69db03e"
         }
       ],
       "confidence": 0.9,
@@ -160,9 +170,10 @@
       "frame": "canonical",
       "story_clock": {
         "chapter_no": 9,
-        "ordinal": 44,
-        "world_date": "D+35",
-        "precision": "exact"
+        "ordinal": 57,
+        "precision": "exact",
+        "calendar": "relative_days",
+        "world_date": "D+35"
       },
       "payload": {
         "knower": {
@@ -177,19 +188,23 @@
         },
         "valid_from": {
           "chapter_no": 9,
-          "ordinal": 44,
-          "precision": "exact"
+          "ordinal": 57,
+          "precision": "exact",
+          "calendar": "relative_days",
+          "world_date": "D+35"
         },
-        "valid_to": null
+        "valid_to": null,
+        "timeline_id": "0191b2a0-0000-7000-8000-000000050001"
       },
       "evidence": [
         {
           "manuscript_version_id": "0191b2a0-0000-7000-8000-000000030009",
           "chapter_no": 9,
-          "paragraph_id": "p45",
-          "start": 4510,
-          "end": 4599,
-          "quote": "Mu-jin glanced at the old compass that had slipped from Do-yoon’s pocket, then forgot it."
+          "paragraph_id": "p57",
+          "start": 6162,
+          "end": 6251,
+          "quote": "Mu-jin glanced at the old compass that had slipped from Do-yoon’s pocket, then forgot it.",
+          "quote_hash": "sha256:2ddab39308913bfb896624bf20dcba80aa2c1a1e72793c6a18597d6eb5a342b6"
         }
       ],
       "confidence": 0.82,
@@ -211,9 +226,10 @@
       "frame": "canonical",
       "story_clock": {
         "chapter_no": 9,
-        "ordinal": 60,
-        "world_date": "D+35",
-        "precision": "exact"
+        "ordinal": 80,
+        "precision": "exact",
+        "calendar": "relative_days",
+        "world_date": "D+35"
       },
       "payload": {
         "from_entity_id": "0191b2a0-0000-7000-8000-0000000c0003",
@@ -243,19 +259,23 @@
         },
         "valid_from": {
           "chapter_no": 9,
-          "ordinal": 60,
-          "precision": "exact"
+          "ordinal": 80,
+          "precision": "exact",
+          "calendar": "relative_days",
+          "world_date": "D+35"
         },
-        "valid_to": null
+        "valid_to": null,
+        "timeline_id": "0191b2a0-0000-7000-8000-000000050001"
       },
       "evidence": [
         {
           "manuscript_version_id": "0191b2a0-0000-7000-8000-000000030009",
           "chapter_no": 9,
-          "paragraph_id": "p58",
-          "start": 5620,
-          "end": 5686,
-          "quote": "“If it weren’t for you, son, I’d have died first. I pay my debts.”"
+          "paragraph_id": "p80",
+          "start": 8334,
+          "end": 8400,
+          "quote": "“If it weren’t for you, son, I’d have died first. I pay my debts.”",
+          "quote_hash": "sha256:d3ecf7cd8edd9a6176da6479d575097fe4af1c583ce94a1434d696ef59e30535"
         }
       ],
       "confidence": 0.88,
@@ -270,7 +290,8 @@
         "contradiction": "supersedes",
         "leak_check_ok": true,
         "notes": "A read trust 4, B read trust 3 → adjudicator chose 3 based on the quote"
-      }
+      },
+      "supersedes_ref": "0191b2a0-0000-7000-8000-0000000e5001"
     },
     {
       "local_id": "pr-1",
@@ -279,8 +300,10 @@
       "frame": "canonical",
       "story_clock": {
         "chapter_no": 9,
-        "ordinal": 45,
-        "precision": "exact"
+        "ordinal": 58,
+        "precision": "exact",
+        "calendar": "relative_days",
+        "world_date": "D+35"
       },
       "payload": {
         "promise_id": "0191b2a0-0000-7000-8000-0000000d0001",
@@ -291,14 +314,79 @@
         {
           "manuscript_version_id": "0191b2a0-0000-7000-8000-000000030009",
           "chapter_no": 9,
-          "paragraph_id": "p46",
-          "start": 4570,
-          "end": 4609,
-          "quote": "The compass needle trembled in the fog."
+          "paragraph_id": "p58",
+          "start": 6279,
+          "end": 6318,
+          "quote": "The compass needle trembled in the fog.",
+          "quote_hash": "sha256:70398cee25bcca8c312b6a64647dc2b7a932902fa7d5429008a79bb9ad8c1484"
         }
       ],
       "confidence": 0.8,
       "importance": "major",
+      "reconciliation_status": "agreed",
+      "verification": {
+        "evidence_ok": true,
+        "entities_ok": true,
+        "frame_ok": true,
+        "validity_ok": true,
+        "contradiction": "none",
+        "leak_check_ok": true
+      }
+    },
+    {
+      "local_id": "f-3",
+      "type": "fact",
+      "op": "assert",
+      "frame": "canonical",
+      "story_clock": {
+        "chapter_no": 9,
+        "ordinal": 76,
+        "precision": "exact",
+        "calendar": "relative_days",
+        "world_date": "D+35"
+      },
+      "payload": {
+        "entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+        "timeline_id": "0191b2a0-0000-7000-8000-000000050001",
+        "attribute": "inventory.item",
+        "key": "mana_stone",
+        "value": {
+          "item": "mana stone",
+          "qty": 2,
+          "grade": "C (maybe B)"
+        },
+        "value_text": "Two C-grade mana stones (sealed, payout pending)",
+        "valid_from": {
+          "chapter_no": 9,
+          "ordinal": 76,
+          "precision": "exact",
+          "calendar": "relative_days",
+          "world_date": "D+35"
+        },
+        "valid_to": null
+      },
+      "evidence": [
+        {
+          "manuscript_version_id": "0191b2a0-0000-7000-8000-000000030009",
+          "chapter_no": 9,
+          "paragraph_id": "p76",
+          "start": 7854,
+          "end": 7869,
+          "quote": "“Two,” he said.",
+          "quote_hash": "sha256:4bd58d00f4b6402dae8e9a39d428a334c361bbaf878c6562fe82227089a3eb7f"
+        },
+        {
+          "manuscript_version_id": "0191b2a0-0000-7000-8000-000000030009",
+          "chapter_no": 9,
+          "paragraph_id": "p86",
+          "start": 9096,
+          "end": 9183,
+          "quote": "“Two mana stones,” the clerk at the folding table said, not looking up from her tablet.",
+          "quote_hash": "sha256:c2bfcf02975515ac3885c00ba4bb864b37ce93d21755a57c1c77def1e5b50b03"
+        }
+      ],
+      "confidence": 0.93,
+      "importance": "minor",
       "reconciliation_status": "agreed",
       "verification": {
         "evidence_ok": true,
@@ -317,23 +405,56 @@
     {
       "hypothesis_ref": "contract:ch09:MH-1",
       "result": "realized",
-      "note": "Mu-jin injured"
+      "note": "Mu-jin injured",
+      "evidence": [
+        {
+          "manuscript_version_id": "0191b2a0-0000-7000-8000-000000030009",
+          "chapter_no": 9,
+          "paragraph_id": "p46",
+          "start": 4907,
+          "end": 4951,
+          "quote": "Black venom was climbing Mu-jin’s left calf.",
+          "quote_hash": "sha256:6a4adbd884e38d079ac8b165e4f6f8ead208bed0cb6ba1f8185f0a8c453c441b"
+        }
+      ]
     },
     {
       "hypothesis_ref": "contract:ch09:MH-2",
       "result": "realized",
-      "note": "Second floor reached"
+      "note": "Second floor reached",
+      "evidence": [
+        {
+          "manuscript_version_id": "0191b2a0-0000-7000-8000-000000030009",
+          "chapter_no": 9,
+          "paragraph_id": "p6",
+          "start": 488,
+          "end": 545,
+          "quote": "Past the second-floor stairs the fog rose to their knees.",
+          "quote_hash": "sha256:77ec605f5f697fb789727ee88c83249e3abd0c7f5c0c6b1b694ddd90d69db03e"
+        }
+      ]
     },
     {
       "hypothesis_ref": "contract:ch09:MH-3",
-      "result": "unrealized",
-      "note": "Planned three mana stones; the text shows two → recorded as partially unrealized; next contract adjusts"
+      "result": "partially_realized",
+      "note": "Planned three mana stones; the text shows two → partially realized; the next contract adjusts the plan (planned ≠ happened)",
+      "evidence": [
+        {
+          "manuscript_version_id": "0191b2a0-0000-7000-8000-000000030009",
+          "chapter_no": 9,
+          "paragraph_id": "p76",
+          "start": 7854,
+          "end": 7869,
+          "quote": "“Two,” he said.",
+          "quote_hash": "sha256:4bd58d00f4b6402dae8e9a39d428a334c361bbaf878c6562fe82227089a3eb7f"
+        }
+      ]
     }
   ],
-  "summary_l1": "Poison Fog Dungeon, second floor. When a fog beast ambushes them, Mu-jin shoves Do-yoon clear and takes venom in his left calf. Do-yoon, using prior-life memory, targets the beast's glowing organ and drives it off, but Mu-jin takes it for luck. On the way out the compass needle trembles. Mu-jin tells Do-yoon he pays his debts. Two mana stones recovered.",
-  "ending_hook": "Outside the gate, the black venom had climbed to Mu-jin's knee.",
+  "summary_l1": "Poison Fog Dungeon, second floor. A fog beast ambushes them; Mu-jin shoves Do-yoon clear and takes venom in his left calf. Do-yoon, using prior-life memory, strikes the beast's glowing organ and drives it off, but Mu-jin calls it luck. Do-yoon recovers a second mana stone from the fog. The old compass slips from his pocket and its needle trembles; Mu-jin notices nothing. On the stairs Mu-jin tells Do-yoon he pays his debts. At the gate tent Do-yoon overrides Mu-jin and gets him onto a stretcher; the clerk notes their two-hour clear. The venom reaches Mu-jin's knee.",
+  "ending_hook": "Outside the gate, the black venom had climbed to Mu-jin’s knee.",
   "reconciliation": {
-    "agreed": 4,
+    "agreed": 5,
     "single_source": 1,
     "conflicts": 1,
     "adjudicated": 1,

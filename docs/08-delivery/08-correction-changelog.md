@@ -17,7 +17,7 @@ sidecar, Korean-only fixtures and editor evaluation.
 | Area | Change |
 | --- | --- |
 | Governing principle | ADR-0026; five governing requirements (OUTPUT-EN-001, STYLE-KWN-001, STYLE-GUARD-001, EVAL-SEPARATION-001, NO-TRANSLATION-001) in FR-0 |
-| Narrative identity | `docs/02-korean-style` → `docs/02-narrative-identity`; eight separable profiles (output language, tradition, genre, setting/culture, naming, dialogue register, terminology/romanization, preferences); Narrative Identity Block with two contracts; fail-closed Guard requiring both (ADR-0027) |
+| Narrative identity | the former `02-korean-style` directory → `docs/02-narrative-identity`; eight separable profiles (output language, tradition, genre, setting/culture, naming, dialogue register, terminology/romanization, preferences); Narrative Identity Block with two contracts; fail-closed Guard requiring both (ADR-0027) |
 | Quality dimensions | English Prose Lint (EP-*), Structure Lint (ST-*), register check (RG-*); Prose/Structure/Genre/Voice judges as separate calls and scorecard sections; five-class contrast set |
 | Korean NLP | Sidecar removed; `packages/prose` + optional English grammar service (ADR-0028) |
 | Dialogue register | Korean speech levels replaced by abstract register axes rendered in natural English; `register-profile.schema.json`; `relationship-state.register` |

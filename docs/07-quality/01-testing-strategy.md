@@ -41,8 +41,23 @@ so that traps are shared and failures are explainable in story terms. Model-depe
   contract hashes in the manifest, preferences cannot override contracts.
 - **Narrative Identity Guard**: rejects missing block, missing either contract, stale hash, unembedded
   header, unsupported output language; passes valid; records versions and both hashes.
-- **StoryClock ordering**, bitemporal helpers, reality-frame rules (no facts from `lie/dream/plan`),
-  per-timeline truth inheritance up to divergence.
+- **StoryClock ordering** (ADR-0040): narrative order total; derived `ord`; flashback with earlier
+  `world_date` and later chapter; `unknown` precision excluded from world order; overlapping `approx`
+  windows unordered; cross-calendar → `calendar_incomparable`; tie-break by id; cross-timeline only through
+  the divergence clock. **Bitemporal change classes** (ADR-0038): one test per class — transition keeps the
+  prior row asserted with closed `valid_to` (TR1); correction retracts and re-asserts; retcon retracts old-version
+  rows; rollback restores exact prior `valid_to`/`superseded_by`/`retracted_at_version` from `inverse`;
+  system-time retraction changes no validity. **Reality-frame × timeline-kind matrix** (ADR-0039): facts from
+  `lie/dream/plan` rejected; `source_story` fact legal only on a `source_story` timeline; `prior_loop` fact
+  on `main` → `FRAME_VIOLATION`; per-timeline truth inheritance up to divergence; source-story divergence.
+- **Lifecycle state machine** (ADR-0037): extraction refuses `working` versions; `accepted` only set by the
+  commit; failed commit leaves `approved`; `origin` and `status` independent; contract `locked` ≠ manuscript
+  `approved`.
+- **Override matrix** (ADR-0042): `never`-class issues cannot be approved by any signal; a locked-fact
+  contradiction opens a correction proposal and the gate stays closed until the re-run passes; `reviewer`
+  overrides are recorded and never alter scorecard sections.
+- **Production Policy pinning** (ADR-0041): a job pins `policy/standard@1`; per-dimension gate evaluation
+  ignores `overall.score`; early stop requires every dimension over threshold + margin.
 - **Reconciler**: agreed / single-source / conflict classification; canonicalization; alias resolution via
   the naming registry.
 - **Evidence verifier**: exact and fuzzy anchoring on code-point offsets; rejects paraphrases; conformance
@@ -166,8 +181,11 @@ concurrent chapter jobs per workspace; Temporal task latency; DB connection pool
 
 ## 12. Definition of test data
 
-- `examples/fixture/` (this repo): intake, register profile, ch.12 contract, ch.9 canon delta, knowledge
-  ledger, contrast sets (seed), register cases; `examples/narrative-profiles/`: language, tradition, genre and
-  composed identity profiles.
+- `examples/fixture/` (this repo): intake, register profile, ch.12 contract, ch.9 canon delta with evidence
+  offsets into `examples/fixture/manuscripts/ch09.accepted.txt` (and the T16 rejected draft
+  `ch09.rejected-draft.txt`), knowledge ledger, the 4 starter contrast sets in the repo (target ≥ 40, B-6-3),
+  register cases, the possession micro-fixture `source-story.micro.json` (ADR-0039);
+  `examples/narrative-profiles/`: language, tradition, four MVP genre profiles and the composed identity;
+  `examples/production-policies/`: economy / standard / premium policy versions (ADR-0041).
 - Recorded model outputs for `ReplayProvider` are produced during implementation and stored in a
   git-LFS or object-storage bucket (not in this planning repo).

@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yeonjae.studio/schemas/canon-delta-payloads.schema.json",
+  "title": "Canon Delta payload proposals",
+  "description": "Proposal shapes for canon-delta items. A proposal is the pre-commit form of a canon object: it carries the story-time fields and values but not the ids, commit ids or canon-version fields that canon.commit_delta assigns. Each proposal mirrors the corresponding stored schema (fact, event, knowledge-state, relationship-state, promise, proposition, entity) field-for-field where a field can be known before commit. Keep the two in lockstep; the planning validator checks that every proposal property exists on its stored counterpart.",
+  "$defs": {
+    "factProposal": {
+      "type": "object",
+      "description": "Mirrors fact.schema.json without id/project_id/asserted_at_version/retracted_at_version/commit_id/superseded_by_fact_id. For op=close only entity_id/attribute/key are required (the closing clock is the item's story_clock).",
+      "required": ["entity_id", "attribute"],
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "timeline_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "attribute": {"type": "string", "pattern": "^[a-z_]+(\\.[a-z_*]+)*$"},
+        "key": {"type": "string"},
+        "value": {"description": "JSON value (string/number/object)"},
+        "value_text": {"type": "string", "description": "Human-readable English rendering used in packs"},
+        "valid_from": {"$ref": "common.schema.json#/$defs/storyClock"},
+        "valid_to": {
+          "oneOf": [{"$ref": "common.schema.json#/$defs/storyClock"}, {"type": "null"}]
+        },
+        "confidence": {"$ref": "common.schema.json#/$defs/confidence"},
+        "locked": {"type": "boolean"},
+        "justification": {"type": "string"}
+      }
+    },
+    "eventProposal": {
+      "type": "object",
+      "description": "Mirrors event.schema.json without id/project_id/timeline_id/frame/asserted_at_version/retracted_at_version/commit_id (frame and clock live on the delta item).",
+      "required": ["type", "summary", "participants"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "action", "dialogue", "revelation", "decision", "travel", "combat", "injury", "healing",
+            "acquisition", "loss", "transaction", "rank_change", "relationship_change", "lie",
+            "promise_setup", "promise_payoff", "death", "meeting", "other"
+          ]
+        },
+        "summary": {"$ref": "common.schema.json#/$defs/text"},
+        "location_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "clock_end": {"$ref": "common.schema.json#/$defs/storyClock"},
+        "narrated_at": {"$ref": "common.schema.json#/$defs/storyClock"},
+        "participants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["entity_id", "role"],
+            "additionalProperties": false,
+            "properties": {
+              "entity_id": {"$ref": "common.schema.json#/$defs/uuid"},
+              "role": {"type": "string", "enum": ["agent", "patient", "witness", "speaker", "hearer", "mentioned"]}
+            }
+          }
+        },
+        "importance": {"type": "string", "enum": ["core", "major", "minor"]}
+      }
+    },
+    "knowledgeStateProposal": {
+      "type": "object",
+      "description": "Mirrors knowledge-state.schema.json without id/project_id/asserted_at_version/retracted_at_version/commit_id.",
+      "required": ["knower", "proposition_id", "stance", "source", "valid_from"],
+      "additionalProperties": false,
+      "properties": {
+        "timeline_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "knower": {"$ref": "common.schema.json#/$defs/knowerRef"},
+        "proposition_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "stance": {"$ref": "common.schema.json#/$defs/stance"},
+        "believed_value": {"type": "string"},
+        "pretend_target_ids": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/uuid"}},
+        "certainty": {"$ref": "common.schema.json#/$defs/confidence"},
+        "source": {"$ref": "knowledge-state.schema.json#/$defs/knowledgeSource"},
+        "valid_from": {"$ref": "common.schema.json#/$defs/storyClock"},
+        "valid_to": {
+          "oneOf": [{"$ref": "common.schema.json#/$defs/storyClock"}, {"type": "null"}]
+        },
+        "implied": {"type": "boolean"}
+      }
+    },
+    "relationshipStateProposal": {
+      "type": "object",
+      "description": "Mirrors relationship-state.schema.json without id/project_id/asserted_at_version/retracted_at_version/commit_id.",
+      "required": ["from_entity_id", "to_entity_id", "type", "valid_from"],
+      "additionalProperties": false,
+      "properties": {
+        "timeline_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "from_entity_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "to_entity_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "type": {"$ref": "relationship-state.schema.json#/$defs/relationshipType"},
+        "axes": {"$ref": "relationship-state.schema.json#/$defs/axes"},
+        "power_dynamic": {"type": "string", "enum": ["equal", "from_dominant", "to_dominant", "shifting"]},
+        "register": {"$ref": "common.schema.json#/$defs/dialogueRegister"},
+        "note": {"type": "string"},
+        "valid_from": {"$ref": "common.schema.json#/$defs/storyClock"},
+        "valid_to": {
+          "oneOf": [{"$ref": "common.schema.json#/$defs/storyClock"}, {"type": "null"}]
+        }
+      }
+    },
+    "promiseEventProposal": {
+      "type": "object",
+      "description": "A promise ledger transition (open/advance/pay). Mirrors promise_events in the data architecture.",
+      "required": ["promise_id", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "promise_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "kind": {"type": "string", "enum": ["opened", "advanced", "paid"]},
+        "note": {"type": "string"}
+      }
+    },
+    "propositionProposal": {
+      "type": "object",
+      "description": "Mirrors proposition.schema.json without id/project_id/created_commit_id. Truth entries are proposed separately as proposition_truth items unless known at creation.",
+      "required": ["statement", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "statement": {"$ref": "common.schema.json#/$defs/text"},
+        "kind": {
+          "type": "string",
+          "enum": ["identity", "event", "location", "ability", "intent", "relationship", "world_rule", "secret", "other"]
+        },
+        "entity_ids": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/uuid"}},
+        "secret": {"$ref": "proposition.schema.json#/$defs/secret"},
+        "truth": {"type": "array", "items": {"$ref": "#/$defs/propositionTruthProposal"}}
+      }
+    },
+    "propositionTruthProposal": {
+      "type": "object",
+      "description": "Mirrors one proposition.truth[] entry without asserted_at_version/retracted_at_version (ADR-0031).",
+      "required": ["proposition_id", "timeline_id", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "proposition_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "timeline_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "value": {"type": "string", "enum": ["true", "false", "unknown"]},
+        "valid_from": {"$ref": "common.schema.json#/$defs/storyClock"},
+        "valid_to": {
+          "oneOf": [{"$ref": "common.schema.json#/$defs/storyClock"}, {"type": "null"}]
+        }
+      }
+    },
+    "entityProposal": {
+      "type": "object",
+      "description": "Mirrors entity.schema.json without id/project_id/status/version. New entities are provisional until approved (Assisted) or auto-created (Autopilot).",
+      "required": ["type", "display_name"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["character", "location", "organization", "item", "ability", "term", "event_anchor", "timeline"]
+        },
+        "display_name": {"$ref": "common.schema.json#/$defs/text"},
+        "native_script_name": {"type": "string"},
+        "romanization": {"type": "string"},
+        "short_forms": {"type": "array", "items": {"type": "string"}},
+        "aliases": {"type": "array", "items": {"type": "string"}},
+        "fields": {"type": "object", "additionalProperties": true},
+        "provisional": {"type": "boolean"}
+      }
+    },
+    "aliasProposal": {
+      "type": "object",
+      "description": "A new alias or short form observed for an existing entity.",
+      "required": ["entity_id", "alias"],
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "alias": {"type": "string", "minLength": 1},
+        "alias_kind": {"type": "string", "enum": ["short_form", "nickname", "title", "romanization_variant", "other"]}
+      }
+    }
+  }
+}

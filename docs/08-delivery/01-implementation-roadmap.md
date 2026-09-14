@@ -2,7 +2,27 @@
 
 Phases are sequential with overlapping tails; each has exit criteria tied to the English fixture story.
 Effort is expressed in engineer-weeks for a 3–4 person team (or equivalent agent capacity); numbers are
-planning estimates, not commitments. The MVP is the vertical slice defined in ADR-0036.
+planning estimates, not commitments. The MVP is the vertical slice defined in ADR-0036, delivered as a
+modular monolith first (ADR-0044). Implementation status is recorded only in `09-progress.md` (ADR-0043).
+
+## 0. Delivery order: checkpoints (ADR-0044)
+
+The phases below describe *what* is built; delivery happens in reviewable checkpoint pull requests, each
+stacked on the previous one, each proving something end to end before adding surface area:
+
+| Checkpoint | Branch slug | Content (phase items) | Proves |
+| --- | --- | --- | --- |
+| 0 | planning baseline | audit, ADR-0037…0044, validator, schemas, fixture manuscripts, policies, CI for the validator | the plan is internally consistent and truthful |
+| 1 | `build-01-foundation` | pnpm workspace, TS strict, lint/format/test, schema→types lockstep, code-point + length utilities, mock provider, `apps/cli` skeleton, CI, secret scanning | tooling and contracts compile and are enforced |
+| 2 | `build-02-domain-canon` | Postgres migrations, immutable versions, evidence trigger, StoryClock, facts/events/propositions/knowledge/relationships/promises, `canon.commit_delta` with change classes, quarantine, integration tests | atomic evidence-backed canon with history |
+| 3 | `build-03-identity-gateway` | profiles as data, identity compiler, fail-closed Guard, prompt registry + immutable versions, provider-neutral gateway with mock/replay/fault, output-language check, budget guard, audit records | no style-sensitive call without both contracts; every call reproducible |
+| 4 | `build-04-context-retrieval` | Active Constraint Set, deterministic packs with manifests/hashes/tiers, structured + lexical retrieval, previous-chapter continuity, rejected-draft exclusion | chapter k sees exactly what it should about k−1 |
+| 5 | `build-05-chapter-vertical-slice` | intake → spec → assumptions → bible → arc → contract → scene plan → draft → checks → revision → approval → extraction → verification → atomic commit → **ch.2 remembers ch.1** → export | the core story loop on the fixture |
+| 6 | `build-06-quality-revision` | prose/structure lints and judges, continuity/knowledge checkers, patch regression, contrast sets ≥ 40, multi-chapter and failure-recovery tests | quality gates and long-form continuity |
+| 7 | `build-07-interface-hardening` | API, web review UI, inspectors, jobs/costs, pause/resume, correction/retcon flows, Temporal (if warranted), observability, security, deployment docs | a user can operate it |
+
+Phase 0 ≈ Checkpoints 1–2; Phase 1 ≈ Checkpoints 2–4; Phase 2 ≈ Checkpoints 5–6 (API items move to 7);
+Phase 3 = Checkpoint 7; Phase 4 continues after.
 
 ## Phase 0 — Foundations (3–4 weeks)
 
@@ -26,8 +46,8 @@ planning estimates, not commitments. The MVP is the vertical slice defined in AD
 - `packages/prompts`: registry model, loader, hashing, prompt set pinning; regression runner skeleton.
 - `packages/prose` (core): output-language identification, tokenizer/POS tagger, length model integration,
   registry enforcement primitives; grammar-service client interface (service itself optional/deferred).
-- `apps/api` skeleton with auth, workspace RLS middleware, projects CRUD; `apps/worker` with Temporal
-  worker bootstrap and a hello workflow.
+- `apps/cli` skeleton driving the packages against a local Postgres (ADR-0044); `apps/api`/`apps/worker`
+  (Temporal) follow in Checkpoint 7 once the core loop is proven.
 
 **Exit:** fixture bible loads into DB via a seed script; a `mock` LLM call through the gateway is
 recorded with all audit fields including both contract hashes; the Guard rejects a style-sensitive call
@@ -39,7 +59,7 @@ SQL.
 
 - `packages/narrative`: profile model (8 layers), composition, `lang/en` + `tradition/kr-webnovel` + 4 genre
   profiles as data, Narrative Identity Block compiler with role variants and IDENTITY_TAIL, structure lint
-  (ST-*), calibration records; contrast-set seed (40) in tests.
+  (ST-*), calibration records; the 4 starter contrast sets in the repo in tests (growing to ≥ 40 before calibration, B-6-3).
 - `packages/prose`: English Prose Lint (all EP-* in the spec), translation-marker set, register check (RG-*)
   against register digests, naming/terminology registry rules, thresholds from profiles.
 - `packages/canon`: extraction pre-pass (registry NER, status-window numbers, speaker/register

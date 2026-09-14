@@ -49,12 +49,12 @@ Judges are **evidence-first**: output schemas place `evidence` before `verdict/s
 
 | Severity | Examples | Effect |
 | --- | --- | --- |
-| blocking | **non-English prose segment**; Korean script outside preserve contexts; contradiction with locked fact; knowledge leak of a secret; forbidden development present; content restriction violation; format drift (screenplay); truncation; required scene missing; register error toward royalty/superiors in strict genres | cannot accept; must patch or regenerate |
-| major | contradiction with unlocked fact without narrated change; injury/inventory/rank mismatch; timeline impossibility; payoff without setup; register/address-term mismatch; translation-like or Western-novel drift ≥ 30% paragraphs; repeated paragraph; must_happen partially met; unapproved untranslated term | must patch or human override with reason |
+| blocking | **non-English prose segment**; Korean script outside preserve contexts; contradiction with locked fact; knowledge leak of a secret; forbidden development present; content restriction violation; format drift (screenplay); truncation; required scene missing; register error toward royalty/superiors in strict genres | cannot be approved; must patch or regenerate. Override class `never` for objective corruption, `canon_workflow` for locked-fact/hard-requirement conflicts (ADR-0042) |
+| major | contradiction with unlocked fact without narrated change; injury/inventory/rank mismatch; timeline impossibility; payoff without setup; register/address-term mismatch; translation-like or Western-novel drift ≥ `policy.gates.drift_flag_scene_repair_ratio` of paragraphs; repeated paragraph; must_happen partially met; unapproved untranslated term | must patch, or `reviewer` override with recorded reason where the override matrix allows it; a fact-bearing override opens a correction proposal (ADR-0042) |
 | minor | lint warns; weak ending (judge medium confidence); exposition run; low-confidence continuity doubts | advisory; auto-patched if cheap and safe (lint-only) |
 | note | unsupported criticism; suggestions | logged |
 
-Confidence gating: model-based issues with `confidence < 0.5` are capped at `minor`; `< 0.3` at `note`.
+Confidence gating: model-based issues below `policy.gates.judge_confidence_caps.minor_below` (starting 0.5) are capped at `minor`; below `note_below` (0.3) at `note`.
 Two independent judges agreeing (Premium) raises confidence by fusion.
 
 ## 4. Revision (patch-first)
@@ -86,10 +86,13 @@ Scorecard issues (open) ─► cluster by span (overlapping/adjacent paragraphs;
 | scene | full deterministic chapter checks + continuity_checker (full) + prose_judge and structure_judge (scene) + contract_compliance (affected criteria) |
 | ≥ 3 patches cumulative | prose_judge and structure_judge whole chapter (smoke) + repetition (cross-chapter) |
 
-### 4.2 Limits
-`max_revision_rounds` (Standard 3, Economy 2, Premium 4); `max_patches_per_round` 6; `max_scene_rewrites`
-2; per-span attempt counter 2 → escalate scope. Exhaustion → `needs_attention` with the residual issues,
-suggested action (regenerate / accept with override / edit manually).
+### 4.2 Limits (Production Policy, ADR-0041)
+All limits come from the pinned policy: `policy.revision.max_rounds` (starting values: economy 2 /
+standard 3 / premium 4), `policy.revision.max_patches_per_round` (6), `policy.revision.max_scene_rewrites`
+(standard 2), `policy.revision.per_span_attempts` (2 → escalate scope), `policy.revision.smoke_after_patches`
+(3), `policy.revision.regression_tolerance_points` (3). Files: `examples/production-policies/*.v1.json`.
+Exhaustion → `needs_attention` with the residual issues, suggested action (regenerate / approve with an
+override permitted by the override matrix, ADR-0042 / edit manually).
 
 ## 5. Candidate comparison (when N > 1)
 
@@ -101,8 +104,9 @@ suggested action (regenerate / accept with override / edit manually).
   impact) with evidence; run in **both
   orders**; consistent winner → pick; inconsistent → third run with shuffled dimension order, majority;
   still tied → higher scorecard; still tied → cheaper (fewer patches).
-- Early stop: if the first candidate's scorecard ≥ `early_stop_threshold` (Standard 88/100) with no major
-  issues, skip generating further candidates (budget saver). Configurable per project.
+- Early stop (per dimension, never an aggregate): if a candidate is already auto-approvable and exceeds
+  **every** gated dimension's threshold by `policy.candidates.early_stop_margin_points` (starting value 6),
+  skip generating further candidates (budget saver).
 
 ## 6. Human review integration
 

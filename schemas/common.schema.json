@@ -26,7 +26,10 @@
     },
     "spellingLocale": {
       "type": "string",
-      "enum": ["en-US", "en-GB"],
+      "enum": [
+        "en-US",
+        "en-GB"
+      ],
       "description": "Spelling and punctuation locale for English manuscripts"
     },
     "text": {
@@ -37,50 +40,134 @@
     "localizedText": {
       "type": "object",
       "description": "User-authored text with its language code and an optional English working paraphrase used in prompts.",
-      "required": ["text", "language"],
+      "required": [
+        "text",
+        "language"
+      ],
       "additionalProperties": false,
       "properties": {
-        "text": { "$ref": "#/$defs/text" },
-        "language": { "$ref": "#/$defs/languageCode" },
-        "text_en": { "type": "string", "description": "English working paraphrase when language != en (never manuscript text)" }
+        "text": {
+          "$ref": "#/$defs/text"
+        },
+        "language": {
+          "$ref": "#/$defs/languageCode"
+        },
+        "text_en": {
+          "type": "string",
+          "description": "English working paraphrase when language != en (never manuscript text)"
+        }
       }
     },
     "lengthModel": {
       "type": "object",
       "description": "Language-neutral length measurement (ADR-0034). For English manuscripts, words is the author-facing primary unit.",
-      "required": ["words", "code_points"],
+      "required": [
+        "words",
+        "code_points"
+      ],
       "additionalProperties": false,
       "properties": {
-        "words": { "type": "integer", "minimum": 0 },
-        "code_points": { "type": "integer", "minimum": 0, "description": "Unicode code points after NFC, including spaces, excluding markup" },
-        "paragraphs": { "type": "integer", "minimum": 0 },
-        "sentences": { "type": "integer", "minimum": 0 },
-        "est_tokens": { "type": "integer", "minimum": 0 },
-        "est_tokens_model": { "type": "string" },
-        "est_reading_seconds": { "type": "integer", "minimum": 0 }
+        "words": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "code_points": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Unicode code points after NFC, including spaces, excluding markup"
+        },
+        "paragraphs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sentences": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "est_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "est_tokens_model": {
+          "type": "string"
+        },
+        "est_reading_seconds": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     },
     "lengthTarget": {
       "type": "object",
       "description": "Author-facing length target. Unit is words for English; tolerance is a ratio.",
-      "required": ["unit", "value"],
+      "required": [
+        "unit",
+        "value"
+      ],
       "additionalProperties": false,
       "properties": {
-        "unit": { "type": "string", "enum": ["words"] },
-        "value": { "type": "integer", "minimum": 50 },
-        "tolerance_ratio": { "type": "number", "minimum": 0, "maximum": 0.5, "default": 0.12 }
+        "unit": {
+          "type": "string",
+          "enum": [
+            "words"
+          ]
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 50
+        },
+        "tolerance_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.5,
+          "default": 0.12
+        }
       }
     },
     "storyClock": {
       "type": "object",
-      "description": "Position in story time. Ordering: (timeline_id, world_date if comparable, chapter_no, ordinal).",
-      "required": ["chapter_no", "ordinal", "precision"],
+      "description": "Position in story time (ADR-0040). Two orderings: NARRATIVE order (chapter_no, ordinal) is total within a timeline and always present; WORLD order (calendar + world_date) is partial and used only when both clocks share a calendar and neither has precision=unknown. Facts and events sort by narrative order (derived key ord = chapter_no*1e6 + ordinal); world_date resolves flashbacks and elapsed-time checks. Clocks on different timelines are comparable only through the child timeline's divergence clock.",
+      "required": [
+        "chapter_no",
+        "ordinal",
+        "precision"
+      ],
       "additionalProperties": false,
       "properties": {
-        "chapter_no": { "type": "integer", "minimum": 0, "description": "0 = before chapter 1 (backstory)" },
-        "ordinal": { "type": "integer", "minimum": 0, "description": "Order within the chapter" },
-        "world_date": { "type": "string", "description": "In-world date/time (ISO-like or era-relative string)" },
-        "precision": { "type": "string", "enum": ["exact", "approx", "unknown"] }
+        "chapter_no": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Chapter during whose story-present this moment occurs. 0 = before chapter 1 (backstory, flashback material, prior-loop or source-story events whose story-present precedes the manuscript)."
+        },
+        "ordinal": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999,
+          "description": "Order within the chapter's story-present, assigned by the extractor (paragraph order of the anchoring evidence by default). Equal ordinals mean simultaneous or unordered; ties break deterministically by item id."
+        },
+        "calendar": {
+          "type": "string",
+          "description": "Calendar system of world_date: 'gregorian', 'relative_days' (D+35 / D-10 from the story's day zero), or 'era:<name>' for in-world calendars. world_date values are comparable only within one calendar.",
+          "default": "relative_days"
+        },
+        "world_date": {
+          "type": "string",
+          "description": "In-world date/time in the stated calendar (ISO-8601 for gregorian; D±n[Thh:mm] for relative_days; free era-relative string otherwise)"
+        },
+        "precision": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "approx",
+            "unknown"
+          ],
+          "description": "Certainty of world_date. unknown = no usable world position (narrative order only; reported as a continuity risk when a duration check needs it)."
+        },
+        "uncertainty_days": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Half-width of the plausible window when precision=approx"
+        }
       }
     },
     "realityFrame": {
@@ -99,11 +186,16 @@
         "source_story",
         "non_canonical_draft"
       ],
-      "description": "See ADR-0007. Only canonical/flashback/prior_loop/alternate_timeline/source_story (on their timelines) may produce facts."
+      "description": "See ADR-0007 and ADR-0039. Fact-bearing frames: canonical and flashback (main or current timeline), prior_loop, alternate_timeline and source_story (each on its own timeline). lie/dream/hallucination/hypothetical/prediction produce knowledge only; plan lives only in plan tables; non_canonical_draft never enters canon."
     },
     "severity": {
       "type": "string",
-      "enum": ["blocking", "major", "minor", "note"]
+      "enum": [
+        "blocking",
+        "major",
+        "minor",
+        "note"
+      ]
     },
     "confidence": {
       "type": "number",
@@ -112,48 +204,122 @@
     },
     "qualityDimension": {
       "type": "string",
-      "enum": ["prose", "structure", "genre", "voice", "continuity", "knowledge", "promise", "contract", "repetition", "length", "output_language"],
+      "enum": [
+        "prose",
+        "structure",
+        "genre",
+        "voice",
+        "continuity",
+        "knowledge",
+        "promise",
+        "contract",
+        "repetition",
+        "length",
+        "output_language"
+      ],
       "description": "Separate evaluation dimensions (EVAL-SEPARATION-001). prose = English prose quality; structure = Korean-webnovel structural adherence."
     },
     "evidenceRef": {
       "type": "object",
       "description": "Exact span into an immutable manuscript version. start/end are Unicode code-point offsets into the NFC text (ADR-0030); quote must equal the code-point slice text[start:end].",
-      "required": ["manuscript_version_id", "start", "end", "quote"],
+      "required": [
+        "manuscript_version_id",
+        "start",
+        "end",
+        "quote"
+      ],
       "additionalProperties": false,
       "properties": {
-        "manuscript_version_id": { "$ref": "#/$defs/uuid" },
-        "chapter_no": { "type": "integer", "minimum": 1 },
-        "paragraph_id": { "type": "string", "description": "Stable paragraph id within the version, e.g. p14" },
-        "start": { "type": "integer", "minimum": 0, "description": "Code-point offset (inclusive)" },
-        "end": { "type": "integer", "minimum": 0, "description": "Code-point offset (exclusive)" },
-        "quote": { "$ref": "#/$defs/text" },
-        "quote_hash": { "type": "string", "description": "SHA-256 of quote" }
+        "manuscript_version_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "chapter_no": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "paragraph_id": {
+          "type": "string",
+          "description": "Stable paragraph id within the version, e.g. p14"
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Code-point offset (inclusive)"
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Code-point offset (exclusive)"
+        },
+        "quote": {
+          "$ref": "#/$defs/text"
+        },
+        "quote_hash": {
+          "type": "string",
+          "description": "SHA-256 of quote"
+        }
       }
     },
     "entityRef": {
       "type": "object",
-      "required": ["entity_id"],
+      "required": [
+        "entity_id"
+      ],
       "additionalProperties": false,
       "properties": {
-        "entity_id": { "$ref": "#/$defs/uuid" },
-        "display_name": { "$ref": "#/$defs/text" }
+        "entity_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "display_name": {
+          "$ref": "#/$defs/text"
+        }
       }
     },
     "knowerRef": {
       "type": "object",
       "description": "A character entity or a pseudo-knower.",
-      "required": ["kind"],
+      "required": [
+        "kind"
+      ],
       "additionalProperties": false,
       "properties": {
-        "kind": { "type": "string", "enum": ["character", "narrator", "reader"] },
-        "entity_id": { "$ref": "#/$defs/uuid" }
+        "kind": {
+          "type": "string",
+          "enum": [
+            "character",
+            "narrator",
+            "reader"
+          ]
+        },
+        "entity_id": {
+          "$ref": "#/$defs/uuid"
+        }
       },
-      "if": { "properties": { "kind": { "const": "character" } } },
-      "then": { "required": ["kind", "entity_id"] }
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "character"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "kind",
+          "entity_id"
+        ]
+      }
     },
     "stance": {
       "type": "string",
-      "enum": ["knows", "suspects", "believes_false", "pretends", "unaware", "forgot", "doubts"]
+      "enum": [
+        "knows",
+        "suspects",
+        "believes_false",
+        "pretends",
+        "unaware",
+        "forgot",
+        "doubts"
+      ]
     },
     "registerLevel": {
       "type": "integer",
@@ -166,43 +332,116 @@
       "description": "Abstract canonical description of how a speaker addresses a counterpart, rendered in natural English by the writer (replaces Korean speech-level enforcement).",
       "additionalProperties": false,
       "properties": {
-        "formality": { "$ref": "#/$defs/registerLevel" },
-        "deference": { "$ref": "#/$defs/registerLevel" },
-        "familiarity": { "$ref": "#/$defs/registerLevel" },
-        "intimacy": { "$ref": "#/$defs/registerLevel" },
-        "directness": { "$ref": "#/$defs/registerLevel" },
-        "contractions": { "type": "string", "enum": ["avoid", "neutral", "free"] },
-        "hedging": { "type": "string", "enum": ["high", "medium", "low"] },
-        "address_terms": { "type": "array", "items": { "type": "string" }, "description": "English vocatives/references the speaker uses for the counterpart, e.g. 'Senior Park', 'sir', 'Do-yoon'" },
-        "titles": { "type": "array", "items": { "type": "string" } },
+        "formality": {
+          "$ref": "#/$defs/registerLevel"
+        },
+        "deference": {
+          "$ref": "#/$defs/registerLevel"
+        },
+        "familiarity": {
+          "$ref": "#/$defs/registerLevel"
+        },
+        "intimacy": {
+          "$ref": "#/$defs/registerLevel"
+        },
+        "directness": {
+          "$ref": "#/$defs/registerLevel"
+        },
+        "contractions": {
+          "type": "string",
+          "enum": [
+            "avoid",
+            "neutral",
+            "free"
+          ]
+        },
+        "hedging": {
+          "type": "string",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "address_terms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "English vocatives/references the speaker uses for the counterpart, e.g. 'Senior Park', 'sir', 'Do-yoon'"
+        },
+        "titles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "public_variant": {
           "type": "object",
           "description": "Overrides applied in public settings",
           "additionalProperties": false,
           "properties": {
-            "formality": { "$ref": "#/$defs/registerLevel" },
-            "address_terms": { "type": "array", "items": { "type": "string" } },
-            "titles": { "type": "array", "items": { "type": "string" } }
+            "formality": {
+              "$ref": "#/$defs/registerLevel"
+            },
+            "address_terms": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "titles": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         },
-        "note": { "type": "string" }
+        "note": {
+          "type": "string"
+        }
       }
     },
     "registerShiftReason": {
       "type": "string",
-      "enum": ["anger", "intimacy_step", "disguise", "mockery", "public_formality", "age_reveal", "emotional_outburst"]
+      "enum": [
+        "anger",
+        "intimacy_step",
+        "disguise",
+        "mockery",
+        "public_formality",
+        "age_reveal",
+        "emotional_outburst"
+      ]
     },
     "requirementKind": {
       "type": "string",
-      "enum": ["hard", "soft", "assumption"]
+      "enum": [
+        "hard",
+        "soft",
+        "assumption"
+      ]
     },
     "provenance": {
       "type": "string",
-      "enum": ["user", "system_default", "model_inferred", "bible", "extraction", "user_correction", "retcon", "rollback"]
+      "enum": [
+        "user",
+        "system_default",
+        "model_inferred",
+        "bible",
+        "extraction",
+        "user_correction",
+        "retcon",
+        "rollback"
+      ]
     },
     "materiality": {
       "type": "string",
-      "enum": ["material", "contextual"],
+      "enum": [
+        "material",
+        "contextual"
+      ],
       "description": "Dependency edge class (ADR-0032). Only material edges mark dependents stale by default."
     },
     "versionRef": {
@@ -210,13 +449,61 @@
       "description": "Pinned input versions for reproducibility.",
       "additionalProperties": false,
       "properties": {
-        "spec_version": { "type": "integer", "minimum": 1 },
-        "bible_version": { "type": "integer", "minimum": 1 },
-        "narrative_identity_version_id": { "$ref": "#/$defs/uuid" },
-        "canon_version": { "type": "integer", "minimum": 0 },
-        "prompt_set_id": { "$ref": "#/$defs/uuid" },
-        "template_version": { "type": "string" }
+        "spec_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "bible_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "narrative_identity_version_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "canon_version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "prompt_set_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "template_version": {
+          "type": "string"
+        }
       }
+    },
+    "timelineKind": {
+      "type": "string",
+      "enum": [
+        "main",
+        "prior_loop",
+        "alternate",
+        "source_story"
+      ],
+      "description": "Timeline kinds (ADR-0023, ADR-0039). prior_loop, alternate and source_story timelines carry their own facts; the main timeline learns of them only through knowledge stances."
+    },
+    "manuscriptStatus": {
+      "type": "string",
+      "enum": [
+        "working",
+        "approved",
+        "accepted",
+        "superseded",
+        "retconned",
+        "rejected"
+      ],
+      "description": "Manuscript-version lifecycle (ADR-0037): working (draft/candidate/revision under production) → approved (approval-locked for extraction; immutable input to canon extraction) → accepted (set inside the atomic canon commit) → superseded (a regeneration was accepted) | retconned (a retcon version was accepted); rejected versions move to quarantine."
+    },
+    "manuscriptOrigin": {
+      "type": "string",
+      "enum": [
+        "assembled",
+        "revision",
+        "candidate",
+        "retcon",
+        "imported"
+      ],
+      "description": "How a manuscript version came to exist (content provenance, orthogonal to status): assembled from scene drafts, produced by a patch (revision), one of N candidates, a retcon edit of an accepted version, or imported text."
     }
   }
 }

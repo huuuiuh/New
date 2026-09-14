@@ -1,0 +1,243 @@
+{
+  "id": "genre/romance-fantasy",
+  "kind": "genre",
+  "version": 1,
+  "name": "Romance fantasy (로판) overlay",
+  "genre": {
+    "genre_id": "romance-fantasy",
+    "reader_fantasy": "Being chosen and truly seen; agency inside a rigid society; slow-burn tension that pays off in steps.",
+    "vocabulary": {
+      "preferred_terms": [
+        "the imperial court",
+        "duchy",
+        "duke",
+        "duchess",
+        "marquis",
+        "young lady",
+        "Lady",
+        "young master",
+        "Your Grace",
+        "Your Majesty",
+        "Your Highness",
+        "high society",
+        "debut",
+        "the Tower",
+        "the Temple",
+        "tea",
+        "ball",
+        "letter"
+      ],
+      "discouraged_terms": [
+        "the ton",
+        "Season (Regency sense)",
+        "chaperone (Regency sense)",
+        "dowager (unless titled in-world)"
+      ],
+      "terminology_defaults": [
+        {
+          "source_term": "영애",
+          "source_language": "ko",
+          "decision": "translate",
+          "english": "young lady / Lady + name"
+        },
+        {
+          "source_term": "공작",
+          "source_language": "ko",
+          "decision": "translate",
+          "english": "duke"
+        },
+        {
+          "source_term": "황궁",
+          "source_language": "ko",
+          "decision": "translate",
+          "english": "the imperial palace"
+        },
+        {
+          "source_term": "마탑",
+          "source_language": "ko",
+          "decision": "translate",
+          "english": "the Tower"
+        },
+        {
+          "source_term": "신전",
+          "source_language": "ko",
+          "decision": "translate",
+          "english": "the Temple"
+        }
+      ]
+    },
+    "devices": [
+      {
+        "id": "letter",
+        "description": "A letter or note rendered as an indented block with salutation and signature; may carry facts (dates, invitations).",
+        "format_grammar": "    <Salutation>,\\n    <body>\\n    — <signature>",
+        "max_per_chapter": 2
+      },
+      {
+        "id": "tea_or_ball_scene",
+        "description": "Society set piece with public register; the private beat happens at its edge.",
+        "max_per_chapter": 1
+      },
+      {
+        "id": "dual_pov_misunderstanding",
+        "description": "Reader knows what one party does not (knowledge ledger: reader knows, heroine unaware). Resolution needs a channel event.",
+        "max_per_chapter": 1
+      }
+    ],
+    "cadence": {
+      "progression_event_every_chapters": 4,
+      "satisfaction_every_chapters": 4,
+      "max_frustration_streak": 3,
+      "relationship_milestone_every_chapters": 4
+    },
+    "structure_overrides": {
+      "monologue_ratio_band": [
+        0.15,
+        0.35
+      ],
+      "opening_types_preferred": [
+        "sharp_dialogue",
+        "emotional_peak_continuation"
+      ]
+    },
+    "register_notes": [
+      "Public register uses strict titles (Your Grace, Lady + name); intimacy milestones move pairs to first names in private — tracked as relationship register facts with validity.",
+      "Anger renders as icy formality (formality rises), not bluntness.",
+      "Servants and lower ranks address nobles by title; nobles address servants by role or surname."
+    ],
+    "default_relationship_registers": [
+      {
+        "relationship_class": "royalty",
+        "register": {
+          "formality": 4,
+          "deference": 4,
+          "familiarity": 0,
+          "directness": 1,
+          "contractions": "avoid",
+          "address_terms": [
+            "Your Majesty",
+            "Your Highness"
+          ],
+          "titles": [
+            "Emperor",
+            "Crown Prince",
+            "Princess"
+          ]
+        }
+      },
+      {
+        "relationship_class": "superior",
+        "register": {
+          "formality": 4,
+          "deference": 3,
+          "familiarity": 1,
+          "directness": 2,
+          "contractions": "avoid",
+          "address_terms": [
+            "Your Grace",
+            "my lord",
+            "my lady"
+          ],
+          "titles": [
+            "Duke",
+            "Duchess",
+            "Marquis"
+          ]
+        }
+      },
+      {
+        "relationship_class": "peer",
+        "register": {
+          "formality": 3,
+          "deference": 1,
+          "familiarity": 2,
+          "directness": 2,
+          "contractions": "neutral",
+          "address_terms": [
+            "Lady",
+            "Lord"
+          ],
+          "titles": []
+        }
+      },
+      {
+        "relationship_class": "lover",
+        "register": {
+          "formality": 1,
+          "deference": 0,
+          "familiarity": 4,
+          "intimacy": 4,
+          "directness": 3,
+          "contractions": "free",
+          "address_terms": [],
+          "titles": [],
+          "public_variant": {
+            "formality": 4,
+            "address_terms": [
+              "Your Grace",
+              "Lady"
+            ],
+            "titles": [
+              "Duke",
+              "Lady"
+            ]
+          }
+        }
+      }
+    ],
+    "taboos": [
+      "Regency-romance pastiche ('the ton', 'the Season')",
+      "Accidental early confession before the planned milestone",
+      "Interiority as essay (paragraph-long reflection with no beat)",
+      "Western-novel pacing even when the setting is Western-styled"
+    ],
+    "judge_notes": [
+      "This is a Korean 로판 society rendered in English, not a Western historical romance.",
+      "Interiority must be natural and beat-anchored; the monologue band is wider here but every inner paragraph ends on a turn.",
+      "Slow-burn: tension beats are payoffs; a confession before the milestone is a hard-requirement violation."
+    ],
+    "lint_thresholds": {
+      "ST-MON-01": {
+        "warn": 0.35,
+        "fail": 0.45
+      },
+      "EP-LEN-01": {
+        "warn": 34,
+        "fail": 45
+      }
+    },
+    "rubric": [
+      {
+        "dimension": "Chosen and seen",
+        "weight": 0.35,
+        "anchors": {
+          "1": "The heroine is acted upon; nobody notices her.",
+          "3": "She is noticed but the scene tells us so.",
+          "5": "A specific character sees something specific in her and the scene shows it."
+        }
+      },
+      {
+        "dimension": "Agency inside the society",
+        "weight": 0.3,
+        "anchors": {
+          "1": "Rules are decoration.",
+          "3": "Rules constrain but she only endures.",
+          "5": "She uses the society's own rules to move her position."
+        }
+      },
+      {
+        "dimension": "Slow-burn step",
+        "weight": 0.35,
+        "anchors": {
+          "1": "No relational movement, or a leap past the planned milestone.",
+          "3": "Movement asserted by narration.",
+          "5": "One visible step in tension or trust, paid on the page, within the planned milestone cadence."
+        }
+      }
+    ]
+  },
+  "calibration": {
+    "status": "uncalibrated",
+    "notes": "Starter profile (ADR-0043). Naming Profile default for this genre is `western`."
+  }
+}

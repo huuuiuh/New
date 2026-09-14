@@ -3,14 +3,18 @@
 ## 1. Core objects
 
 ### 1.1 Manuscript versions (immutable)
-`manuscript_versions { id, project_id, chapter_id, version_no, kind: draft|revision|candidate|approved|
-accepted|retconned, language: 'en', text (NFC), length_json (words, code_points, paragraphs, sentences,
-est_tokens, est_reading_seconds; ADR-0034), content_hash, parent_version_id, created_by_job_id, status }`.
-Text is never edited in place; a patch creates a new version. **Exactly one** version per chapter may be
-`accepted` at a time (partial unique index). Evidence spans reference `(manuscript_version_id, start, end,
-quote, quote_hash)` where `start`/`end` are **Unicode code-point offsets** into the NFC text (ADR-0030); on
-write the DB trigger verifies `substring(text from start+1 for end-start) = quote` (PostgreSQL
-`substring` on `text` is code-point based).
+`manuscript_versions { id, project_id, chapter_id, version_no, origin: assembled|revision|candidate|retcon|
+imported, status: working|approved|accepted|superseded|retconned|rejected, language: 'en', text (NFC),
+length_json (words, code_points, paragraphs, sentences, est_tokens, est_reading_seconds; ADR-0034),
+content_hash, parent_version_id, created_by_job_id }`. `origin` is content provenance; `status` is the
+lifecycle (ADR-0037) — the two are orthogonal (a `candidate` can become `approved`; a `revision` can be
+`rejected`). Text is never edited in place; a patch creates a new version. **Exactly one** version per
+chapter may be `accepted` at a time (partial unique index). `approved` means *approval-locked for
+extraction*: the gate froze this version as the only input to canon extraction; `accepted` is set inside the
+atomic canon commit. Evidence spans reference `(manuscript_version_id, start, end, quote, quote_hash)`
+where `start`/`end` are **Unicode code-point offsets** into the NFC text (ADR-0030); on write the DB trigger
+verifies `substring(text from start+1 for end-start) = quote` (PostgreSQL `substring` on `text` is
+code-point based) and that the version's status is one of `approved | accepted | superseded | retconned`.
 
 ### 1.2 Entities
 `entities { id, project_id, type: character|location|organization|item|ability|term|event_anchor|
@@ -25,7 +29,7 @@ facts {
   valid_from  StoryClock, valid_to  StoryClock | null,      -- story time
   asserted_at_version int, retracted_at_version int | null, -- canon version (system time)
   source: bible|extraction|user_correction|retcon, confidence, locked bool,
-  frame: canonical|flashback|prior_loop|alternate_timeline,  -- facts exist only in reality-bearing frames
+  frame: canonical|flashback|prior_loop|alternate_timeline|source_story,  -- fact-bearing frames only (ADR-0039)
   evidence_span_ids[] (≥1 unless source=bible), commit_id, superseded_by_fact_id
 }
 ```
@@ -35,18 +39,34 @@ Attribute families (extensible enum): `identity.*` (name, age, gender, appearanc
 `role.*`, `world.rule.*`, `relation.*` (mirrored in relationship_states), `register.*` (dialogue-register facts:
 formality/address terms/titles per pair).
 
-**Validity semantics**: `valid_to = null` = still true; a new fact for the same `(entity, attribute[, key])`
-closes the prior one at `valid_from` of the new (story time) **and** records `superseded_by`. Facts are
-never deleted; retractions set `retracted_at_version` (system time) so "as of canon version v" queries work.
+**Validity semantics** (ADR-0038): `valid_to = null` = still true; a new fact for the same
+`(entity, attribute[, key])` closes the prior one at `valid_from` of the new (story time) **and** records
+`superseded_by` — this is a **transition** and the prior row stays asserted (history is preserved: "as of
+chapter 14" still returns the ch.10 injury after it heals in ch.18). Facts are never deleted; only
+corrections, retcons, rollbacks and system-time retractions set `retracted_at_version` (system time) so "as
+of canon version v" queries work. Extraction may never emit a retraction for an in-story change.
 
-### 1.4 Story clock
-`StoryClock { chapter_no: int, ordinal: int, world_date?: iso-like string or era-relative, precision:
-exact|approx|unknown }`. Ordering: `(timeline_id, world_date if comparable, chapter_no, ordinal)`.
-Elapsed-time facts (`world.time.elapsed_since_prev`) are extracted where prose states them; unknown
-precision is allowed and reported as a continuity risk.
+### 1.4 Story clock (ADR-0040)
+`StoryClock { chapter_no: int, ordinal: int (< 1,000,000), calendar?: gregorian|relative_days|era:<name>,
+world_date?: string, precision: exact|approx|unknown, uncertainty_days?: number }`.
+- **Narrative order** `(chapter_no, ordinal)` is total within a timeline and is the authoritative sort key;
+  the derived column `ord = chapter_no × 1,000,000 + ordinal` backs indexes and range constraints.
+- **World order** (`calendar` + `world_date`) is partial: comparable only within one calendar and only when
+  neither clock is `unknown`; `approx` clocks with overlapping uncertainty windows are unordered. It serves
+  duration reasoning (travel, healing windows, "the next morning"); a check that needs an unknown clock
+  reports `clock_unknown` as a continuity risk instead of guessing; cross-calendar checks report
+  `calendar_incomparable` and fall back to narrative order.
+- **Flashbacks** carry the clock of when the event *happened* (possibly `chapter_no = 0`, pre-story) and
+  `narrated_at` for where the manuscript tells it.
+- **Simultaneity**: equal `(timeline, chapter_no, ordinal)` = simultaneous/unordered; deterministic
+  tie-break for rendering is item id. Two simultaneous changes to one `(entity, attribute, key)` are a
+  verifier conflict.
+- **Cross-timeline** comparison works only through the child timeline's `divergence_clock`; `source_story`
+  timelines have none and are never compared with `main`.
+Elapsed-time facts (`world.time.elapsed_since_prev`) are extracted where prose states them.
 
 ### 1.5 Events
-`events { id, project_id, timeline_id, story_clock_start, story_clock_end, frame, summary, type,
+`events { id, project_id, timeline_id, clock_start, clock_end, narrated_at?, frame, summary, type,
 location_id, participants[] (entity, role), asserted_at_version, retracted_at_version, evidence_span_ids[],
 source_chapter_id, narrated_in_chapter_ids[] }`.
 
@@ -63,16 +83,21 @@ source_chapter_id, narrated_in_chapter_ids[] }`.
 | `plan` | no | planner | (from plan tables, not extraction) |
 | `prior_loop` | yes on the prior timeline; no on main | regressor only (plus anyone told) | "last time", "in my first life" |
 | `alternate_timeline` | yes on that timeline | per timeline | branch scenes |
-| `source_story` | as prior_loop for possession/villainess "original story" knowledge | possessor | "in the original story…" |
+| `source_story` | yes on the `source_story` timeline; no on main (ADR-0039) | possessor (as `source_story` knowledge) | "in the original story…", "in the novel…" |
 | `non_canonical_draft` | never stored in canon | — | quarantine only |
 
-Rule enforced by verifier: **only `canonical`, `flashback`, `prior_loop` (on its timeline), and
-`alternate_timeline` (on its timeline) may produce facts or state changes.** `lie` produces knowledge
+Rule enforced by verifier: **only `canonical` and `flashback` (current timeline), and `prior_loop`,
+`alternate_timeline` and `source_story` (each only on a timeline of the matching kind) may produce facts or
+state changes** (`FRAME_VIOLATION` otherwise; ADR-0039). `lie` produces knowledge
 stances, never facts. `dream/hallucination/hypothetical/prediction` produce knowledge items for the
 experiencer only and may open promises (e.g., prophetic dream → promise type `mystery`).
 
 ### 1.7 Timelines (ADR-0023)
-`timelines { id, project_id, name, parent_timeline_id, divergence_clock, kind: main|prior_loop|alternate }`.
+`timelines { id, project_id, name, parent_timeline_id, divergence_clock, kind: main|prior_loop|alternate|source_story }`.
+A `source_story` timeline (possession/villainess/transmigration) has no parent and no divergence clock: it
+is a parallel reference whose facts reach `main` only as the possessor's `source_story` knowledge; divergence
+is computed exactly as for prior loops by comparing per-timeline truth (ADR-0039). Reincarnation's previous
+life is a `prior_loop` timeline diverging at rebirth (there is no separate frame for it).
 Facts/events carry `timeline_id`. Regression: the story starts with `prior_loop` timeline populated by
 extraction from the regressor's recollections (frame `prior_loop`), and `main` from chapter 1. Queries for
 "what is true now" use `main`; "what does the protagonist expect" joins `prior_loop` facts as knowledge with
@@ -96,17 +121,24 @@ is updated in the same transaction with an optimistic check (`WHERE canon_versio
 - Facts have no `future` validity: `valid_from` must be ≤ the chapter's `story_time.end`. Predictions are
   frame `prediction` knowledge items.
 
-## 4. Chapter lifecycle (state machine)
+## 4. Chapter lifecycle (state machine; ADR-0037)
 
 ```
 planned ─► drafting ─► drafted ─► evaluating ─► revising ─► review_pending ─► approved ─► extracting
-   ─► reconciling ─► verifying ─► committing ─► accepted ─► (stale | retconned | superseded)
-                      │ (blocking issues after max rounds) └► needs_attention
+   ─► reconciling ─► verifying ─► committing ─► accepted ─► (stale | superseded | retconned)
+                      │ (blocking issues after policy.revision.max_rounds) └► needs_attention
 rejected (any pre-accepted state via user) → versions quarantined
 ```
-Only `accepted` versions feed canon. `approved` is the human/policy gate; `accepted` is set inside the
-atomic commit transaction. If extraction/verification fails, the chapter stays `approved` with the failure
-recorded and a retry available; canon is untouched.
+- `approved` = the human or policy gate passed and the manuscript version is **approval-locked**: immutable,
+  the only legal input to extraction, **not yet canon**. Gates *approve*; only the commit *accepts*.
+- `accepted` is set inside the atomic commit transaction together with the canon version bump. If
+  extraction/verification/commit fails, the chapter stays `approved` with the failure recorded and a retry
+  available; canon is untouched. Nothing requires a chapter to be `accepted` before the extraction that
+  makes it accepted (the version is `approved` at that point).
+- Semi-automatic and Autopilot differ from Assisted only in *who approves*: the policy approves when every
+  deterministic criterion passes, `blocking_count = major_count = 0`, and every gated dimension meets its
+  own threshold (`policy.gates`, ADR-0041). Policy approval is still approval; acceptance is the commit's job.
+- Only `accepted` versions feed packs, summaries, indexes and exemplars.
 
 ## 5. Extraction, reconciliation, verification
 
@@ -125,8 +157,8 @@ sweep; B: event-timeline-first sweep) and, when routing allows, different model 
 Items are canonicalized (entity IDs resolved via aliases, values normalized, story clocks compared) and
 matched by `(type, entity/proposition/pair, attribute/kind, story_clock window)`:
 - **Agreed** (same value, compatible evidence) → accepted with `confidence = max`.
-- **Only-in-one** with confidence ≥ 0.8 and verifiable evidence → accepted as `single_source` (flagged in
-  UI); < 0.8 → adjudicate.
+- **Only-in-one** with confidence ≥ `policy.extraction.single_source_min_confidence` (starting value 0.8) and
+  verifiable evidence → kept as `single_source` (flagged in UI); below → adjudicate.
 - **Conflict** (same key, different value) → adjudicator call with the exact spans of both claims and the
   surrounding paragraphs; adjudicator must pick or reject with evidence; still unresolved → **human queue**
   (commit blocked for that item only if it is `major`; `minor` items dropped with record).
@@ -134,11 +166,12 @@ matched by `(type, entity/proposition/pair, attribute/kind, story_clock window)`
   relationship level changes are `major`.
 
 ### 5.3 Verification (deterministic)
-- Every evidence quote must be found at the given paragraph (exact after NFC; fallback fuzzy ≥ 0.98 with
-  re-anchoring, else reject item).
+- Every evidence quote must be found at the given paragraph (exact after NFC; fallback fuzzy ≥
+  `policy.extraction.fuzzy_anchor_min_ratio`, starting value 0.98, with re-anchoring, else reject item).
 - Entity IDs must exist or be in `introduces[]`; unknown names → proposed new entity requiring approval in
   Assisted mode (auto in Autopilot with `provisional=true`).
-- Frame rules (§1.6) enforced; `plan`-frame items forbidden; validity must not start in the future.
+- Frame rules (§1.6) enforced per timeline kind (`FRAME_VIOLATION`); `plan`-frame items forbidden; validity
+  must not start in the future; `retract` ops forbidden in chapter-acceptance deltas (ADR-0038).
 - Consistency pre-check against current canon: contradictions with **locked** facts → blocking (the chapter
   should not have been approved; this is the last line of defense and returns the chapter to
   `needs_attention`); contradictions with unlocked facts → recorded as `supersedes` (state change) if the
@@ -166,15 +199,15 @@ status `accepted`. Any failure → rollback → chapter remains `approved`, job 
 
 ## 7. Isolation of rejected drafts (hard guarantees)
 
-1. Extraction activities accept only `manuscript_version_id` whose `kind='approved'` and whose chapter is
-   in state `approved`; the DB function `assert_extractable(version_id)` raises otherwise.
-2. Candidate and rejected versions are stored with `kind in (candidate, draft, revision)` and, upon
-   rejection, moved to `quarantine_versions` (same shape, different table) by the workflow; the context
+1. Extraction activities accept only a `manuscript_version_id` whose `status='approved'` and whose chapter
+   is in state `approved`; the DB function `assert_extractable(version_id)` raises otherwise.
+2. Working versions (`status='working'`, any origin) that are rejected are moved to `quarantine_versions`
+   (same shape, different table) by the workflow with `status='rejected'`; the context
    assembler's source allowlist contains no quarantine tables and no non-accepted versions except the
    **current chapter's own prior scenes** during drafting (explicitly scoped by job).
 3. Search documents/embeddings are only built from accepted versions and canon items; a nightly job
    asserts no `search_documents` row references a non-accepted version.
-4. Exemplar bank rows require `manuscript_version.kind='accepted'` (FK + check).
+4. Exemplar bank rows require `manuscript_version.status='accepted'` (FK + check).
 5. Tests: fixture includes a rejected draft containing a distinctive false fact ("Do-yoon's left arm was
    severed");
    the suite asserts that fact never appears in facts, summaries, packs, or exemplars.
@@ -199,20 +232,31 @@ status `accepted`. Any failure → rollback → chapter remains `approved`, job 
   `plan_continuity_checker` on stale contracts and `continuity_checker` on stale accepted chapters, producing
   patch proposals.
 
-## 9. Retcons, corrections, rollback
+## 9. Change classes: transition, correction, retcon, rollback, retraction (ADR-0038)
 
-- **User correction**: edit canon item → commit `source=user_correction` (closing/replacing the item;
-  evidence optional but a `justification` required) → dependency propagation → optional manuscript patch
-  task if the text now contradicts canon (detected by running the continuity checker on the source chapter
-  span).
-- **Retcon**: new manuscript version of an accepted chapter (patched or rewritten) → `approved` → extraction
-  diff against items sourced from the old version → commit that retracts old items and inserts new ones →
-  old version `retconned` → propagation.
-- **Rollback (MVP)**: apply `inverse_json` of the latest commit in one transaction (new commit
-  `source=rollback`); chapter returns to `approved` with its version `approved` (not accepted). Beta:
-  arbitrary version = sequential inverse application with conflict detection.
-- **Regeneration**: `ChapterProductionWorkflow(supersedes=version)`; on acceptance, the commit retracts all
-  canon items sourced from the superseded version in the same transaction.
+| Class | Trigger | Story time | System time | Commit `source` |
+| --- | --- | --- | --- | --- |
+| **Transition** | the story moves on (heal, rank up, move, register milestone) | new row asserted; prior row `valid_to` closed + `superseded_by`; prior row stays asserted | untouched on the prior row | `chapter_acceptance` |
+| **Correction** | a row is wrong (extraction error; user fixes a fact with `justification`) | replacement carries the originally intended validity | wrong row `retracted_at_version = v` | `user_correction` |
+| **Retcon** | an accepted manuscript is changed and re-accepted | old-version rows retracted; new rows extracted from the retcon version | old rows retracted at `v`; old version `status = retconned` | `retcon` |
+| **Rollback** (MVP: latest) | undo a commit | `inverse` re-opens closed `valid_to`, restores retracted rows, retracts inserted rows | inserted rows retracted at `v` | `rollback` |
+| **System-time retraction** | out-of-story removal (entity merge, rights, regeneration superseding a version) | untouched | `retracted_at_version = v` | `merge_entities`, `regeneration`, `user_correction` |
+
+- **User correction**: edit canon item → commit `source=user_correction` (evidence optional; `justification`
+  required) → dependency propagation → optional manuscript patch task if the text now contradicts canon
+  (continuity checker on the source chapter span).
+- **Retcon**: new manuscript version (`origin=retcon`) of an accepted chapter → gate → `approved` →
+  extraction diff against items sourced from the old version → commit that retracts old items and inserts
+  new ones → old version `status=retconned`, new version `accepted` → propagation.
+- **Rollback (MVP)**: apply `inverse` of the latest commit in one transaction (new commit
+  `source=rollback`, version bumped once, never decremented); the chapter and its version return to
+  `approved` (not `accepted`). `inverse` records, per touched row, the exact prior `valid_to`,
+  `superseded_by` and `retracted_at_version` so nothing is inferred. Beta: arbitrary version = sequential
+  inverse application with conflict detection.
+- **Regeneration**: `ChapterProductionWorkflow(supersedes=version)`; on acceptance the commit retracts all
+  canon items sourced from the superseded version in the same transaction and sets that version
+  `status=superseded`.
+- A `retract` op in a `chapter_acceptance` delta is rejected by the verifier (transitions only).
 
 ## 10. Special narrative structures
 
@@ -224,5 +268,6 @@ status `accepted`. Any failure → rollback → chapter remains `approved`, job 
 | Lies | `lie` event + knowledge stances (`believes_false` for deceived hearers) + speaker `knows` truth |
 | Predictions/prophecy | frame `prediction` knowledge; promise opened |
 | Regression loop restart | new timeline `prior_loop_n` created from `main` at divergence; `main` reset semantics documented in ADR-0023 (rare; default: one prior loop) |
+| Possession / villainess "original story" | `source_story` timeline with its own facts and truth entries; possessor gets `knows` stances with `source.kind=source_story`; `diverged` when main truth differs (ADR-0039); fixture `examples/fixture/source-story.micro.json` |
 | Alternate POV retelling of a known event | event `narrated_in_chapter_ids` appended; new knowledge for the new POV character extracted |
 | Hidden identity | proposition "X is Y" with secret knower set; extraction of any `knows` for others requires a channel event |

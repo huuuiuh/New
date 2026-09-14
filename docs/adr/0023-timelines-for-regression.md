@@ -1,6 +1,6 @@
 # ADR-0023: Explicit timelines for regression/possession/alternate realities
 
-- **Status:** Accepted
+- **Status:** Accepted — `source_story` is a timeline kind with its own facts (ADR-0039)
 - **Date:** 2026-09-13
 - **Deciders:** principal architects (product, software, AI systems, data, Korean webnovel production)
 

@@ -1,29 +1,52 @@
 #!/usr/bin/env python3
-"""Planning-package consistency check (not application code).
+"""Planning-package consistency check (repository tooling, not application code).
 
-1. Validates every schema in schemas/ against the JSON Schema 2020-12 metaschema.
-2. Validates the example instances in examples/ against their schemas.
-3. Enforces the evidence-span invariant (end - start == len(quote) in code points).
-4. Scans the repository for contradictory language-output statements and stale field names
-   (the product composes English manuscripts in the Korean webnovel tradition; see ADR-0026).
+Checks, in order:
+ 1. Every schema in schemas/ is valid against the JSON Schema 2020-12 metaschema and every `$ref`
+    inside every schema resolves (unresolved references are errors, not warnings).
+ 2. Every example in examples/ validates against its schema (discovered by directory + a manifest below).
+ 3. Canon-delta items are validated as a discriminated union (payload shape per `type`) — no required
+    field is ever dropped to make an example pass; canon-delta-payloads mirror the stored schemas.
+ 4. Evidence spans: `end - start == len(quote)` in Unicode code points, and where the referenced fixture
+    manuscript exists, `text[start:end] == quote` on the NFC text, the quote hash matches when present,
+    and the paragraph id matches the paragraph containing the span.
+ 5. Cross-file references: fixture ids exist in ids.json; profile lineage ids exist as profile files;
+    ADR numbers referenced in docs exist; docs paths referenced in docs exist; lint rule ids used anywhere
+    are defined in the lint-rules doc; fixture trap ids referenced in docs are defined in the fixture story;
+    canon-delta payload properties exist on the stored schema they mirror.
+ 6. Stale terminology: character-based length/cost fields, retired lifecycle words, contradictory
+    output-language statements (the product composes English manuscripts in the Korean webnovel tradition;
+    ADR-0026), bare policy numbers outside the Production Policy (ADR-0041).
+ 7. Truthfulness: the contrast-set count claimed in docs equals the count in the fixture (ADR-0043).
 
-Usage:  python tools/validate-planning-package.py
-Deps:   jsonschema>=4.18 (pip install jsonschema)
+Exit status is non-zero on any failure; diagnostics name file, line/path and the rule.
+
+Usage:  python tools/validate-planning-package.py [--quiet]
+Deps:   jsonschema>=4.18, referencing (pip install jsonschema)
 """
 from __future__ import annotations
 
 import glob
+import hashlib
 import json
 import os
 import re
 import sys
+import unicodedata
+from typing import Iterable
 
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
+from referencing.exceptions import Unresolvable
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_URI = "https://yeonjae.studio/schemas/"
+QUIET = "--quiet" in sys.argv
 
+# ----------------------------------------------------------------------------------------------------
+# Example → schema manifest. Every JSON file under examples/ must be covered by exactly one rule or be
+# explicitly listed as a "bundle" (validated per entry) or as "meta" (ids/README-like, not an instance).
+# ----------------------------------------------------------------------------------------------------
 EXAMPLES = [
     ("examples/fixture/story-intake.json", "story-intake.schema.json"),
     ("examples/fixture/register-profile.seoha.json", "register-profile.schema.json"),
@@ -32,27 +55,58 @@ EXAMPLES = [
     ("examples/narrative-profiles/lang-en.v1.json", "narrative-identity.schema.json"),
     ("examples/narrative-profiles/tradition-kr-webnovel.v1.json", "narrative-identity.schema.json"),
     ("examples/narrative-profiles/genre-hunter-gate.v1.json", "narrative-identity.schema.json"),
+    ("examples/narrative-profiles/genre-regression.v1.json", "narrative-identity.schema.json"),
+    ("examples/narrative-profiles/genre-academy.v1.json", "narrative-identity.schema.json"),
+    ("examples/narrative-profiles/genre-romance-fantasy.v1.json", "narrative-identity.schema.json"),
     ("examples/narrative-profiles/project-second-awakening.composed.v1.json", "narrative-identity.schema.json"),
+    ("examples/production-policies/standard.v1.json", "production-policy.schema.json"),
+    ("examples/production-policies/economy.v1.json", "production-policy.schema.json"),
+    ("examples/production-policies/premium.v1.json", "production-policy.schema.json"),
 ]
-
-PAYLOAD_SCHEMAS = {
-    "fact": "fact.schema.json",
-    "event": "event.schema.json",
-    "knowledge_state": "knowledge-state.schema.json",
-    "relationship_state": "relationship-state.schema.json",
+# Bundles: JSON files whose top-level arrays hold instances of stored schemas (key → schema).
+BUNDLES = {
+    "examples/fixture/source-story.micro.json": {
+        "propositions": "proposition.schema.json",
+        "facts": "fact.schema.json",
+        "knowledge_states": "knowledge-state.schema.json",
+    },
+}
+META_EXAMPLES = {
+    "examples/fixture/ids.json",
+    "examples/fixture/knowledge-ledger.json",   # readable-shorthand ledger; checked structurally below
+    "examples/fixture/contrast-sets.seed.json",  # checked structurally below
+}
+FIXTURE_MANUSCRIPTS = {
+    # manuscript_version_id → path (NFC text; offsets are code points)
+    "0191b2a0-0000-7000-8000-000000030009": "examples/fixture/manuscripts/ch09.accepted.txt",
+}
+# canon-delta payload proposal → stored schema it mirrors (property names must be a subset)
+PAYLOAD_MIRRORS = {
+    "factProposal": "fact.schema.json",
+    "eventProposal": "event.schema.json",
+    "knowledgeStateProposal": "knowledge-state.schema.json",
+    "relationshipStateProposal": "relationship-state.schema.json",
+    "propositionProposal": "proposition.schema.json",
+    "entityProposal": "entity.schema.json",
+}
+PAYLOAD_EXTRA_ALLOWED = {  # proposal-only fields that legitimately have no stored counterpart
+    "eventProposal": {"narrated_at"},
+    "entityProposal": {"provisional"},
+    "propositionProposal": set(),
 }
 
-# Statements that contradict the governing principle if they appear anywhere in the package.
-# Each entry: (pattern, explanation, strict). Non-strict patterns are exempt on lines that describe a
-# prohibition or a replacement (e.g., "never translates into English", "replaces the Korean NLP sidecar").
+# ----------------------------------------------------------------------------------------------------
+# Contradiction / stale-terminology patterns. (pattern, explanation, strict). Non-strict patterns are
+# exempt on lines that describe a prohibition or replacement.
+# ----------------------------------------------------------------------------------------------------
 CONTRADICTION_PATTERNS = [
     (r"output (is )?always Korean", "manuscript output must be English", True),
     (r"natively Korean prose", "manuscript prose is English", True),
     (r"\bnative Korean prose\b", "manuscript prose is English", True),
     (r"\bKorean prose (quality|benchmark|output|for one scene)\b", "prose roles write English", True),
     (r"Korean characters? (per|incl|including)", "length is measured in words for English", True),
-    (r"target_chars_per_chapter", "use target_words_per_chapter", True),
-    (r"length_target_chars", "use length_target (words)", True),
+    (r"target_chars_per_chapter|length_target_chars|accepted_chars|cost_per_1k_chars|chars_per_chapter|per_1k_chars",
+     "character-based length/cost fields were replaced by words (ADR-0034)", True),
     (r"english_leakage|English leakage", "English is the output language, never leakage", True),
     (r"\bKL-[A-Z]{2,6}-\d\d\b", "Korean lint rule ids were replaced by EP-*/ST-*/RG-*", True),
     (r"\bkoreanText\b", "use common.schema.json#/$defs/text", True),
@@ -64,14 +118,23 @@ CONTRADICTION_PATTERNS = [
     (r"translate(d|s)? (it |them )?(into|to) English", "the pipeline never translates into English", False),
     (r"docs/02-korean-style", "directory renamed to docs/02-narrative-identity", True),
     (r"\bspeech-profile\.schema|style-profile\.schema", "schemas renamed to register-profile / narrative-identity", True),
-    (r"\bcanonical_name_ko\b|\btext_ko\b|\bsummary_ko\b|\bstatement_ko\b|\bpurpose_ko\b|\bdescription_ko\b|\brationale_ko\b|\bsuggestion_ko\b|\btitle_ko\b", "language-suffixed primary fields were removed", True),
+    (r"\bcanonical_name_ko\b|\btext_ko\b|\bsummary_ko\b|\bstatement_ko\b|\bpurpose_ko\b|\bdescription_ko\b|\brationale_ko\b|\bsuggestion_ko\b|\btitle_ko\b",
+     "language-suffixed primary fields were removed", True),
+    # Lifecycle (ADR-0037)
+    (r"auto-accept(ed|s|ance)?\b", "gates approve; commits accept — say auto-approve (ADR-0037)", True),
+    (r"kind\s*=\s*'?(accepted|approved|retconned)'?|kind IN \('approved'", "manuscript lifecycle is `status`, provenance is `origin` (ADR-0037)", True),
+    (r"kind: draft\|revision\|candidate\|approved", "manuscript `kind` was split into origin + status (ADR-0037)", True),
+    (r"\bprior_life\b", "reincarnation uses a prior_loop timeline; there is no prior_life frame (ADR-0039)", True),
+    (r"scorecard\s*(≥|>=)\s*(tier threshold|\d)", "gates are per dimension, never an aggregate scorecard (ADR-0041)", True),
+    (r"early_stop_threshold", "early stop is per-dimension margin in the Production Policy (ADR-0041)", True),
+    (r"auto_acceptable", "renamed acceptance.auto_approvable (ADR-0037)", True),
 ]
 NEGATION_CONTEXT = re.compile(
     r"never|does not|do not|must not|cannot|no translation|NO-TRANSLATION|replace|supersed|removed|instead|"
-    r"anti-pattern|drift|mirroring|forbid|reject|prohibit|not a criterion|not apply|do not exist|calque",
+    r"anti-pattern|drift|mirroring|forbid|reject|prohibit|not a criterion|not apply|do not exist|calque|"
+    r"retired|was split|were replaced|formerly|no longer",
     re.I,
 )
-
 # Files where historical references to the old design are legitimately allowed (they describe the change).
 CONTRADICTION_ALLOWLIST = {
     "docs/adr/0026-english-manuscript-korean-webnovel-tradition.md",
@@ -81,148 +144,418 @@ CONTRADICTION_ALLOWLIST = {
     "docs/adr/0005-fail-closed-style-guard.md",
     "docs/adr/0017-korean-nlp-sidecar.md",
     "docs/adr/0024-nfc-normalization-and-character-counting.md",
+    "docs/adr/0037-manuscript-lifecycle-and-approval-lock.md",
+    "docs/adr/0038-bitemporal-transition-classes.md",
+    "docs/adr/0039-source-story-as-fact-bearing-timeline.md",
+    "docs/adr/0041-production-policy-single-source.md",
+    "docs/adr/0043-planning-baseline-truthfulness.md",
     "docs/08-delivery/07-plan-audit.md",
     "docs/08-delivery/08-correction-changelog.md",
+    "docs/08-delivery/10-baseline-audit-report.md",
     "tools/validate-planning-package.py",
 }
 
+# Bare-number scan for policy-owned parameters (ADR-0041): a doc may quote a value only when the line also
+# names the policy key or the marker "starting value". Patterns capture the parameter phrase.
+POLICY_NUMBER_PATTERNS = [
+    (r"max(imum)?[_ ]revision[_ ]rounds?\D{0,12}\d", "policy.revision.max_rounds"),
+    (r"\b(\d) revision rounds\b", "policy.revision.max_rounds"),
+    (r"repair rounds per chapter:? ?\d", "policy.revision.max_rounds"),
+    (r"max_patches_per_round\D{0,4}\d", "policy.revision.max_patches_per_round"),
+    (r"max_scene_rewrites\D{0,4}\d", "policy.revision.max_scene_rewrites"),
+    (r"last ~?≈?\s?\d{3}(–|-)\d{3} words", "policy.context.previous_tail_words"),
+]
+POLICY_ALLOW = re.compile(r"policy\.|starting value|standard\.v1|production[- ]policy|ADR-0041", re.I)
+
 HANGUL = re.compile(r"[\uac00-\ud7a3]")
-# Files that may contain Korean script (terminology of the tradition, source terms in policies).
-HANGUL_ALLOWLIST_PREFIXES = (
-    "docs/00-overview/02-glossary.md",
-    "docs/02-narrative-identity/",
-    "docs/adr/",
-    "examples/narrative-profiles/",
-    "schemas/narrative-identity.schema.json",
-    "README.md",
-    "AGENTS.md",
-    "docs/00-overview/01-executive-product-definition.md",
-    "docs/08-delivery/",
-    "docs/07-quality/",
-    "docs/05-generation/",
-    "docs/06-system/",
-    "docs/04-memory-canon/",
-    "docs/03-story-planning/",
-    "docs/01-requirements/",
+FIXTURE_ENGLISH_ONLY = (
+    "examples/fixture/chapter-contract.ch12.json", "examples/fixture/canon-delta.ch09.json",
+    "examples/fixture/knowledge-ledger.json", "examples/fixture/register-profile.seoha.json",
+    "examples/fixture/contrast-sets.seed.json", "examples/fixture/story-intake.json",
+    "examples/fixture/source-story.micro.json", "examples/fixture/manuscripts/ch09.accepted.txt",
+    "examples/fixture/manuscripts/ch09.rejected-draft.txt",
 )
 
+failures: list[str] = []
+notes: list[str] = []
 
+
+def fail(msg: str) -> None:
+    failures.append(msg)
+    print(f"[FAIL] {msg}")
+
+
+def ok(msg: str) -> None:
+    if not QUIET:
+        print(f"[ok] {msg}")
+
+
+def read(rel: str) -> str:
+    with open(os.path.join(ROOT, rel), encoding="utf-8") as f:
+        return f.read()
+
+
+def load_json(rel: str):
+    return json.loads(read(rel))
+
+
+def rel_files(patterns: Iterable[str]):
+    for pattern in patterns:
+        for path in glob.glob(os.path.join(ROOT, pattern), recursive=True):
+            rel = os.path.relpath(path, ROOT).replace(os.sep, "/")
+            if rel.startswith(".hoplite") or rel.startswith(".git") or "/node_modules/" in rel:
+                continue
+            yield rel
+
+
+# ----------------------------------------------------------------------------------------------------
+# 1. Schemas
+# ----------------------------------------------------------------------------------------------------
 def load_schemas() -> tuple[dict, Registry]:
     schemas: dict[str, dict] = {}
     registry = Registry()
-    for path in sorted(glob.glob(os.path.join(ROOT, "schemas", "*.schema.json"))):
-        with open(path, encoding="utf-8") as f:
-            schema = json.load(f)
-        name = os.path.basename(path)
+    for rel in sorted(rel_files(["schemas/*.schema.json"])):
+        schema = load_json(rel)
+        name = os.path.basename(rel)
+        if schema.get("$id") != BASE_URI + name:
+            fail(f"{rel}: $id must be {BASE_URI + name}, got {schema.get('$id')!r}")
         schemas[name] = schema
         resource = Resource.from_contents(schema)
-        registry = registry.with_resource(schema["$id"], resource)
         registry = registry.with_resource(BASE_URI + name, resource)
     return schemas, registry
 
 
-def iter_repo_text_files():
-    for pattern in ("**/*.md", "**/*.json", "**/*.py", ".env.example"):
-        for path in glob.glob(os.path.join(ROOT, pattern), recursive=True):
-            rel = os.path.relpath(path, ROOT)
-            if rel.startswith(".hoplite") or "/.git/" in path or rel.startswith(".git"):
-                continue
-            yield rel, path
+def iter_refs(node, path=""):
+    if isinstance(node, dict):
+        for k, v in node.items():
+            if k == "$ref" and isinstance(v, str):
+                yield path, v
+            else:
+                yield from iter_refs(v, f"{path}/{k}")
+    elif isinstance(node, list):
+        for i, v in enumerate(node):
+            yield from iter_refs(v, f"{path}/{i}")
 
 
-def main() -> int:
-    ok = True
-    schemas, registry = load_schemas()
-
+def check_schemas(schemas: dict, registry: Registry) -> None:
     for name, schema in schemas.items():
         try:
             Draft202012Validator.check_schema(schema)
         except Exception as exc:  # noqa: BLE001
-            ok = False
-            print(f"[SCHEMA INVALID] {name}: {exc}")
-    print(f"metaschema: {len(schemas)} schemas checked")
+            fail(f"schemas/{name}: invalid against metaschema: {exc}")
+        resolver = registry.resolver(base_uri=BASE_URI + name)
+        for path, ref in iter_refs(schema):
+            try:
+                resolver.lookup(ref)
+            except Unresolvable as exc:
+                fail(f"schemas/{name}{path}: unresolved $ref {ref!r} ({exc.__class__.__name__})")
+            except Exception as exc:  # noqa: BLE001
+                fail(f"schemas/{name}{path}: $ref {ref!r} failed to resolve: {exc}")
+    # language-suffixed primary fields
+    for name, schema in schemas.items():
+        for m in re.finditer(r'"([a-z_]+_ko)"\s*:', json.dumps(schema)):
+            fail(f"schemas/{name}: stale language-suffixed field {m.group(1)}")
+    print(f"schemas: {len(schemas)} checked against metaschema; all $ref resolved" if not failures else "")
 
+
+def check_payload_mirrors(schemas: dict) -> None:
+    payloads = schemas["canon-delta-payloads.schema.json"]["$defs"]
+    for prop_name, stored_name in PAYLOAD_MIRRORS.items():
+        stored_props = set(schemas[stored_name]["properties"].keys())
+        proposal_props = set(payloads[prop_name]["properties"].keys())
+        extra = proposal_props - stored_props - PAYLOAD_EXTRA_ALLOWED.get(prop_name, set())
+        if extra:
+            fail(f"canon-delta-payloads.{prop_name}: properties {sorted(extra)} do not exist on {stored_name}")
+        else:
+            ok(f"canon-delta-payloads.{prop_name} mirrors {stored_name}")
+
+
+# ----------------------------------------------------------------------------------------------------
+# 2–3. Examples
+# ----------------------------------------------------------------------------------------------------
+def validate_instance(schemas, registry, schema_name, instance, label) -> bool:
+    validator = Draft202012Validator(schemas[schema_name], registry=registry)
+    errors = sorted(validator.iter_errors(instance), key=lambda e: list(e.path))
+    if errors:
+        fail(f"{label} invalid vs {schema_name}")
+        for err in errors[:12]:
+            where = "/".join(map(str, err.path)) or "<root>"
+            print(f"     - {where}: {err.message[:220]}")
+        return False
+    ok(f"{label} vs {schema_name}")
+    return True
+
+
+def check_examples(schemas, registry) -> None:
+    covered = set(p for p, _ in EXAMPLES) | set(BUNDLES) | META_EXAMPLES
+    for rel in rel_files(["examples/**/*.json"]):
+        if rel not in covered:
+            fail(f"{rel}: not covered by the example manifest (add it to EXAMPLES, BUNDLES or META_EXAMPLES)")
+    for rel, _ in EXAMPLES:
+        if not os.path.exists(os.path.join(ROOT, rel)):
+            fail(f"{rel}: listed in manifest but missing")
     for rel, schema_name in EXAMPLES:
-        with open(os.path.join(ROOT, rel), encoding="utf-8") as f:
-            instance = json.load(f)
-        validator = Draft202012Validator(schemas[schema_name], registry=registry)
-        errors = sorted(validator.iter_errors(instance), key=lambda e: list(e.path))
-        if errors:
-            ok = False
-            print(f"[INVALID] {rel} vs {schema_name}")
-            for err in errors[:20]:
-                print("   -", "/".join(map(str, err.path)), ":", err.message[:200])
-        else:
-            print(f"[ok] {rel} vs {schema_name}")
+        if os.path.exists(os.path.join(ROOT, rel)):
+            validate_instance(schemas, registry, schema_name, load_json(rel), rel)
+    for rel, mapping in BUNDLES.items():
+        bundle = load_json(rel)
+        for key, schema_name in mapping.items():
+            for i, item in enumerate(bundle.get(key, [])):
+                validate_instance(schemas, registry, schema_name, item, f"{rel}#{key}[{i}]")
 
-    # Canon delta payloads: pre-commit objects lack ids/version fields, so validate present fields only.
-    with open(os.path.join(ROOT, "examples/fixture/canon-delta.ch09.json"), encoding="utf-8") as f:
-        delta = json.load(f)
-    for item in delta["items"]:
-        schema_name = PAYLOAD_SCHEMAS.get(item["type"])
-        if not schema_name:
-            continue
-        schema = json.loads(json.dumps(schemas[schema_name]))
-        schema["required"] = [r for r in schema.get("required", []) if r in item["payload"]]
-        errors = list(Draft202012Validator(schema, registry=registry).iter_errors(item["payload"]))
-        if errors:
-            ok = False
-            print(f"[INVALID payload] {item['local_id']} ({item['type']})")
-            for err in errors[:10]:
-                print("   -", "/".join(map(str, err.path)), ":", err.message[:200])
-        else:
-            print(f"[ok payload] {item['local_id']} ({item['type']}) vs {schema_name}")
 
-    # Evidence-span invariant (code points).
-    def check_evidence(owner: str, ev: dict) -> None:
-        nonlocal ok
-        if len(ev["quote"]) != ev["end"] - ev["start"]:
-            ok = False
-            print(f"[EVIDENCE MISMATCH] {owner}: len(quote)={len(ev['quote'])} end-start={ev['end'] - ev['start']}")
+# ----------------------------------------------------------------------------------------------------
+# 4. Evidence
+# ----------------------------------------------------------------------------------------------------
+class Manuscript:
+    def __init__(self, rel: str):
+        self.rel = rel
+        text = read(rel)
+        if text != unicodedata.normalize("NFC", text):
+            fail(f"{rel}: not NFC-normalized")
+        self.text = text
+        self.cps = list(text)  # Python str indexing is code-point based; kept explicit for clarity
+        self.paragraphs: list[tuple[int, int]] = []
+        start = 0
+        for m in re.finditer(r"\n\n+", text):
+            self.paragraphs.append((start, m.start()))
+            start = m.end()
+        self.paragraphs.append((start, len(text.rstrip("\n"))))
 
-    for item in delta["items"]:
-        for ev in item.get("evidence", []):
-            check_evidence(item["local_id"], ev)
-    with open(os.path.join(ROOT, "examples/fixture/chapter-contract.ch12.json"), encoding="utf-8") as f:
-        contract = json.load(f)
-    for anchor in contract.get("continuity_anchors", []):
-        for ev in anchor.get("evidence", []):
-            check_evidence(f"anchor {anchor['fact_id']}", ev)
+    def paragraph_id(self, offset: int) -> str | None:
+        for i, (a, b) in enumerate(self.paragraphs, 1):
+            if a <= offset < b:
+                return f"p{i}"
+        return None
 
-    # Fixture prose must be English: no Hangul in manuscript-like fields of fixture examples.
-    for rel in ("examples/fixture/chapter-contract.ch12.json", "examples/fixture/canon-delta.ch09.json",
+
+def check_evidence_ref(owner: str, ev: dict, manuscripts: dict[str, Manuscript]) -> None:
+    quote = ev["quote"]
+    if ev["end"] - ev["start"] != len(quote):
+        fail(f"{owner}: evidence length mismatch: end-start={ev['end'] - ev['start']} len(quote)={len(quote)} code points")
+    if quote != unicodedata.normalize("NFC", quote):
+        fail(f"{owner}: evidence quote is not NFC")
+    if ev.get("quote_hash"):
+        expected = "sha256:" + hashlib.sha256(quote.encode("utf-8")).hexdigest()
+        if ev["quote_hash"] != expected:
+            fail(f"{owner}: quote_hash mismatch")
+    ms = manuscripts.get(ev["manuscript_version_id"])
+    if ms is None:
+        return
+    sliced = "".join(ms.cps[ev["start"]:ev["end"]])
+    if sliced != quote:
+        fail(f"{owner}: quote does not match manuscript slice [{ev['start']}:{ev['end']}] of {ms.rel}: {sliced[:60]!r}")
+    pid = ms.paragraph_id(ev["start"])
+    if ev.get("paragraph_id") and pid != ev["paragraph_id"]:
+        fail(f"{owner}: paragraph_id {ev['paragraph_id']} but span starts in {pid}")
+
+
+def walk_evidence(node, owner, manuscripts, path="") -> None:
+    if isinstance(node, dict):
+        if {"manuscript_version_id", "start", "end", "quote"} <= set(node.keys()):
+            check_evidence_ref(f"{owner}{path}", node, manuscripts)
+            return
+        for k, v in node.items():
+            walk_evidence(v, owner, manuscripts, f"{path}/{k}")
+    elif isinstance(node, list):
+        for i, v in enumerate(node):
+            walk_evidence(v, owner, manuscripts, f"{path}[{i}]")
+
+
+def check_evidence() -> dict[str, Manuscript]:
+    manuscripts = {mv: Manuscript(rel) for mv, rel in FIXTURE_MANUSCRIPTS.items() if os.path.exists(os.path.join(ROOT, rel))}
+    for rel in ("examples/fixture/canon-delta.ch09.json", "examples/fixture/chapter-contract.ch12.json",
+                "examples/fixture/source-story.micro.json"):
+        walk_evidence(load_json(rel), rel, manuscripts)
+    # Rejected-draft isolation (T16): the distinctive false fact must not appear in any accepted artifact.
+    poison = "left arm was severed"
+    for rel in ("examples/fixture/manuscripts/ch09.accepted.txt", "examples/fixture/canon-delta.ch09.json",
+                "examples/fixture/knowledge-ledger.json"):
+        if poison in read(rel):
+            fail(f"{rel}: contains the T16 quarantined phrase {poison!r}")
+    if os.path.exists(os.path.join(ROOT, "examples/fixture/manuscripts/ch09.rejected-draft.txt")):
+        if poison not in read("examples/fixture/manuscripts/ch09.rejected-draft.txt"):
+            fail("examples/fixture/manuscripts/ch09.rejected-draft.txt: T16 phrase missing (fixture trap removed?)")
+    ok("evidence spans verified against fixture manuscripts (code points, NFC, paragraph ids, hashes)")
+    return manuscripts
+
+
+# ----------------------------------------------------------------------------------------------------
+# 5. Cross-file references
+# ----------------------------------------------------------------------------------------------------
+UUID_RE = re.compile(r"0191b2a0-0000-7000-8000-[0-9a-f]{12}")
+
+
+def collect_ids(node, out: set) -> None:
+    if isinstance(node, dict):
+        for v in node.values():
+            collect_ids(v, out)
+    elif isinstance(node, list):
+        for v in node:
+            collect_ids(v, out)
+    elif isinstance(node, str) and UUID_RE.fullmatch(node):
+        out.add(node)
+
+
+def check_cross_refs(schemas) -> None:
+    ids = load_json("examples/fixture/ids.json")
+    known: set[str] = set()
+    collect_ids(ids, known)
+    # ids referenced by fixture files must be declared in ids.json (except call ids / call-scoped ids)
+    for rel in ("examples/fixture/canon-delta.ch09.json", "examples/fixture/chapter-contract.ch12.json",
                 "examples/fixture/knowledge-ledger.json", "examples/fixture/register-profile.seoha.json",
-                "examples/fixture/contrast-sets.seed.json", "examples/fixture/story-intake.json"):
-        text = open(os.path.join(ROOT, rel), encoding="utf-8").read()
-        if HANGUL.search(text):
-            ok = False
-            print(f"[NON-ENGLISH FIXTURE TEXT] {rel} contains Hangul; fixture manuscripts/working text must be English")
+                "examples/narrative-profiles/project-second-awakening.composed.v1.json"):
+        used: set[str] = set()
+        collect_ids(load_json(rel), used)
+        missing = sorted(u for u in used - known if not u.endswith("090001"))  # 09xxxx = llm call ids
+        if missing:
+            fail(f"{rel}: fixture ids not declared in ids.json: {missing}")
+    ok("fixture ids resolve to ids.json")
 
-    # Contradiction scan across the repository.
-    hits = 0
-    for rel, path in iter_repo_text_files():
+    # Narrative-profile lineage → profile files exist
+    composed = load_json("examples/narrative-profiles/project-second-awakening.composed.v1.json")
+    profile_ids = {load_json(rel)["id"]: rel for rel in rel_files(["examples/narrative-profiles/*.json"])}
+    lineage = composed.get("lineage", {})
+    for ref in [lineage.get("output_language"), lineage.get("tradition"), *lineage.get("genres", [])]:
+        if ref and ref.split("@")[0] not in profile_ids:
+            fail(f"composed profile lineage references {ref!r} but no profile file has that id")
+    # Genre catalog MVP overlays must exist as data (ADR-0043)
+    catalog = read("docs/02-narrative-identity/03-genre-catalog.md").split("## Beta overlays")[0]
+    for gid in re.findall(r"^### \d\. `(genre/[a-z-]+)`", catalog, re.M):
+        if gid not in profile_ids:
+            fail(f"genre catalog lists MVP overlay {gid} but examples/narrative-profiles/ has no such profile (ADR-0043)")
+    ok("profile lineage and MVP genre overlays resolve to profile files")
+
+    # ADR references
+    adr_nums = {int(m.group(1)) for m in re.finditer(r"^(\d{4})-", "\n".join(os.path.basename(p) for p in rel_files(["docs/adr/*.md"])), re.M)}
+    docs_text = {rel: read(rel) for rel in rel_files(["docs/**/*.md", "README.md", "AGENTS.md", "schemas/README.md", "examples/README.md", "schemas/*.json"])}
+    for rel, text in docs_text.items():
+        for m in re.finditer(r"ADR-(\d{4})", text):
+            if int(m.group(1)) not in adr_nums:
+                fail(f"{rel}: references ADR-{m.group(1)} which does not exist")
+    # ADR index lists every ADR
+    index = read("docs/adr/README.md")
+    for n in adr_nums:
+        if n and f"[{n:04d}]" not in index:
+            fail(f"docs/adr/README.md: ADR-{n:04d} missing from index")
+    ok("ADR references resolve and the index is complete")
+
+    # Repository paths referenced in docs exist
+    path_re = re.compile(r"`((?:docs|examples|schemas|tools)/[A-Za-z0-9_./-]+)`")
+    for rel, text in docs_text.items():
+        for m in path_re.finditer(text):
+            p = m.group(1).rstrip("/")
+            if p.endswith("…") or "*" in p or "<" in p:
+                continue
+            if os.path.exists(os.path.join(ROOT, p)):
+                continue
+            # shorthand `docs/<dir>/<NN>` → any file with that number prefix in the directory
+            d, _, leaf = p.rpartition("/")
+            if re.fullmatch(r"\d{2}", leaf) and glob.glob(os.path.join(ROOT, d, f"{leaf}-*.md")):
+                continue
+            fail(f"{rel}: references path `{p}` which does not exist")
+    ok("repository paths referenced in docs exist")
+
+    # Lint rule ids used anywhere must be defined in the lint-rules doc
+    lint_doc = read("docs/02-narrative-identity/04-prose-and-structure-lint-rules.md")
+    defined = set(re.findall(r"\b(?:EP|ST|RG|TRN)-[A-Z]*-?\d\d\b", lint_doc))
+    for rel, text in {**docs_text, **{r: read(r) for r in rel_files(["examples/**/*.json"])}}.items():
+        for rid in set(re.findall(r"\b(?:EP|ST|RG|TRN)-[A-Z]*-?\d\d\b", text)):
+            if rid not in defined:
+                fail(f"{rel}: lint rule {rid} is not defined in the lint-rules doc")
+    ok("lint rule ids resolve to definitions")
+
+    # Fixture trap ids referenced in docs must be defined in the fixture story
+    fixture = read("docs/07-quality/02-fixture-story.md")
+    traps = set(re.findall(r"^\| \*{0,2}(T\d{1,2})\*{0,2} \|", fixture, re.M))
+    for rel, text in docs_text.items():
+        if rel == "docs/07-quality/02-fixture-story.md":
+            continue
+        for t in set(re.findall(r"(?<![A-Za-z0-9_-])(T\d{1,2})(?![A-Za-z0-9_])", text)):
+            if t == "T0":
+                continue  # context-pack tier, never a trap id
+            if t not in traps and re.search(rf"trap {t}\b|traps? [^|\n]*\b{t}\b|\b{t}\b (isolation|test|fixture)", text):
+                fail(f"{rel}: references fixture trap {t} which is not defined in the fixture story")
+    ok("fixture trap references resolve")
+
+    # Contrast-set count claims (ADR-0043)
+    cs = load_json("examples/fixture/contrast-sets.seed.json")
+    actual = len(cs["sets"])
+    claim_re = re.compile(r"(\d+) (?:starter )?(?:seed )?contrast sets in the repo")
+    claims = [(rel, int(m.group(1))) for rel, text in docs_text.items() for m in claim_re.finditer(text)]
+    for rel, n in claims:
+        if n != actual:
+            fail(f"{rel}: claims {n} contrast sets in the repo; examples/fixture/contrast-sets.seed.json has {actual}")
+    for rel, text in docs_text.items():
         if rel in CONTRADICTION_ALLOWLIST:
             continue
-        with open(path, encoding="utf-8", errors="replace") as f:
+        if re.search(r"(seed|MVP)\s*[≈~]\s*40\s*(contrast )?sets|\(40\)|~40 sets|≈ ?40 sets", text):
+            fail(f"{rel}: stale claim of ~40 contrast sets (repo has {actual}; ADR-0043)")
+    ok(f"contrast-set count claims consistent ({actual} sets in the repo)")
+
+    # Contrast-set structure: five classes present per set with expectations
+    for s in cs["sets"]:
+        for cls in ("kwn_english", "western_english", "translation_like", "literary", "weak_serial"):
+            if cls not in s["variants"]:
+                fail(f"contrast set {s['id']}: missing variant {cls}")
+        if s["expected"]["prose_rank"][0] != "kwn_english" or s["expected"]["structure_rank"][0] != "kwn_english":
+            fail(f"contrast set {s['id']}: kwn_english must rank first on both dimensions")
+        if s["expected"]["prose_rank"][-1] != "translation_like":
+            fail(f"contrast set {s['id']}: translation_like must rank last on prose")
+
+    # Knowledge ledger shorthand: stance/source kinds must be schema enums; timelines declared
+    ledger = load_json("examples/fixture/knowledge-ledger.json")
+    stances = set(schemas["common.schema.json"]["$defs"]["stance"]["enum"])
+    source_kinds = set(schemas["knowledge-state.schema.json"]["$defs"]["knowledgeSource"]["properties"]["kind"]["enum"])
+    for i, ks in enumerate(ledger["knowledge_states"]):
+        if ks["stance"] not in stances:
+            fail(f"knowledge-ledger.json#knowledge_states[{i}]: stance {ks['stance']!r} not in schema enum")
+        if ks["source"]["kind"] not in source_kinds:
+            fail(f"knowledge-ledger.json#knowledge_states[{i}]: source kind {ks['source']['kind']!r} not in schema enum")
+    for p in ledger["propositions"]:
+        for t in p["truth"]:
+            if t["timeline_id"] not in ledger["timelines"].values():
+                fail(f"knowledge-ledger.json proposition {p['id']}: truth timeline {t['timeline_id']} not declared")
+    ok("knowledge ledger shorthand uses schema enums and declared timelines")
+
+
+# ----------------------------------------------------------------------------------------------------
+# 6. Stale terminology / contradictions / bare policy numbers
+# ----------------------------------------------------------------------------------------------------
+def check_text_rules() -> None:
+    hits = 0
+    for rel in rel_files(["**/*.md", "**/*.json", "**/*.py", ".env.example"]):
+        if rel in CONTRADICTION_ALLOWLIST:
+            continue
+        with open(os.path.join(ROOT, rel), encoding="utf-8", errors="replace") as f:
             for lineno, line in enumerate(f, 1):
                 for pattern, why, strict in CONTRADICTION_PATTERNS:
                     if re.search(pattern, line):
                         if not strict and NEGATION_CONTEXT.search(line):
                             continue
                         hits += 1
-                        ok = False
-                        print(f"[CONTRADICTION] {rel}:{lineno}: /{pattern}/ — {why}\n    {line.strip()[:160]}")
-    print(f"contradiction scan: {hits} hit(s)")
+                        fail(f"{rel}:{lineno}: /{pattern}/ — {why}\n        {line.strip()[:160]}")
+                if rel.startswith("docs/") and rel not in CONTRADICTION_ALLOWLIST:
+                    for pattern, key in POLICY_NUMBER_PATTERNS:
+                        if re.search(pattern, line, re.I) and not POLICY_ALLOW.search(line):
+                            hits += 1
+                            fail(f"{rel}:{lineno}: bare policy number for {key} — reference the Production Policy (ADR-0041)\n        {line.strip()[:160]}")
+    print(f"contradiction / stale-term scan: {hits} hit(s)")
+    for rel in FIXTURE_ENGLISH_ONLY:
+        if os.path.exists(os.path.join(ROOT, rel)) and HANGUL.search(read(rel)):
+            fail(f"{rel}: contains Hangul; fixture manuscripts and working text must be English")
 
-    # Schema field-name hygiene: no language-suffixed primary fields.
-    for path in glob.glob(os.path.join(ROOT, "schemas", "*.schema.json")):
-        text = open(path, encoding="utf-8").read()
-        for m in re.finditer(r'"([a-z_]+_ko)"\s*:', text):
-            ok = False
-            print(f"[STALE FIELD] {os.path.relpath(path, ROOT)}: {m.group(1)}")
 
-    print("RESULT:", "ALL OK" if ok else "FAILURES")
-    return 0 if ok else 1
+def main() -> int:
+    schemas, registry = load_schemas()
+    check_schemas(schemas, registry)
+    check_payload_mirrors(schemas)
+    check_examples(schemas, registry)
+    check_evidence()
+    check_cross_refs(schemas)
+    check_text_rules()
+    print(f"RESULT: {'ALL OK' if not failures else f'{len(failures)} FAILURE(S)'}")
+    return 0 if not failures else 1
 
 
 if __name__ == "__main__":

@@ -4,96 +4,314 @@
   "title": "Arc Plan",
   "description": "Major or minor arc plan (docs/03-story-planning/01 §4). Plan frame — never canon.",
   "type": "object",
-  "required": ["id", "project_id", "season_id", "kind", "ordinal", "title", "objective", "conflict", "beats", "chapter_range_est", "status"],
+  "required": [
+    "id",
+    "project_id",
+    "season_id",
+    "kind",
+    "ordinal",
+    "title",
+    "objective",
+    "conflict",
+    "beats",
+    "chapter_range_est",
+    "status"
+  ],
   "additionalProperties": false,
   "properties": {
-    "id": { "$ref": "common.schema.json#/$defs/uuid" },
-    "project_id": { "$ref": "common.schema.json#/$defs/uuid" },
-    "season_id": { "$ref": "common.schema.json#/$defs/uuid" },
-    "parent_arc_id": { "oneOf": [ { "$ref": "common.schema.json#/$defs/uuid" }, { "type": "null" } ] },
-    "kind": { "type": "string", "enum": ["major", "minor"] },
-    "ordinal": { "type": "integer", "minimum": 1 },
-    "version": { "type": "integer", "minimum": 1 },
-    "pinned": { "$ref": "common.schema.json#/$defs/versionRef" },
-    "title": { "type": "string" },
-    "objective": { "type": "string" },
-    "conflict": { "type": "string" },
-    "antagonistic_force": { "type": "string" },
-    "stakes": { "type": "string" },
-    "entry_state": { "type": "string" },
-    "exit_state_assertions": { "type": "array", "items": { "type": "string" } },
-    "participants": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/uuid" } },
-    "locations": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/uuid" } },
+    "id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "project_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "season_id": {
+      "$ref": "common.schema.json#/$defs/uuid"
+    },
+    "parent_arc_id": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "major",
+        "minor"
+      ]
+    },
+    "ordinal": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "pinned": {
+      "$ref": "common.schema.json#/$defs/versionRef"
+    },
+    "title": {
+      "type": "string"
+    },
+    "objective": {
+      "type": "string"
+    },
+    "conflict": {
+      "type": "string"
+    },
+    "antagonistic_force": {
+      "type": "string"
+    },
+    "stakes": {
+      "type": "string"
+    },
+    "entry_state": {
+      "type": "string"
+    },
+    "exit_state_assertions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "participants": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/uuid"
+      }
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/uuid"
+      }
+    },
     "story_time_window": {
       "type": "object",
       "additionalProperties": false,
-      "properties": { "start": { "$ref": "common.schema.json#/$defs/storyClock" }, "end": { "$ref": "common.schema.json#/$defs/storyClock" } }
+      "properties": {
+        "start": {
+          "$ref": "common.schema.json#/$defs/storyClock"
+        },
+        "end": {
+          "$ref": "common.schema.json#/$defs/storyClock"
+        }
+      }
     },
     "chapter_range_est": {
       "type": "object",
-      "required": ["from", "to"],
+      "required": [
+        "from",
+        "to"
+      ],
       "additionalProperties": false,
-      "properties": { "from": { "type": "integer", "minimum": 1 }, "to": { "type": "integer", "minimum": 1 } }
+      "properties": {
+        "from": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "to": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
     },
     "beats": {
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["id", "type", "description", "target_chapter_offset"],
+        "required": [
+          "id",
+          "type",
+          "description",
+          "target_chapter_offset"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string" },
-          "type": { "type": "string", "enum": ["setup", "escalation", "reversal", "cider", "revelation", "emotional", "progression", "climax", "aftermath", "comedic", "relationship"] },
-          "description": { "type": "string" },
-          "target_chapter_offset": { "type": "integer", "minimum": 0 },
-          "participants": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/uuid" } },
-          "promise_refs": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/uuid" } },
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "setup",
+              "escalation",
+              "reversal",
+              "cider",
+              "revelation",
+              "emotional",
+              "progression",
+              "climax",
+              "aftermath",
+              "comedic",
+              "relationship"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "target_chapter_offset": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/uuid"
+            }
+          },
+          "promise_refs": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/uuid"
+            }
+          },
           "knowledge_changes_planned": {
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["knower", "proposition_ref", "to_stance"],
+              "required": [
+                "knower",
+                "proposition_ref",
+                "to_stance"
+              ],
               "additionalProperties": false,
               "properties": {
-                "knower": { "$ref": "common.schema.json#/$defs/knowerRef" },
-                "proposition_ref": { "type": "string", "description": "proposition id or 'new:<text>'" },
-                "to_stance": { "$ref": "common.schema.json#/$defs/stance" },
-                "channel": { "type": "string" }
+                "knower": {
+                  "$ref": "common.schema.json#/$defs/knowerRef"
+                },
+                "proposition_ref": {
+                  "type": "string",
+                  "description": "proposition id or 'new:<text>'"
+                },
+                "to_stance": {
+                  "$ref": "common.schema.json#/$defs/stance"
+                },
+                "channel": {
+                  "type": "string"
+                }
               }
             }
           },
-          "status": { "type": "string", "enum": ["planned", "realized", "partially_realized", "unrealized"] }
+          "status": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "realized",
+              "partially_realized",
+              "unrealized"
+            ]
+          }
         }
       }
     },
-    "promises_opened": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/uuid" } },
-    "promises_advanced": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/uuid" } },
-    "promises_paid": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/uuid" } },
-    "progression_milestone_ids": { "type": "array", "items": { "type": "string" } },
-    "relationship_milestone_ids": { "type": "array", "items": { "type": "string" } },
+    "promises_opened": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/uuid"
+      }
+    },
+    "promises_advanced": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/uuid"
+      }
+    },
+    "promises_paid": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/uuid"
+      }
+    },
+    "progression_milestone_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "relationship_milestone_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "cadence_check": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "cider_interval_ok": { "type": "boolean" },
-        "progression_interval_ok": { "type": "boolean" },
-        "frustration_streak_ok": { "type": "boolean" },
-        "notes": { "type": "array", "items": { "type": "string" } }
+        "cider_interval_ok": {
+          "type": "boolean"
+        },
+        "progression_interval_ok": {
+          "type": "boolean"
+        },
+        "frustration_streak_ok": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
-    "risks": { "type": "array", "items": { "type": "string" } },
-    "must_not": { "type": "array", "items": { "type": "string" } },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "must_not": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "repetition_check": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "compared_arc_ids": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/uuid" } },
-        "similarity_score": { "type": "number", "minimum": 0, "maximum": 1 },
-        "notes": { "type": "string" }
+        "compared_arc_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/uuid"
+          }
+        },
+        "similarity_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "notes": {
+          "type": "string"
+        }
       }
     },
-    "status": { "type": "string", "enum": ["draft", "validated", "approved", "stale", "superseded", "realized"] },
-    "stale_reasons": { "type": "array", "items": { "type": "string" } }
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "validated",
+        "locked",
+        "stale",
+        "superseded",
+        "realized"
+      ],
+      "description": "Plan lifecycle (ADR-0037): locked = approved and frozen for production."
+    },
+    "stale_reasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
   }
 }

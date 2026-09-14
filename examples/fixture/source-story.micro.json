@@ -1,0 +1,90 @@
+{
+  "_comment": "Possession micro-fixture (ADR-0039): a possessor who remembers the 'original story'. Demonstrates a source_story timeline carrying its own facts and proposition truth, a main-timeline knowledge stance sourced from source_story, and a divergence once main diverges from the source story. All ids are fixture placeholders; validator checks each bundle entry against its stored schema. Original content; no commercial work is referenced.",
+  "project_id": "0191b2a0-0000-7000-8000-0000000000a1",
+  "timelines": [
+    {"id": "0191b2a0-0000-7000-8000-0000000500a1", "kind": "main", "name": "main"},
+    {"id": "0191b2a0-0000-7000-8000-0000000500a2", "kind": "source_story", "name": "The Thorn Duchess (original novel)", "divergence_clock": null}
+  ],
+  "entities": {
+    "possessor_in_body_of_Ilse": "0191b2a0-0000-7000-8000-0000000c00a1",
+    "Duke_Aldric": "0191b2a0-0000-7000-8000-0000000c00a2"
+  },
+  "propositions": [
+    {
+      "id": "0191b2a0-0000-7000-8000-0000000b00a1",
+      "project_id": "0191b2a0-0000-7000-8000-0000000000a1",
+      "statement": "Duke Aldric dies at the autumn hunt in the third year of the reign.",
+      "kind": "event",
+      "entity_ids": ["0191b2a0-0000-7000-8000-0000000c00a2"],
+      "truth": [
+        {"timeline_id": "0191b2a0-0000-7000-8000-0000000500a2", "value": "true", "asserted_at_version": 1},
+        {
+          "timeline_id": "0191b2a0-0000-7000-8000-0000000500a1",
+          "value": "false",
+          "valid_from": {"chapter_no": 14, "ordinal": 30, "precision": "exact", "calendar": "era:reign", "world_date": "Y3 autumn hunt"},
+          "asserted_at_version": 14
+        }
+      ],
+      "secret": null
+    }
+  ],
+  "facts": [
+    {
+      "id": "0191b2a0-0000-7000-8000-0000000400a1",
+      "project_id": "0191b2a0-0000-7000-8000-0000000000a1",
+      "timeline_id": "0191b2a0-0000-7000-8000-0000000500a2",
+      "entity_id": "0191b2a0-0000-7000-8000-0000000c00a2",
+      "attribute": "status.alive",
+      "value": false,
+      "value_text": "Dead (killed at the autumn hunt, Y3) — in the original story",
+      "valid_from": {"chapter_no": 0, "ordinal": 300, "precision": "approx", "calendar": "era:reign", "world_date": "Y3 autumn", "uncertainty_days": 30},
+      "valid_to": null,
+      "asserted_at_version": 1,
+      "source": "extraction",
+      "frame": "source_story",
+      "evidence": [
+        {
+          "manuscript_version_id": "0191b2a0-0000-7000-8000-0000000300a1",
+          "chapter_no": 1,
+          "paragraph_id": "p3",
+          "start": 0,
+          "end": 60,
+          "quote": "In the novel, the duke never came back from the autumn hunt."
+        }
+      ]
+    }
+  ],
+  "knowledge_states": [
+    {
+      "id": "0191b2a0-0000-7000-8000-0000000900a1",
+      "project_id": "0191b2a0-0000-7000-8000-0000000000a1",
+      "timeline_id": "0191b2a0-0000-7000-8000-0000000500a1",
+      "knower": {"kind": "character", "entity_id": "0191b2a0-0000-7000-8000-0000000c00a1"},
+      "proposition_id": "0191b2a0-0000-7000-8000-0000000b00a1",
+      "stance": "knows",
+      "certainty": 0.9,
+      "source": {"kind": "source_story", "chapter_id": "0191b2a0-0000-7000-8000-0000000200a1"},
+      "valid_from": {"chapter_no": 1, "ordinal": 3, "precision": "exact"},
+      "valid_to": null,
+      "asserted_at_version": 1
+    },
+    {
+      "id": "0191b2a0-0000-7000-8000-0000000900a2",
+      "project_id": "0191b2a0-0000-7000-8000-0000000000a1",
+      "timeline_id": "0191b2a0-0000-7000-8000-0000000500a1",
+      "knower": {"kind": "character", "entity_id": "0191b2a0-0000-7000-8000-0000000c00a2"},
+      "proposition_id": "0191b2a0-0000-7000-8000-0000000b00a1",
+      "stance": "unaware",
+      "source": {"kind": "narration", "chapter_id": "0191b2a0-0000-7000-8000-0000000200a1"},
+      "valid_from": {"chapter_no": 1, "ordinal": 3, "precision": "exact"},
+      "valid_to": null,
+      "asserted_at_version": 1
+    }
+  ],
+  "expected": {
+    "diverged_at": {"chapter_no": 14, "ordinal": 30},
+    "diverged_explanation": "After ch.14 the duke survives the hunt on main; the possessor's knows-stance keeps its source_story source but the writer receives a 'what has changed from the original story' entry and the ledger marks diverged=true.",
+    "frame_rule": "A fact with frame source_story is legal only on a timeline of kind source_story; the same statement asserted on main with frame source_story is FRAME_VIOLATION.",
+    "no_main_fact_before_divergence": "No status.alive fact for Duke Aldric exists on main from the possessor's memory alone; main learns his fate only from main-timeline events."
+  }
+}

@@ -47,7 +47,7 @@
           "type": "number",
           "minimum": 0,
           "maximum": 100,
-          "description": "Informational aggregate only; gating uses per-dimension thresholds"
+          "description": "Informational aggregate for dashboards only. Never a gate input (ADR-0041): gating uses acceptance.dimension_results and the blocking/major counts."
         },
         "blocking_count": {
           "type": "integer",
@@ -259,7 +259,8 @@
       "type": "object",
       "required": [
         "criteria_results",
-        "auto_acceptable"
+        "dimension_results",
+        "auto_approvable"
       ],
       "additionalProperties": false,
       "properties": {
@@ -291,11 +292,54 @@
             }
           }
         },
-        "auto_acceptable": {
-          "type": "boolean"
+        "dimension_results": {
+          "type": "array",
+          "description": "Per-dimension gate outcome; every gated dimension must pass independently (EVAL-SEPARATION-001).",
+          "items": {
+            "type": "object",
+            "required": [
+              "dimension",
+              "score",
+              "threshold",
+              "passed"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "dimension": {
+                "$ref": "common.schema.json#/$defs/qualityDimension"
+              },
+              "score": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "threshold": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "passed": {
+                "type": "boolean"
+              }
+            }
+          }
         },
-        "threshold_used": {
-          "type": "number"
+        "auto_approvable": {
+          "type": "boolean",
+          "description": "True iff all deterministic criteria pass, blocking_count = 0, major_count = 0 and every dimension_results entry passed. Approval (not acceptance) follows per operating mode (ADR-0037)."
+        },
+        "production_policy_version": {
+          "type": "string"
+        },
+        "gate_outcome": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "approved_with_overrides",
+            "rejected",
+            "needs_attention"
+          ]
         }
       }
     },

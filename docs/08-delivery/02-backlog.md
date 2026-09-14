@@ -1,21 +1,38 @@
 # Prioritized Development Backlog
 
 IDs `B-<phase>-<n>`. Priority P0/P1/P2 within phase. Each item lists requirement refs and acceptance
-(tests). Estimates in ideal engineer-days (d). Scope follows the MVP vertical slice (ADR-0036).
+(tests). Estimates in ideal engineer-days (d). Scope follows the MVP vertical slice (ADR-0036) delivered in
+the checkpoint order of ADR-0044 (see `01-implementation-roadmap.md` §0 for the phase → checkpoint map).
+Items marked **[CP7]** were moved out of the first proof of the core loop (API, web UI, Temporal bootstrap).
+
+## Checkpoint 0 — Corrected planning baseline (done in this change)
+
+| ID | P | Item | Refs | Acceptance |
+| --- | --- | --- | --- | --- |
+| B-CP0-1 | P0 | Lifecycle unification (`origin` + `status`; approval-locked extraction; contract `locked`) | ADR-0037 | validator stale-term scan green |
+| B-CP0-2 | P0 | Bitemporal change classes; canon-delta `close`/`supersede`/`retract` semantics | ADR-0038 | fixture TR1/R1/C1/RB1/SR1 defined |
+| B-CP0-3 | P0 | `source_story` timeline kind; frame × timeline rule; possession micro-fixture | ADR-0039 | `source-story.micro.json` validates |
+| B-CP0-4 | P0 | StoryClock formalization (`calendar`, `uncertainty_days`, `narrated_at`, derived `ord`) | ADR-0040 | schema + docs |
+| B-CP0-5 | P0 | Production Policy schema + economy/standard/premium starting versions; per-dimension gates; docs reference policy keys | ADR-0041 | bare-number scan green |
+| B-CP0-6 | P0 | Issue-override matrix (`override_class`) | ADR-0042 | policy examples carry the matrix |
+| B-CP0-7 | P0 | Truthful counts, starter labels, four MVP genre profiles as data, progress document | ADR-0043 | truthfulness checks green |
+| B-CP0-8 | P0 | Validator: `$ref` resolution, discriminated canon-delta union, evidence offsets against fixture manuscripts, cross-file references, stale terms, CI workflow | §9.2 of the brief | `python tools/validate-planning-package.py` exit 0 in CI |
 
 ## Phase 0 — Foundations
 
 | ID | P | Item | Refs | Acceptance | Est |
 | --- | --- | --- | --- | --- | --- |
-| B-0-1 | P0 | Monorepo scaffold, CI (incl. planning-package validator), docker-compose, formatter rules that never reflow fixture prose/terminology data | ADR-0001/0021 | CI green on empty packages; fixture files unchanged by formatter | 3d |
+| B-0-1 | P0 | Monorepo scaffold, CI (incl. planning-package validator, secret scanning, dependency audit), local Postgres (docker-compose optional; Temporal deferred per ADR-0044), formatter rules that never reflow fixture prose/terminology data | ADR-0001/0021/0044 | CI green on empty packages; fixture files unchanged by formatter | 3d |
 | B-0-2 | P0 | Schema → TypeScript type generation + example validation | NFR-I.1 | all `examples/**/*.json` validate; types compile | 2d |
 | B-0-3 | P0 | Code-point addressing utilities + cross-runtime conformance vector; length model; NFC boundary; StoryClock ordering | NFR-F.1, ADR-0030, ADR-0034 | conformance vector green in TS + SQL; length model tests | 3d |
 | B-0-4 | P0 | DB migrations v1 (tenancy, projects, spec + active constraint sets, entities/naming, register profiles, terminology, manuscripts w/ language constraint, canon incl. proposition truths, dependency edges w/ materiality, embedding sets, packs, llm_calls, budgets) + RLS | data arch, NFR-E.3, ADR-0031/0032/0033/0035 | pgTAP: RLS isolation; constraints | 7d |
-| B-0-5 | P0 | `canon.commit_delta` SQL function (atomic, optimistic version) + evidence trigger (code-point semantics) | FR-7.4, NFR-B.3, NFR-F.2 | fault-injection tests; racing commits; non-BMP evidence | 4d |
+| B-0-5 | P0 | `canon.commit_delta` SQL function (atomic, optimistic version, sets `accepted`, per-class rules of ADR-0038, complete `inverse`) + evidence trigger (code-point semantics; immutable statuses only) | FR-7.4, NFR-B.3, NFR-F.2, ADR-0037/0038 | fault-injection tests; racing commits; non-BMP evidence; TR1 transition keeps history | 5d |
 | B-0-6 | P0 | Gateway: adapters ×2 + mock/replay/fault, routing table, **Narrative Identity Guard (both contracts)**, **output-language check**, budget guard, idempotency, schema validation, audit rows (identity + contract hashes), OTel | FR-9.6, FR-6.2, FR-4.10, NFR-A.1, NFR-D.1, ADR-0027 | guard tests (missing either contract); language check rejects Korean mock output; idempotent replay; cost accounting | 8d |
 | B-0-7 | P0 | Prompt registry + loader + hashing + prompt sets + regression runner skeleton | ADR-0016, NFR-I.2 | version immutability tests | 4d |
 | B-0-8 | P0 | `packages/prose` core: language identification, English tokenizer/POS, registry primitives, grammar-service client interface (service optional) | ADR-0028 | language-id accuracy on test set; interface mockable | 4d |
-| B-0-9 | P0 | API skeleton: auth, workspace middleware, projects CRUD; worker bootstrap | FR-11.1/11.2 | authz matrix tests | 5d |
+| B-0-9 | P0 | **[CP7]** API skeleton: auth, workspace middleware, projects CRUD; Temporal worker bootstrap (ADR-0044) — replaced in Checkpoint 1 by `apps/cli` + Postgres-checkpointed idempotent steps | FR-11.1/11.2, ADR-0044 | authz matrix tests | 5d |
+| B-0-11 | P0 | `apps/cli` skeleton (project create, intake, spec, run chapter, inspect, export) with JSON artifacts as the review surface until Checkpoint 7 | ADR-0044 | CLI smoke test | 2d |
+| B-0-12 | P0 | Production Policy loader + pinning (`policy/<tier>@v`) on jobs and calls | ADR-0041 | pin recorded on every llm_call | 1d |
 | B-0-10 | P1 | Seed script: load fixture bible/spec/contracts/profiles | fixture | seed idempotent | 2d |
 
 ## Phase 1 — Canon core & narrative identity core
@@ -52,17 +69,17 @@ IDs `B-<phase>-<n>`. Priority P0/P1/P2 within phase. Each item lists requirement
 | B-2-6 | P0 | Evaluators (contract, continuity, knowledge, promise, **prose**, **structure**, genre, voice, repetition) + scorecard sections + severity policy + clustering by dimension | FR-5.1–5.4, FR-5.7 | trap detections incl. T23–T29 | 9d |
 | B-2-7 | P0 | RevisionWorkflow: dimension-targeted revisers, patch application, regression re-checks (no cross-dimension regression), limits, escalation | FR-5.5/5.6, FR-6.8 | T1–T6, T18, T23–T25 repaired at spec'd scope; T17 escalates | 6d |
 | B-2-8 | P0 | CanonCommit child workflow (extract ∥, reconcile, adjudicate, verify, commit, edge promotion, post-commit) | FR-7.2–7.4 | fixture deltas | 4d |
-| B-2-9 | P0 | Gates per mode; signals approve/reject/request-changes/override; change_request_interpreter | FR-4.9, ADR-0019 | workflow tests | 4d |
+| B-2-9 | P0 | Gates per mode with per-dimension policy approval; signals approve/reject/request-changes/override constrained by the override matrix; change_request_interpreter | FR-4.9, ADR-0019/0041/0042 | workflow tests; `never`-class cannot be approved | 4d |
 | B-2-10 | P0 | Batch workflow; pause/cancel/resume; leases; stale-canon re-validation | FR-4.7, FR-7.12/7.13, NFR-B | chaos cases | 4d |
 | B-2-11 | P0 | Regeneration/Retcon/Correction workflows (MVP scope) + dependency report (material/contextual) | FR-4.8, FR-7.14/7.15 | R1/C1 | 4d |
 | B-2-12 | P0 | Budgets & cost prediction v1 (words); quality tiers; usage aggregation | FR-9.1–9.3 | hard-limit tests | 4d |
-| B-2-13 | P0 | API endpoints for plans/production/canon/jobs/costs; SSE | API plan | contract tests | 6d |
+| B-2-13 | P0 | **[CP7]** API endpoints for plans/production/canon/jobs/costs; SSE (ADR-0044) | API plan | contract tests | 6d |
 | B-2-14 | P0 | Prompt regression golden cases from fixture (all MVP roles) incl. contrast sets + output-language assertions | NFR-I.2 | suite runs in CI (replay) | 5d |
 | B-2-15 | P0 | P-class model benchmark harness (English-under-KWN) and routing table publication | gateway §3 | benchmark report recorded | 3d |
 | B-2-16 | P1 | Candidate comparison for chapters (mechanism; off by default) + early stop | FR-4.5 | tests | 3d |
 | B-2-17 | P1 | Export TXT/DOCX workflow (locale typography, romanized-term glossary) | FR-10.1 | typography check | 3d |
 
-## Phase 3 — UI
+## Phase 3 — UI **[CP7]** (after the core loop is proven, ADR-0044)
 
 | ID | P | Item | Refs | Est |
 | --- | --- | --- | --- | --- |
@@ -76,6 +93,15 @@ IDs `B-<phase>-<n>`. Priority P0/P1/P2 within phase. Each item lists requirement
 | B-3-8 | P0 | Jobs/Attention with SSE; Costs; Budgets; Export | UW-6, 14, 15, 16 | 6d |
 | B-3-9 | P1 | Retcon/regeneration flows with dependency reports | UW-9, 10 | 3d |
 
+## Checkpoint 6 — Quality and long-form validation (additions)
+
+| ID | P | Item | Refs | Acceptance | Est |
+| --- | --- | --- | --- | --- | --- |
+| B-6-1 | P0 | Multi-chapter continuity test on the fixture (ch.1 → ch.2 → … remembers committed state, tail and hook) | brief §10 | pack contains k−1 summary/tail/hook/deltas; ch.2 draft cites ch.1 state | 4d |
+| B-6-2 | P0 | Failure-recovery tests: commit fault, stale canon, provider fault, resume from checkpoint | NFR-B | no partial canon; exactly-once bump | 3d |
+| B-6-3 | P0 | Grow the contrast set from the 4 starter sets to ≥ 40 original, diverse sets (all four MVP genres × functions: hook, emotional beat, banter, status window, reveal, ending, exposition, action) with expectations; no filler | ADR-0043, ADR-0029 | validator count check; judge calibration run recorded | 6d |
+| B-6-4 | P0 | Candidate comparison + patch regression suites on replay | FR-4.5, ADR-0014/0015 | position-bias both orders; no cross-dimension regression | 3d |
+
 ## Phase 4 — Hardening
 
 | ID | P | Item | Est |
@@ -84,7 +110,7 @@ IDs `B-<phase>-<n>`. Priority P0/P1/P2 within phase. Each item lists requirement
 | B-4-2 | P0 | Chaos suite completion; provider fallback drills | 4d |
 | B-4-3 | P0 | Backup/restore, secret rotation, runbooks | 3d |
 | B-4-4 | P0 | Security test suite; dependency & secret scanning gates | 3d |
-| B-4-5 | P0 | Bilingual reviewer evaluation round; threshold calibration to `contrast_calibrated`; contrast set to 100 | 4d |
+| B-4-5 | P0 | Bilingual reviewer evaluation round; threshold calibration to `contrast_calibrated` (requires B-6-3 ≥ 40 sets); contrast set to 100 | 4d |
 | B-4-6 | P1 | Cost calibration; dashboards | 3d |
 
 ## Phase 5 — Beta (summary items)

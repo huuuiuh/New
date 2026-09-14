@@ -32,7 +32,7 @@ Terms are used with exactly these meanings across all documents and schemas. Kor
 | **Planning Horizon** | Number of chapters ahead planned in detail (default 6); arcs ahead planned at outline level (default 2); seasons planned at summary level (all). |
 | **Job / Workflow / Activity** | Temporal terms. A *Workflow* is a durable orchestration; an *Activity* is a retriable unit of work; a *Job* is the user-visible record of a workflow run. |
 | **Operating mode** | Assisted / Semi-automatic / Autopilot — governs which gates require a human. |
-| **Gate** | A point where a workflow waits for human approval (or auto-approves per mode + thresholds). |
+| **Gate** | A point where a workflow waits for human approval (or the policy approves when every per-dimension threshold and issue rule is met; ADR-0041). Gates approve; only the canon commit accepts. |
 
 ## Narrative identity components
 
@@ -57,16 +57,16 @@ Terms are used with exactly these meanings across all documents and schemas. Kor
 
 | Term | Definition |
 | --- | --- |
-| **Canon** | The set of facts, events, states and knowledge established by **accepted** chapters (plus user-locked bible facts). Versioned. |
+| **Canon** | The set of facts, events, states and knowledge established by **accepted** chapters (plus user-locked bible facts). Versioned. A chapter becomes accepted inside the atomic canon commit (ADR-0037). |
 | **Canon Version** | Monotonic integer per project, incremented by exactly one atomic canon commit. Every job records the canon version it read. |
-| **Canon Commit** | Single atomic transaction that applies an approved **Canon Delta** and bumps the canon version. |
-| **Canon Delta** | Proposed set of changes extracted from an accepted chapter, each with evidence. |
+| **Canon Commit** | Single atomic transaction that applies a *verified* **Canon Delta**, bumps the canon version exactly once, and marks the source manuscript version `accepted`. Belongs to one change class: transition, correction, retcon, rollback or system-time retraction (ADR-0038). |
+| **Canon Delta** | Proposed set of changes extracted from an **approval-locked** (`approved`) manuscript version, each with evidence. Proposals, not truth, until the commit applies them. |
 | **Fact** | A typed assertion about an entity with **validity period** (story time) and **assertion period** (system time), evidence, confidence, source chapter, timeline. Bitemporal. |
 | **Evidence Span** | Exact **Unicode code-point** offsets (ADR-0030) into an immutable NFC-normalized manuscript version, plus the quoted text and a content hash. |
 | **Canonical Event** | Something that happened in the story, with story-time position, participants, location, and reality frame. |
 | **Reality Frame** | `canonical`, `flashback`, `dream`, `hallucination`, `lie`, `hypothetical`, `prediction`, `plan`, `prior_loop`, `alternate_timeline`, `source_story`, `non_canonical_draft`. Only reality-bearing frames update objective state. |
-| **Timeline** | A branch of story time. Default `main`; regression/alternate stories add timelines with a divergence point. **Proposition truth is per timeline** (ADR-0031). |
-| **Story Time** | In-world time, represented as an ordered **story clock** (chapter-relative ordinal + optional in-world date). |
+| **Timeline** | A branch or parallel reference of story time. Kinds: `main`, `prior_loop`, `alternate` (branches with a divergence point) and `source_story` (parallel reference for possession/villainess stories, no divergence point; ADR-0039). **Proposition truth is per timeline** (ADR-0031). |
+| **Story Time** | In-world time, represented as a **story clock**: authoritative *narrative order* (chapter, ordinal) plus optional *world order* (calendar, date, precision, uncertainty) for duration reasoning (ADR-0040). |
 | **Knowledge Ledger** | Records, per **proposition** and per **knower** (character, narrator, reader), an epistemic stance: `knows`, `suspects`, `believes_false`, `pretends`, `unaware`, `forgot`, `doubts`, with source and validity. |
 | **Proposition** | A canonical statement that can be known/believed; truth value recorded per timeline. |
 | **Secret** | A proposition with restricted knowers and an owner; violations are *knowledge leaks*. |
@@ -88,9 +88,12 @@ Terms are used with exactly these meanings across all documents and schemas. Kor
 | **Scorecard** | Structured evaluation result with separate sections for English prose quality, structural adherence, genre adherence, voice, continuity, knowledge, promises, repetition, length. |
 | **Issue** | A single finding: kind, severity, confidence, claim, chapter span, conflicting canon, canon evidence, recommended repair. |
 | **Patch** | A targeted edit (sentence / paragraph / dialogue line / scene) applied to a manuscript version, producing a new version; regression-tested. |
-| **Manuscript Version** | Immutable text snapshot of a chapter (draft, revision, approved, accepted). |
+| **Manuscript Version** | Immutable text snapshot of a chapter with an `origin` (assembled / revision / candidate / retcon / imported) and a lifecycle `status` (working → approved → accepted → superseded / retconned; or rejected → quarantine). **Approved** = approval-locked for extraction; **accepted** = canon committed (ADR-0037). |
 | **Length Model** | Language-neutral measurement of a text: words (primary author-facing unit for English), Unicode code points, paragraphs, sentences, estimated tokens, estimated reading time. Targets and tolerances are in the author-facing unit (ADR-0034). |
-| **Quality Tier** | Budget/quality preset (Economy / Standard / Premium). |
+| **Quality Tier** | Budget/quality preset (Economy / Standard / Premium); selects a **Production Policy** version. |
+| **Production Policy** | Versioned data object holding revision limits, candidate policy, per-dimension gate thresholds, context-tail budget, extraction thresholds and the issue-override matrix; the single source for these numbers (ADR-0041). |
+| **Override class** | Who may waive an issue: `never` (objective corruption), `canon_workflow` (needs a correction/retcon), `reviewer` (recorded reason), `advisory` (ADR-0042). |
+| **Change class** | The kind of canon change a commit makes: transition (story moves on; validity closed, history kept), correction, retcon, rollback, system-time retraction (ADR-0038). |
 | **Hard Limit** | Spend ceiling that halts workflows when reached. |
 
 ## Korean webnovel tradition terminology (used in narrative-tradition and genre profiles; always glossed)

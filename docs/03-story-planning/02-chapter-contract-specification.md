@@ -1,7 +1,8 @@
 # Chapter Contract Specification
 
 Normative companion to `schemas/chapter-contract.schema.json`. A contract is created by `chapter_planner`,
-validated deterministically and by `plan_continuity_checker`, approved per operating mode, and then drives
+validated deterministically and by `plan_continuity_checker`, approved per operating mode (status `locked`,
+ADR-0037), and then drives
 scene planning, drafting, evaluation, and acceptance. **The chapter is accepted only if the contract's
 acceptance criteria are satisfied.** All free-text fields in a contract are English working text
 (`language: "en"` at the document level); manuscript output realizing the contract is English.
@@ -89,13 +90,17 @@ acceptance criteria are satisfied.** All free-text fields in a contract are Engl
 Auto-populated: all `must_happen` (judge: contract compliance with evidence), all `must_not_happen`
 (judge + lexical), **output language = English** (deterministic `EP-LANG-01`), length in words
 (deterministic), prose lint fail count = 0, structure lint fail count = 0, register violations (RG-01..03) =
-0, `prose_score` ≥ tier threshold (Prose Judge), `structure_score` ≥ tier threshold (Structure Judge),
-`genre_score` ≥ threshold, `voice_score` ≥ threshold, continuity blocking = 0 (with evidence), knowledge
+0, `prose_score` ≥ `policy.gates.dimensions.prose.min_score` (Prose Judge), `structure_score` ≥
+`policy.gates.dimensions.structure.min_score` (Structure Judge), `genre_score` and `voice_score` ≥ their
+own thresholds, continuity blocking = 0 (with evidence), knowledge
 leaks = 0, promise handling as planned, hook present (Structure Judge). Plus user-added criteria.
 
-Acceptance rule: all `deterministic` pass; all `judge` pass or overridden by a human with recorded reason
-(prose and structure are separate criteria and are never averaged); `human` criteria satisfied by explicit
-approval (Assisted) or auto-approval policy (Semi-auto/Autopilot).
+Approval rule (ADR-0041/0042): all `deterministic` criteria pass; all `judge` criteria pass on their own
+dimension (prose and structure are separate criteria and are never averaged; thresholds come from the pinned
+Production Policy `policy.gates.dimensions`), or are overridden where the override matrix allows it (`never`
+and `canon_workflow` classes cannot be waived); `human` criteria satisfied by explicit approval (Assisted) or
+the approval policy (Semi-auto/Autopilot). Approval locks the version; acceptance follows from the atomic
+canon commit (ADR-0037).
 
 ## 9. Example (abridged, fixture story chapter 12)
 

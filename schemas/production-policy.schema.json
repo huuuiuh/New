@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yeonjae.studio/schemas/production-policy.schema.json",
+  "title": "Production Policy",
+  "description": "The single authoritative, versioned source for workflow limits, per-dimension gate thresholds, candidate policy, extraction thresholds, context-tail budgets and the issue-override matrix (ADR-0041, ADR-0042). One shipped starting version per quality tier; projects pin a version at job start. All numbers are starting values with calibration status (ADR-0029).",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "quality_tier",
+    "content_hash",
+    "revision",
+    "candidates",
+    "gates",
+    "context",
+    "extraction",
+    "output_language",
+    "length",
+    "override_matrix",
+    "calibration"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {"type": "string", "pattern": "^policy/[a-z-]+$"},
+    "version": {"type": "integer", "minimum": 1},
+    "quality_tier": {"type": "string", "enum": ["economy", "standard", "premium"]},
+    "name": {"type": "string"},
+    "content_hash": {"type": "string", "description": "sha256 of the canonical JSON without this field"},
+    "revision": {
+      "type": "object",
+      "required": ["max_rounds", "max_patches_per_round", "max_scene_rewrites", "per_span_attempts", "smoke_after_patches"],
+      "additionalProperties": false,
+      "properties": {
+        "max_rounds": {"type": "integer", "minimum": 0, "description": "Revision rounds before needs_attention"},
+        "max_patches_per_round": {"type": "integer", "minimum": 1},
+        "max_scene_rewrites": {"type": "integer", "minimum": 0},
+        "per_span_attempts": {"type": "integer", "minimum": 1, "description": "Attempts on one span before escalating scope"},
+        "smoke_after_patches": {"type": "integer", "minimum": 1, "description": "Cumulative patches after which both judges re-run on the whole chapter"},
+        "regression_tolerance_points": {"type": "number", "minimum": 0, "description": "Max allowed per-dimension score drop between versions"}
+      }
+    },
+    "candidates": {
+      "type": "object",
+      "required": ["chapter_candidates", "concept_candidates", "early_stop_margin_points"],
+      "additionalProperties": false,
+      "properties": {
+        "chapter_candidates": {"type": "integer", "minimum": 1},
+        "concept_candidates": {"type": "integer", "minimum": 2},
+        "arc_candidates": {"type": "integer", "minimum": 1},
+        "early_stop_margin_points": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Stop generating further candidates when an auto-approvable candidate exceeds EVERY gated dimension's threshold by at least this margin (per dimension; never an aggregate)"
+        },
+        "judge_families_differ_from_writer": {"type": "boolean"}
+      }
+    },
+    "gates": {
+      "type": "object",
+      "description": "Per-dimension acceptance. auto_approvable = all deterministic criteria pass AND blocking_count = 0 AND major_count = 0 AND every listed dimension score >= its threshold. No aggregate score is ever used.",
+      "required": ["dimensions", "blocking_max", "major_max"],
+      "additionalProperties": false,
+      "properties": {
+        "dimensions": {
+          "type": "object",
+          "required": ["prose", "structure"],
+          "additionalProperties": false,
+          "properties": {
+            "prose": {"$ref": "#/$defs/dimensionGate"},
+            "structure": {"$ref": "#/$defs/dimensionGate"},
+            "genre": {"$ref": "#/$defs/dimensionGate"},
+            "voice": {"$ref": "#/$defs/dimensionGate"}
+          }
+        },
+        "blocking_max": {"type": "integer", "const": 0},
+        "major_max": {"type": "integer", "const": 0},
+        "judge_confidence_caps": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "minor_below": {"$ref": "common.schema.json#/$defs/confidence", "description": "Model issues below this confidence are capped at minor"},
+            "note_below": {"$ref": "common.schema.json#/$defs/confidence", "description": "…and below this at note"}
+          }
+        },
+        "drift_flag_scene_repair_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Share of paragraphs flagged for one drift class (at judge confidence >= drift_flag_min_confidence) that triggers a scene-level repair plan instead of per-paragraph patches"
+        },
+        "drift_flag_min_confidence": {"$ref": "common.schema.json#/$defs/confidence"},
+        "chapter_regenerate_ratio": {"type": "number", "minimum": 0, "maximum": 1, "description": "Share of flagged paragraphs above which the chapter is regenerated"}
+      }
+    },
+    "context": {
+      "type": "object",
+      "required": ["previous_tail_words", "previous_tail_floor_words", "active_constraints_cap_tokens"],
+      "additionalProperties": false,
+      "properties": {
+        "previous_tail_words": {"type": "integer", "minimum": 50, "description": "Verbatim tail of the previous accepted chapter (sentence-aligned)"},
+        "previous_tail_floor_words": {"type": "integer", "minimum": 50, "description": "Lowest the degradation ladder may shrink the tail to"},
+        "previous_tail_extend_to_scene_below_words": {"type": "integer", "minimum": 0, "description": "Extend the tail backward to the start of the last scene when that scene is shorter than this"},
+        "active_constraints_cap_tokens": {"type": "integer", "minimum": 100},
+        "writer_input_budget_tokens": {"type": "integer", "minimum": 1000},
+        "l1_summary_max_words": {"type": "integer", "minimum": 20}
+      }
+    },
+    "extraction": {
+      "type": "object",
+      "required": ["passes", "single_source_min_confidence", "fuzzy_anchor_min_ratio"],
+      "additionalProperties": false,
+      "properties": {
+        "passes": {"type": "integer", "minimum": 1, "maximum": 2, "description": "Independent extractor passes (2 = A and B)"},
+        "single_source_min_confidence": {"$ref": "common.schema.json#/$defs/confidence", "description": "Only-in-one-pass items at or above this confidence with verifiable evidence are accepted as single_source; below → adjudicate"},
+        "fuzzy_anchor_min_ratio": {"type": "number", "minimum": 0.9, "maximum": 1, "description": "Evidence quotes not found exactly may be re-anchored when similarity >= this ratio; else the item is rejected"},
+        "major_unresolved_blocks_commit": {"type": "boolean", "const": true},
+        "adjudicate_conflicts": {"type": "boolean"}
+      }
+    },
+    "output_language": {
+      "type": "object",
+      "required": ["language", "min_english_confidence"],
+      "additionalProperties": false,
+      "properties": {
+        "language": {"$ref": "common.schema.json#/$defs/manuscriptLanguage"},
+        "min_english_confidence": {"type": "number", "minimum": 0.9, "maximum": 1},
+        "regenerate_once_then_reroute": {"type": "boolean", "const": true}
+      }
+    },
+    "length": {
+      "type": "object",
+      "required": ["warn_tolerance_ratio", "fail_tolerance_ratio"],
+      "additionalProperties": false,
+      "properties": {
+        "warn_tolerance_ratio": {"type": "number", "minimum": 0, "maximum": 0.5},
+        "fail_tolerance_ratio": {"type": "number", "minimum": 0, "maximum": 0.5}
+      }
+    },
+    "override_matrix": {
+      "type": "object",
+      "description": "issue kind → override class (ADR-0042). Kinds not listed default to `reviewer` for major and `advisory` for minor/note.",
+      "required": ["never", "canon_workflow"],
+      "additionalProperties": false,
+      "properties": {
+        "never": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "canon_workflow": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        "reviewer": {"type": "array", "items": {"type": "string"}},
+        "project_escalations": {
+          "type": "array",
+          "description": "Project-level raises (kind → class); may only raise, never lower",
+          "items": {
+            "type": "object",
+            "required": ["kind", "class"],
+            "additionalProperties": false,
+            "properties": {
+              "kind": {"type": "string"},
+              "class": {"type": "string", "enum": ["never", "canon_workflow"]}
+            }
+          }
+        }
+      }
+    },
+    "calibration": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {"type": "string", "enum": ["uncalibrated", "contrast_calibrated", "project_calibrated"]},
+        "last_calibrated_at": {"$ref": "common.schema.json#/$defs/timestamp"},
+        "evidence_ref": {"type": "string"},
+        "notes": {"type": "string"}
+      }
+    }
+  },
+  "$defs": {
+    "dimensionGate": {
+      "type": "object",
+      "required": ["min_score"],
+      "additionalProperties": false,
+      "properties": {
+        "min_score": {"type": "number", "minimum": 0, "maximum": 100},
+        "judge_weight": {"type": "number", "minimum": 0, "maximum": 1, "description": "Share of the dimension score from the judge; the remainder comes from the deterministic composite (lint / register / terminology)"},
+        "note": {"type": "string"}
+      }
+    }
+  }
+}

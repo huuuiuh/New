@@ -67,28 +67,33 @@ payloads and API objects.
 ## 5. Chapters & manuscripts
 
 - `chapters(id, project_id, number, title, status, accepted_version_id|null, current_contract_id, lease_job_id)`
-- `manuscript_versions(id, chapter_id, version_no, kind: draft|revision|candidate|approved|accepted|retconned,
-  language 'en', text, length_json (words, code_points, paragraphs, sentences, est_tokens,
-  est_reading_seconds), content_hash, parent_version_id, created_by_job_id, scorecard_id, meta_json)`
-  — partial unique index `(chapter_id) WHERE kind='accepted'`.
-- `quarantine_versions(...)` same shape; receives rejected candidates/drafts (moved by workflow); no FKs
-  from canon tables may point here (enforced by FK targets).
+- `manuscript_versions(id, chapter_id, version_no, origin: assembled|revision|candidate|retcon|imported,
+  status: working|approved|accepted|superseded|retconned|rejected, language 'en', text, length_json (words,
+  code_points, paragraphs, sentences, est_tokens, est_reading_seconds), content_hash, parent_version_id,
+  created_by_job_id, scorecard_id, approved_at, approved_by, accepted_commit_id, meta_json)` (ADR-0037)
+  — partial unique index `(chapter_id) WHERE status='accepted'`; `approved`/`accepted`/`superseded`/
+  `retconned` rows are immutable (trigger rejects UPDATE of `text`; `status` may only advance along the
+  lifecycle).
+- `quarantine_versions(...)` same shape with `status='rejected'`; receives rejected working versions (moved
+  by workflow); no FKs from canon tables may point here (enforced by FK targets).
 - `patches(id, from_version_id, to_version_id, span_json, issue_ids[], reviser_call_id, regression_json)`
 - `evidence_spans(id, manuscript_version_id, start int, end int, quote, quote_hash)` — `start`/`end` are
   code-point offsets; trigger validates quote equality (ADR-0030).
 
 ## 6. Canon
 
-- `timelines(id, project_id, name, kind, parent_timeline_id, divergence_clock_json)`
+- `timelines(id, project_id, name, kind: main|prior_loop|alternate|source_story, parent_timeline_id|null,
+  divergence_clock_json|null)` — `source_story` timelines have no parent/divergence (ADR-0039)
 - `canon_commits(id, project_id, version, parent_version, source, chapter_id, manuscript_version_id,
   delta_json, inverse_json, actor_json, item_counts_json)` unique `(project_id, version)`.
 - `facts(id, project_id, timeline_id, entity_id, attribute, key text|null, value_json, value_text,
-  valid_from_json, valid_to_json|null, valid_from_ord bigint, valid_to_ord bigint|null (derived ordering
-  keys), asserted_at_version int, retracted_at_version int|null, source, confidence, locked bool, frame,
+  valid_from_json, valid_to_json|null, valid_from_ord bigint, valid_to_ord bigint|null (derived narrative
+  ordering keys `chapter_no × 1,000,000 + ordinal`, ADR-0040), asserted_at_version int, retracted_at_version
+  int|null, source, confidence, locked bool, frame,
   commit_id, superseded_by_fact_id|null)`
   indexes: `(project_id, entity_id, attribute, valid_from_ord)`, partial `WHERE retracted_at_version IS NULL`.
 - `fact_evidence(fact_id, evidence_span_id)`
-- `events(id, project_id, timeline_id, clock_start_json, clock_end_json, clock_ord bigint, frame, type,
+- `events(id, project_id, timeline_id, clock_start_json, clock_end_json, narrated_at_json|null, clock_ord bigint, frame, type,
   summary, location_id, asserted_at_version, retracted_at_version, commit_id, source_chapter_id,
   narrated_in_chapter_ids[])`
 - `event_participants(event_id, entity_id, role)`
@@ -145,8 +150,9 @@ payloads and API objects.
   latency_ms, attempt, status, error_json, finish_reason, schema_valid bool, created_at)`
 - `budgets(id, workspace_id, project_id|null, scope: project|chapter|workflow|workspace, hard_limit_cents,
   soft_limit_cents, period, spent_cents)`; per-chapter budgets stored on `jobs.budget_cents`.
-- `cost_snapshots(project_id, date, by_role_json, by_model_json, accepted_chapters, accepted_chars,
-  cost_per_chapter, cost_per_1k_chars)`
+- `cost_snapshots(project_id, date, by_role_json, by_model_json, accepted_chapters, accepted_words,
+  cost_per_chapter, cost_per_1k_words)` (words are the author-facing unit, ADR-0034; code points are kept only
+  in `length_json` for evidence addressing)
 - `llm_concurrency_leases(workspace_id, slot, job_id, expires_at)`
 
 ## 9. Quality
@@ -173,13 +179,18 @@ payloads and API objects.
 ## 12. Integrity rules (DB-enforced where possible)
 
 1. `evidence_spans` trigger: `substring(mv.text from start+1 for end-start) = quote` (code-point semantics on
-   `text`) and `mv.kind IN ('approved','accepted','retconned')`.
+   `text`) and `mv.status IN ('approved','accepted','superseded','retconned')` (all immutable statuses;
+   never `working`/`rejected`).
 2. Canon tables' `commit_id` NOT NULL; canon inserts only through `canon.commit_delta()` SQL function
    executed inside one transaction that also checks `projects.canon_version = parent_version`.
 3. `manuscript_versions` partial unique accepted per chapter.
-4. `exemplars.manuscript_version_id` must reference `kind='accepted'` (trigger).
+4. `exemplars.manuscript_version_id` must reference `status='accepted'` (trigger).
 5. `search_documents.manuscript_version_id` must be accepted (trigger); nightly assertion job.
-6. `facts`: `valid_from_ord <= chapter's clock` at insert (checked in commit function).
+6. `facts`: `valid_from_ord <= chapter's clock` at insert (checked in commit function); `frame` must match
+   the timeline's `kind` (`canonical`/`flashback` on any timeline; `prior_loop`/`alternate_timeline`/
+   `source_story` only on a timeline of that kind) — `FRAME_VIOLATION` otherwise (ADR-0039).
+6b. Transitions never set `retracted_at_version`; `retract` ops are refused for `source='chapter_acceptance'`
+   commits (ADR-0038). Every commit stores a complete `inverse`.
 7. `knowledge_states` with stance `knows` for a secret proposition require `source_json.event_id` or
    `source_json.kind IN ('prior_loop_memory','source_story')` (commit function check).
 8. RLS policies on all tables: `workspace_id = current_setting('app.workspace_id')::uuid`.

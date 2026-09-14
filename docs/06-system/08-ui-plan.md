@@ -47,7 +47,7 @@ Lock toggles with lock icon; locked facts listed in a "Locked canon" panel.
 
 ### Plan
 Blueprint page (promise, conflict, arcs, ending, endgame requirements with satisfaction status). Season
-board (columns) → arc cards → chapter contract chips (status colors: draft/validated/approved/stale/
+board (columns) → arc cards → chapter contract chips (status colors: draft/validated/locked/stale/
 realized). Contract editor with validation panel (canon/plan/narrative checks) and cadence strip (last 10
 chapters' ending/payoff types).
 

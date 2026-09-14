@@ -1,7 +1,9 @@
 # Requirements Traceability Matrix
 
 Maps each requirement group to design documents, schemas, ADRs, backlog items, and tests. Keep this file
-updated in the same change as any requirement/design change (AGENTS.md rule 1).
+updated in the same change as any requirement/design change (AGENTS.md rule 1). Checkpoint 0 additions
+(ADR-0037…0044) are appended to the affected rows; the Production Policy (`schemas/production-policy.schema.json`,
+`examples/production-policies/`) is the single source for the numeric limits and gates those rows cite.
 
 ## Governing requirements (FR-0)
 
@@ -21,20 +23,20 @@ updated in the same change as any requirement/design change (AGENTS.md rule 1).
 | FR-2.1 concepts | `05-generation/01` §2.2; `02-eval` §5 | `concept`, `comparison-verdict` | 0015 | B-2-2, B-3-3 | §5 position bias |
 | FR-2.2–2.8 bible, locks, register profiles, naming, terminology | `05-generation/01` §2.3; `02-narrative-identity/02` §4–7; `04-memory-canon/02` §1 | `entity` (display/native/romanized names), `register-profile`, `narrative-identity` (setting, naming, register_policy, terminology) | 0006, 0025, 0026 | B-2-3, B-3-4 | §3 bitemporal; §6 register/naming/terminology suites |
 | FR-3.1–3.9 hierarchical planning, promises, contracts | `03-story-planning/01`, `02` | `series-blueprint`, `arc-plan`, `chapter-contract` (length_target words), `scene-plan` (register pre-resolution), `promise` | 0012, 0013, 0034 | B-2-4, B-3-5 | §4; §5 chapter_planner |
-| FR-4.1–4.10 production pipeline incl. output-language check | `05-generation/01` §4–6 | `scene-draft` (language, length), `patch`, `job` | 0003, 0014, 0015, 0027 | B-2-5, 2-9, 2-10, 2-11, 2-16 | §4; §8 chaos (non-English injection) |
-| FR-5.1–5.8 evaluation & revision (separate dimensions) | `05-generation/02` | `issue` (dimension), `scorecard` (sections), `patch` (dimension), `lint-report` | 0014, 0026 | B-2-6, B-2-7, B-2-14 | §5 regression; §2 lint |
+| FR-4.1–4.10 production pipeline incl. output-language check | `05-generation/01` §4–6; lifecycle §4 of `04-memory-canon/02` (approval-locked → accepted) | `scene-draft` (language, length), `patch`, `job`; `common.manuscriptStatus`/`manuscriptOrigin`, `production-policy` | 0003, 0014, 0015, 0027; 0037, 0041, 0044 | B-2-5, 2-9, 2-10, 2-11, 2-16; B-CP0-1, B-0-11 | §4; §8 chaos (non-English injection); §2 lifecycle state machine |
+| FR-5.1–5.8 evaluation & revision (separate dimensions) | `05-generation/02`; `02-narrative-identity/05` §2 (per-dimension gates) | `issue` (dimension), `scorecard` (sections), `patch` (dimension), `lint-report`; `issue.override_class`, `scorecard.acceptance.dimension_results`, `production-policy.gates/override_matrix` | 0014, 0026; 0041, 0042 | B-2-6, B-2-7, B-2-14; B-CP0-5, B-CP0-6, B-2-9 | §5 regression; §2 lint; §2 override matrix; §2 policy pinning |
 | FR-6.1–6.13 narrative identity | `02-narrative-identity/01`–`05` | `narrative-identity`, `register-profile`, `lint-report`, `context-pack-manifest.narrative_identity_block` | 0026, 0027, 0028, 0029, 0025 | B-1-1…1-6 | §2, §6 |
-| FR-7.1–7.18 memory/canon/knowledge incl. per-timeline truth and materiality | `04-memory-canon/01`–`03` | `fact`, `event`, `proposition` (truth[]), `knowledge-state`, `relationship-state` (register), `canon-delta` (proposition_truth items), `canon-commit`, `common` (evidenceRef code points, materiality) | 0006, 0007, 0008, 0009, 0022, 0023, 0030, 0031, 0032 | B-0-5, B-1-7…1-12, 1-16, B-2-8 | §3 integration; §7 long-form |
+| FR-7.1–7.18 memory/canon/knowledge incl. per-timeline truth and materiality | `04-memory-canon/01`–`03`; `04-memory-canon/02` §1.4 (StoryClock), §1.6–1.7 (frames × timelines), §9 (change classes) | `fact`, `event`, `proposition` (truth[]), `knowledge-state`, `relationship-state` (register), `canon-delta` (proposition_truth items), `canon-commit`, `common` (evidenceRef code points, materiality); `canon-delta` discriminated union + `canon-delta-payloads`, `common.storyClock/timelineKind`, `event.narrated_at`, `fact.$defs.factFrame` | 0006, 0007, 0008, 0009, 0022, 0023, 0030, 0031, 0032; 0037, 0038, 0039, 0040 | B-0-5, B-1-7…1-12, 1-16, B-2-8; B-CP0-1…4, B-0-5 | §3 integration; §7 long-form; §2 StoryClock, change classes, frame × timeline matrix; §3 TR1/R1/C1/RB1/SR1; `source-story.micro.json` |
 | FR-8.1–8.5 context packs | `04-memory-canon/04`, `05` | `context-pack-manifest` (materiality, contract hashes, active constraints) | 0010, 0011, 0033, 0035 | B-1-13, B-1-14 | §3 recall/determinism; embedding-set switch |
-| FR-9.1–9.6 budgets, jobs, audit, gateway | `06-system/05`, `07`, `04` | `llm-call-record`, `job`, `budget` | 0004, 0018, 0027 | B-0-6, B-2-12, B-3-8 | §8, §9 |
+| FR-9.1–9.6 budgets, jobs, audit, gateway | `06-system/05`, `07`, `04` | `llm-call-record`, `job`, `budget`; `job.production_policy_version`, `llm-call-record.production_policy_version` | 0004, 0018, 0027; 0041 | B-0-6, B-2-12, B-3-8; B-0-12 | §8, §9 |
 | FR-10.1–10.4 export & rights | `06-system/06` §9–10; UW-16 | `export-request` (spelling_locale, romanized glossary) | 0025 | B-2-17, B-3-8 | manual + unit |
 | FR-11.1–11.5 security & tenancy | `06-system/06` | — | 0020 | B-0-4, B-0-9, B-4-4 | §10 |
 | NFR-A auditability | `06-system/05` §5, `07` §1 | `llm-call-record` (identity + contract hashes + language check), `context-pack-manifest` | 0004, 0016, 0027 | B-0-6 | §3 |
-| NFR-B reliability | `06-system/04` | `job` | 0003 | B-2-10, B-4-2 | §8 |
+| NFR-B reliability | `06-system/04`; ADR-0044 staged orchestration (Postgres-checkpointed steps first) | `job` | 0003; 0044 | B-2-10, B-4-2; B-6-2 | §8 |
 | NFR-C performance | `06-system/02` §14, `04-memory-canon/05` | — | 0002 | B-4-x, load | §11 |
 | NFR-D cost | `06-system/05` | `budget`, `common.lengthModel` | 0018, 0034 | B-2-12 | §9 |
 | NFR-E security/privacy | `06-system/06` | — | 0020 | B-0-4, B-4-4 | §10 |
-| NFR-F integrity (code points, length model, embedding sets) | `06-system/02` §12 | `common` (evidenceRef, lengthModel, storyClock) | 0022, 0030, 0034, 0035 | B-0-3, B-0-5, B-1-13 | §2, §3 |
+| NFR-F integrity (code points, length model, embedding sets) | `06-system/02` §12; fixture manuscripts with validator-checked offsets | `common` (evidenceRef, lengthModel, storyClock) | 0022, 0030, 0034, 0035 | B-0-3, B-0-5, B-1-13; B-CP0-8 | §2, §3; validator evidence check (code points, NFC, paragraph ids, hashes) |
 | NFR-G observability | `06-system/05` §5 | `llm-call-record` | — | B-0-6, B-4-6 | — |
 | NFR-H usability/i18n | `06-system/08` | — | — | B-3-1 | usability pass |
 | NFR-I maintainability (calibration, contradiction scan) | `05-generation/03`; AGENTS.md; `tools/validate-planning-package.py` | all | 0016, 0021, 0029 | B-0-1, B-0-2, B-0-7 | §1 contract |

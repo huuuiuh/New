@@ -55,7 +55,7 @@ recency. Items already implied by T1 are deduplicated by ID. Diversity: at most 
 | Knowledge | stance table | lossless |
 | Relationships | pair table with register summary (formality/familiarity/deference), address terms, titles | lossless |
 | Events | one-line `ch.N [frame] summary` | from stored `summary`; no LLM at pack time |
-| Previous chapter | verbatim tail (never compressed) + stored L1 summary | tail length configurable (default 400 words, sentence-aligned) |
+| Previous chapter | verbatim tail (never compressed) + stored L1 summary | tail length = `policy.context.previous_tail_words` (starting value 400, sentence-aligned; ADR-0041) |
 | L2/L3 summaries | stored tiers; choose lowest tier that fits | never generated at pack time |
 | Evidence spans | quote trimmed to ≤ 60 words around the fact | boundaries at sentence edges |
 | Narrative Identity Block | compiler with role budget | never truncated (compile error instead) |
@@ -65,7 +65,7 @@ No LLM call is made during assembly (determinism, cost); all summaries are preco
 Budget per role (Standard tier, e.g., writer 24k tokens input): T0 first (must fit or `PACK_T0_OVERFLOW`
 error → operator must raise budget/model), T1 next (compress via cheaper renderers; if still over, error
 `PACK_T1_OVERFLOW` — never drop silently; the template may define a T1 **degradation ladder**, e.g., previous
-chapter tail 400 → 250 words, knowledge table limited to contract propositions + secrets only, full states
+chapter tail `previous_tail_words` → `previous_tail_floor_words` (starting values 400 → 250), knowledge table limited to contract propositions + secrets only, full states
 for POV + top-4 participants and compact rows for others), T2 fill by rank, T3 if room. Token counting uses
 the target model's tokenizer when available, else a calibrated English estimator (words × 1.3 ± margin);
 the manifest records both counts and the estimator used.
@@ -74,7 +74,7 @@ the manifest records both counts and the estimator used.
 requirement list. `PlanningHorizonWorkflow` compiles, per chapter, an **Active Constraint Set**: requirements
 whose scope covers this chapter (series-wide, this season/arc, this chapter range, these participants), with
 duplicates merged, superseded items dropped, content restrictions folded into one block, and each constraint
-carrying its stable requirement ID. Its size is bounded by a configurable cap (starting 1,200 tokens); if a
+carrying its stable requirement ID. Its size is bounded by `policy.context.active_constraints_cap_tokens` (starting value 1,200); if a
 project's in-scope constraints exceed the cap, the workflow raises `CONSTRAINTS_OVERFLOW` and asks the user
 to consolidate (the UI offers merge suggestions) rather than trimming silently.
 
@@ -147,11 +147,13 @@ edges drive staleness.
 
 ## 4. The previous chapter (special treatment)
 
-For chapter k the pack contains, from chapter k−1's **accepted** version only: (a) L1 summary (≤ 120
-words), (b) the **last ~400 words verbatim** (sentence-aligned; extended backward to the start of the last
-scene if that scene is < 600 words), (c) the recorded `ending_hook`, (d) the state/knowledge/relationship
-deltas committed from k−1 (so "what just changed" is explicit), (e) elapsed story time between k−1 end and
-k start from the contract. If chapter k−1 is not accepted, chapter k cannot start (FR-7.13). For k=1, (b)
+For chapter k the pack contains, from chapter k−1's **accepted** version only: (a) L1 summary (≤
+`policy.context.l1_summary_max_words`, starting value 120), (b) the **last `policy.context.previous_tail_words`
+words verbatim** (starting value 400; sentence-aligned; extended backward to the start of the last scene if
+that scene is shorter than `previous_tail_extend_to_scene_below_words`, starting value 600), (c) the recorded
+`ending_hook`, (d) the state/knowledge/relationship deltas and promise transitions committed from k−1 (so
+"what just changed" is explicit), (e) the current relevant facts at the start of chapter k (participants'
+states as of `story_time.start`), (f) elapsed story time between k−1 end and k start from the contract. If chapter k−1 is not accepted, chapter k cannot start (FR-7.13). For k=1, (b)
 is replaced by the concept's chapter-one hook plan.
 
 ## 5. Caching and deduplication

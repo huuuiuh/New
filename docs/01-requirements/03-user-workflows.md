@@ -81,7 +81,7 @@ valid, continue; else re-plan.
 1. Select range k..k+n; choose gate policy for the batch (per mode); see cost prediction and hard-limit
    headroom.
 2. `BatchProductionWorkflow` runs chapters sequentially as child workflows. In Semi-auto mode: chapters
-   with no blocking/major issues and score ≥ threshold auto-accept; others queue for review and the batch
+   with no blocking/major issues and every gated dimension at or above its threshold are auto-approved (then accepted by the commit); others queue for review and the batch
    pauses (configurable: pause vs. continue with review queue — default pause because later chapters
    depend on acceptance).
 3. Author reviews the queue; batch resumes.

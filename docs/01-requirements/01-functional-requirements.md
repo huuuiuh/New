@@ -62,7 +62,7 @@ These five requirements govern every other requirement in this document and are 
 | --- | --- | --- |
 | FR-4.1 | Chapter production runs as a durable workflow: contract validation → context pack → scene plan → scene drafting → assembly → deterministic checks → model evaluations → targeted revision loop → gate → acceptance → canon extraction → reconciliation → verification → atomic canon commit → post-commit. | M/P0 |
 | FR-4.2 | Every LLM call receives an explicit **Context Pack** (versioned, manifested) and a versioned prompt; no call relies on prior conversation. | M/P0 |
-| FR-4.3 | Scene drafting is per scene **in English** with the immediately preceding accepted text (last ≈350–500 words) and the preceding drafted scene as continuity anchors. | M/P0 |
+| FR-4.3 | Scene drafting is per scene **in English** with the verbatim tail of the previous accepted chapter (`policy.context.previous_tail_words`, starting value 400, sentence-aligned; ADR-0041) and the preceding drafted scene as continuity anchors. | M/P0 |
 | FR-4.4 | Output length is controlled to the **target word count** ± tolerance (default ±12%); the length model also records code points, paragraphs, estimated tokens and reading time (ADR-0034). Overruns/underruns trigger scene-level adjustments. | M/P0 |
 | FR-4.5 | Candidate generation (N≥2) mechanism ships in MVP and is configurable per project: concepts (always N≥2), arc plans (Standard+), scenes/chapters (Premium or on request in MVP; default-on for Standard in Beta). Candidates are judged pairwise with position swapping; early stop when a candidate exceeds the threshold or budget is reached. | M/P0 (mechanism), B/P1 |
 | FR-4.6 | Rejected candidates and drafts are stored in a quarantined table space never read by the context assembler or canon extractor. | M/P0 |
@@ -78,9 +78,9 @@ These five requirements govern every other requirement in this document and are 
 | FR-5.1 | Deterministic checks: schema validity, truncation, length (words), output-language check, **English Prose Lint**, **Structure Lint**, forbidden content lexicon, naming/terminology registry compliance, required-scene markers, repeated paragraph detection (n-gram/simhash vs all accepted chapters), status-window format validity. | M/P0 |
 | FR-5.2 | Model-based evaluators: contract compliance, continuity (facts/timeline/location/inventory/injury/rank), knowledge leakage, relationship consistency, world/power-rule compliance, promise tracking, repetition, **Prose Judge** (English quality, translation-like syntax, literary/Western drift), **Structure Judge** (Korean-webnovel form: hook, payoff, pacing, ending pull, exposition), **Genre Judge**, **Voice Judge** (character voice + dialogue register). | M/P0 |
 | FR-5.3 | Every issue includes kind, severity, confidence, claim, chapter span (code-point offsets), conflicting canon IDs, canon evidence spans, and recommended repair scope. | M/P0 |
-| FR-5.4 | Blocking issues prevent acceptance; majors require repair or explicit user override; minors/notes are advisory. | M/P0 |
+| FR-5.4 | Blocking issues prevent approval and cannot be overridden; majors require repair or a reviewer override **allowed by the issue-override matrix** (ADR-0042): objective corruption (non-English output, truncation, corrupt structured output, unapproved prohibited content, evidence-integrity failure, partial commit, stale-canon race, invalid reality-frame mutation, secret leak) is never overridable, and a contradiction with a locked fact or a hard requirement requires a correction/retcon canon workflow rather than a style override; minors/notes are advisory. | M/P0 |
 | FR-5.5 | **Patch-first revision** with affected-check re-runs and whole-chapter smoke checks after ≥3 patches or any scene-level patch. | M/P0 |
-| FR-5.6 | Revision loop bounded by rounds and spend; exhaustion escalates to human review. | M/P0 |
+| FR-5.6 | Revision loop bounded by the pinned Production Policy (`policy.revision.*`, ADR-0041) and spend; exhaustion escalates to human review. | M/P0 |
 | FR-5.7 | Scorecards are stored per manuscript version with **separate sections** for prose quality, structural adherence, genre adherence, voice, continuity, knowledge, promises, repetition, length (EVAL-SEPARATION-001). | M/P0 |
 | FR-5.8 | Judge calibration: evaluators run against golden fixtures and the five-class contrast set on every prompt change. | M/P0 |
 
@@ -107,22 +107,22 @@ These five requirements govern every other requirement in this document and are 
 | ID | Requirement | Tier/Prio |
 | --- | --- | --- |
 | FR-7.1 | Accepted chapter text is stored as an **immutable manuscript version**; canon references its spans by Unicode code-point offsets + quote + hash (ADR-0030). | M/P0 |
-| FR-7.2 | Canon extraction runs only on accepted chapters and produces a **Canon Delta**: facts, events (with frames), state changes, knowledge changes, relationship changes (incl. register/address-term changes), promises, unresolved questions, L1 summary. | M/P0 |
+| FR-7.2 | Canon extraction runs only on an **approval-locked** manuscript version (`status=approved`, ADR-0037) and produces a **Canon Delta** of *proposals*: facts, events (with frames), state changes, knowledge changes, relationship changes (incl. register/address-term changes), promises, unresolved questions, L1 summary. | M/P0 |
 | FR-7.3 | Two independent extractor passes reconciled; conflicts adjudicated with spans; unresolved → human queue; items lacking verifiable evidence rejected. | M/P0 |
-| FR-7.4 | **Atomic canon commit** in one transaction with version bump, delta + inverse, and dependency edges. | M/P0 |
-| FR-7.5 | Facts are bitemporal; "as of chapter k" and "as of canon version v" queries supported. | M/P0 |
+| FR-7.4 | **Atomic canon commit** in one transaction with version bump (exactly once), delta + complete inverse, dependency edges, and the manuscript version set to `accepted` (ADR-0037). | M/P0 |
+| FR-7.5 | Facts are bitemporal; "as of chapter k" and "as of canon version v" queries supported. Normal story transitions close story-time validity and keep history; only corrections, retcons, rollbacks and system-time retractions set `retracted_at_version` (ADR-0038). | M/P0 |
 | FR-7.6 | Reality frames on events and derived facts; only reality-bearing frames mutate state. | M/P0 |
 | FR-7.7 | Knowledge ledger distinguishes objective truth **per timeline**, narrator knowledge, reader knowledge, and per-character stances with source and validity (ADR-0031). | M/P0 |
 | FR-7.8 | Secrets with restricted knower sets; knowledge leaks detected. | M/P0 |
 | FR-7.9 | Relationship states per directed pair with type, axes, **register summary** (formality/familiarity/deference), address terms/titles, validity. | M/P0 |
-| FR-7.10 | Timeline model with divergence points; prior-loop knowledge attributable only to the regressor. | M/P0 |
+| FR-7.10 | Timeline model with divergence points (`main`, `prior_loop`, `alternate`, `source_story`); prior-loop and source-story facts live on their own timelines and reach the present only as knowledge of the regressor/possessor (ADR-0023, ADR-0039). StoryClock ordering and uncertainty follow ADR-0040. | M/P0 |
 | FR-7.11 | Hierarchical summaries L1–L4 regenerated on commit from accepted text. | M/P0 |
 | FR-7.12 | Jobs record `canon_version_read`; stale jobs detected before commit. | M/P0 |
 | FR-7.13 | Per-target leases prevent conflicting parallel jobs; batches sequential. | M/P0 |
 | FR-7.14 | User corrections produce a new canon version with justification and an impact report over **material** dependencies. | M/P0 |
 | FR-7.15 | Retcons re-extract, commit, and propagate to materially dependent artifacts (MVP: list; Beta: patch proposals). | M/P0 (basic), B/P1 |
 | FR-7.16 | Rollback of the latest commit in MVP; arbitrary in Beta. | M/P1, B/P0 |
-| FR-7.17 | Rejected drafts and non-accepted versions are excluded from canon, summaries, embeddings used for context, and exemplar banks. | M/P0 |
+| FR-7.17 | Rejected drafts and non-accepted versions are excluded from canon, summaries, retrieval indexes, embeddings used for context, exemplar banks, later Context Packs and canon extraction. | M/P0 |
 | FR-7.18 | Dependency edges carry a **materiality class** (`material` vs `contextual`); only material edges mark dependents stale by default, contextual edges are reported as "review suggested" (ADR-0032). | M/P0 |
 
 ## FR-8 Context construction
@@ -140,7 +140,7 @@ These five requirements govern every other requirement in this document and are 
 | ID | Requirement | Tier/Prio |
 | --- | --- | --- |
 | FR-9.1 | Budgets at project, chapter, and workflow level with **hard limits**. | M/P0 |
-| FR-9.2 | Quality tiers set candidate counts, judge depth, model routing; cost prediction per chapter. | M/P0 |
+| FR-9.2 | Quality tiers select a versioned **Production Policy** (candidate counts, revision limits, per-dimension gates, extraction thresholds, override matrix; ADR-0041) and model routing; cost prediction per chapter. | M/P0 |
 | FR-9.3 | Usage tracking per call; aggregated cost per accepted chapter and **per 1,000 accepted words**. | M/P0 |
 | FR-9.4 | Jobs list with status, progress, spend, ETA; pause/cancel/resume; escalation details. | M/P0 |
 | FR-9.5 | Full audit record per LLM call (NFR-A). | M/P0 |

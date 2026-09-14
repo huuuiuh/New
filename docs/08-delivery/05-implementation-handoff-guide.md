@@ -88,7 +88,7 @@ translation.
 
 ## 6. How to verify you are done with a phase
 
-Run the fixture assertions listed in the roadmap's exit criteria; produce a short report in
-`docs/08-delivery/reports/` (one file per phase, e.g. `phase-0.md`) with test results, costs, and any ADRs
-added. Keep `python tools/validate-planning-package.py` green whenever schemas, examples or docs change
+Run the fixture assertions listed in the roadmap's exit criteria; record results, commands, costs and any
+ADRs added in `docs/08-delivery/09-progress.md` (the single durable progress document, ADR-0043) and in the
+checkpoint's pull request. Keep `python tools/validate-planning-package.py` green whenever schemas, examples or docs change
 (it also scans for contradictory language-output statements).
