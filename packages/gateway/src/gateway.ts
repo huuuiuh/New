@@ -44,6 +44,7 @@ export interface BudgetLedger {
 export interface AuditRecord {
   readonly id: Uuid;
   readonly idempotency_key: string;
+  readonly activity_id?: string | undefined;
   readonly role: string;
   readonly prompt_version_id: string;
   readonly prompt_hash: string;
@@ -219,6 +220,11 @@ export class Gateway {
             system: req.pack.renderedSystem,
             user: req.pack.renderedUser,
             params,
+            trace: {
+              role: req.role,
+              activityId: req.activityId,
+              idempotencyKey: req.idempotencyKey,
+            },
           });
         } catch (err) {
           lastError = {
@@ -372,6 +378,7 @@ export class Gateway {
     return {
       id: uuidv7(now.getTime()),
       idempotency_key: req.idempotencyKey,
+      activity_id: req.activityId,
       role: req.role,
       prompt_version_id: req.promptVersionId,
       prompt_hash: req.promptHash,

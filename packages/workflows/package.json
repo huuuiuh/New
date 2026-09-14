@@ -1,0 +1,29 @@
+{
+  "name": "@yeonjae/workflows",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Chapter-production workflow (Checkpoint 5): Postgres-checkpointed idempotent steps from intake to accepted export, with the Chapter 2 proof that chapter k remembers chapter k−1. Temporal orchestration is deferred (ADR-0044).",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@yeonjae/canon": "workspace:*",
+    "@yeonjae/context": "workspace:*",
+    "@yeonjae/db": "workspace:*",
+    "@yeonjae/domain": "workspace:*",
+    "@yeonjae/gateway": "workspace:*",
+    "@yeonjae/narrative": "workspace:*",
+    "@yeonjae/prompts": "workspace:*",
+    "@yeonjae/prose": "workspace:*"
+  }
+}

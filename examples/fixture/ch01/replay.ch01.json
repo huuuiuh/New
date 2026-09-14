@@ -1,0 +1,2636 @@
+{
+ "activity:story_spec:v1": {
+  "json": {
+   "project_id": "{{project}}",
+   "version": "{{int:spec_version}}",
+   "items": [
+    {
+     "id": "REQ-001",
+     "kind": "hard",
+     "category": "premise",
+     "text": "F-rank porter Kang Do-yoon dies in the Seoul Collapse ten years from now and wakes on the morning of his awakening measurement at twenty-seven. He knows the Collapse's mastermind, \"the Watcher\", is Hunter Association Chairman Yoon Jae-kyung—and he cannot prove it. He builds power quietly to stop the Collapse, but the future starts to slip every time he intervenes.",
+     "language": "en",
+     "provenance": "user",
+     "confirmed_by_user": true,
+     "scope": {
+      "level": "series"
+     }
+    },
+    {
+     "id": "REQ-002",
+     "kind": "hard",
+     "category": "genre",
+     "text": "Primary genre hunter-gate with a regression overlay; English manuscript in the Korean serialized-webnovel tradition.",
+     "language": "en",
+     "provenance": "user",
+     "confirmed_by_user": true,
+     "scope": {
+      "level": "series"
+     }
+    },
+    {
+     "id": "REQ-003",
+     "kind": "hard",
+     "category": "content_restriction",
+     "text": "Violence within a 15+ rating; no sexual content.",
+     "language": "en",
+     "provenance": "user",
+     "confirmed_by_user": true,
+     "scope": {
+      "level": "series"
+     }
+    },
+    {
+     "id": "REQ-004",
+     "kind": "hard",
+     "category": "length",
+     "text": "Target 180 chapters of about 2,500 words each.",
+     "language": "en",
+     "provenance": "user",
+     "confirmed_by_user": true,
+     "scope": {
+      "level": "series"
+     },
+     "structured": {
+      "chapter_count": 180,
+      "words_per_chapter": 2500
+     }
+    },
+    {
+     "id": "REQ-005",
+     "kind": "hard",
+     "category": "mandatory_scene",
+     "text": "Chapter 1 opens on the measurement device showing F.",
+     "language": "en",
+     "provenance": "user",
+     "confirmed_by_user": true,
+     "scope": {
+      "level": "chapter_range",
+      "chapter_from": 1,
+      "chapter_to": 1
+     }
+    },
+    {
+     "id": "REQ-021",
+     "kind": "hard",
+     "category": "forbidden_development",
+     "text": "Do-yoon tells no one about the regression before ch.58.",
+     "language": "en",
+     "provenance": "user",
+     "confirmed_by_user": true,
+     "scope": {
+      "level": "chapter_range",
+      "chapter_from": 1,
+      "chapter_to": 57
+     }
+    },
+    {
+     "id": "REQ-022",
+     "kind": "hard",
+     "category": "forbidden_development",
+     "text": "Park Mu-jin does not die in Season 1.",
+     "language": "en",
+     "provenance": "user",
+     "confirmed_by_user": true,
+     "scope": {
+      "level": "season",
+      "season_ids": [
+       "0191b2a0-0000-7000-8000-0000000f0001"
+      ]
+     }
+    },
+    {
+     "id": "REQ-025",
+     "kind": "hard",
+     "category": "forbidden_development",
+     "text": "The Watcher's identity is not revealed before ch.120.",
+     "language": "en",
+     "provenance": "user",
+     "confirmed_by_user": true,
+     "scope": {
+      "level": "chapter_range",
+      "chapter_from": 1,
+      "chapter_to": 119
+     }
+    },
+    {
+     "id": "REQ-024",
+     "kind": "hard",
+     "category": "romance",
+     "text": "Romance is slow-burn: no confession and no physical intimacy before ch.87.",
+     "language": "en",
+     "provenance": "user",
+     "confirmed_by_user": true,
+     "scope": {
+      "level": "chapter_range",
+      "chapter_from": 1,
+      "chapter_to": 86
+     }
+    },
+    {
+     "id": "REQ-041",
+     "kind": "soft",
+     "category": "tone",
+     "text": "Cold, tense tone with intermittent humor; fast pace.",
+     "language": "en",
+     "provenance": "user",
+     "scope": {
+      "level": "series"
+     }
+    },
+    {
+     "id": "REQ-042",
+     "kind": "soft",
+     "category": "style",
+     "text": "Short sentences; exposition through action and dialogue; hindsight monologue at most 20% of a chapter.",
+     "language": "en",
+     "provenance": "user",
+     "scope": {
+      "level": "series"
+     }
+    },
+    {
+     "id": "REQ-043",
+     "kind": "soft",
+     "category": "structure",
+     "text": "Occasional forum interludes as a device.",
+     "language": "en",
+     "provenance": "user",
+     "scope": {
+      "level": "series"
+     }
+    },
+    {
+     "id": "REQ-051",
+     "kind": "assumption",
+     "category": "world",
+     "text": "Awakened ranks run F through S and are read from measurement devices; there are no status windows.",
+     "language": "en",
+     "provenance": "model_inferred",
+     "confidence": 0.9,
+     "scope": {
+      "level": "series"
+     }
+    },
+    {
+     "id": "REQ-052",
+     "kind": "assumption",
+     "category": "world",
+     "text": "Mana stones are the currency of the hunter economy.",
+     "language": "en",
+     "provenance": "model_inferred",
+     "confidence": 0.8,
+     "scope": {
+      "level": "series"
+     }
+    }
+   ],
+   "conflicts": []
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:assumptions:v1": {
+  "json": {
+   "explanations": [
+    {
+     "assumption_id": "REQ-051",
+     "rationale": "The intake says 'no status windows—only measurement-device readings' and an F–S scale, so the world rule is stated explicitly rather than left implicit."
+    },
+    {
+     "assumption_id": "REQ-052",
+     "rationale": "The intake mentions a 'mana-stone economy' without defining it; treating mana stones as the hunter currency is the minimal reading."
+    }
+   ]
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:arc_plan:1": {
+  "json": {
+   "id": "0191b2a0-0000-7000-8000-0000000e0001",
+   "project_id": "{{project}}",
+   "season_id": "0191b2a0-0000-7000-8000-0000000f0001",
+   "kind": "major",
+   "ordinal": 1,
+   "version": 1,
+   "title": "The Second Awakening",
+   "objective": "Do-yoon re-enters the hunter world as an F-rank porter with ten years of future knowledge, attaches himself to Park Mu-jin, and starts the quiet work of changing the first death he remembers.",
+   "conflict": "He knows everything and can prove nothing; every intervention risks moving the future he relies on.",
+   "antagonistic_force": "The original history itself, and the Association's indifference to F-ranks.",
+   "stakes": "Mu-jin's life on the first gate run; Do-yoon's cover.",
+   "entry_state": "Measurement morning, day zero. Do-yoon is F-rank and unknown.",
+   "exit_state_assertions": [
+    "Do-yoon is registered as an F-rank porter.",
+    "Do-yoon is attached to Park Mu-jin's gate run.",
+    "Mu-jin survives the Mapo gate run."
+   ],
+   "participants": [
+    "0191b2a0-0000-7000-8000-0000000c0001",
+    "0191b2a0-0000-7000-8000-0000000c0003",
+    "0191b2a0-0000-7000-8000-0000000c0008"
+   ],
+   "locations": [
+    "0191b2a0-0000-7000-8000-000000010001",
+    "0191b2a0-0000-7000-8000-000000010006"
+   ],
+   "story_time_window": {
+    "start": {
+     "chapter_no": 1,
+     "ordinal": 0,
+     "precision": "exact",
+     "calendar": "relative_days",
+     "world_date": "D+0"
+    },
+    "end": {
+     "chapter_no": 3,
+     "ordinal": 999,
+     "precision": "exact",
+     "calendar": "relative_days",
+     "world_date": "D+2"
+    }
+   },
+   "chapter_range_est": {
+    "from": 1,
+    "to": 3
+   },
+   "beats": [
+    {
+     "id": "arc1.beat.01",
+     "type": "setup",
+     "description": "The device reads F again; Do-yoon does not flinch (opening mandatory scene).",
+     "target_chapter_offset": 0,
+     "participants": [
+      "0191b2a0-0000-7000-8000-0000000c0001",
+      "0191b2a0-0000-7000-8000-0000000c0008"
+     ]
+    },
+    {
+     "id": "arc1.beat.02",
+     "type": "relationship",
+     "description": "Do-yoon approaches Park Mu-jin at the porter board and is taken on for tomorrow's Mapo gate run.",
+     "target_chapter_offset": 0,
+     "participants": [
+      "0191b2a0-0000-7000-8000-0000000c0001",
+      "0191b2a0-0000-7000-8000-0000000c0003"
+     ],
+     "promise_refs": [
+      "0191b2a0-0000-7000-8000-0000000d0011"
+     ]
+    },
+    {
+     "id": "arc1.beat.03",
+     "type": "cider",
+     "description": "On the steps Do-yoon writes his three-item list and deletes the third; Mu-jin's message arrives — the same words as last time.",
+     "target_chapter_offset": 0,
+     "participants": [
+      "0191b2a0-0000-7000-8000-0000000c0001",
+      "0191b2a0-0000-7000-8000-0000000c0003"
+     ]
+    },
+    {
+     "id": "arc1.beat.04",
+     "type": "escalation",
+     "description": "The Mapo gate run: the left corridor.",
+     "target_chapter_offset": 1,
+     "participants": [
+      "0191b2a0-0000-7000-8000-0000000c0001",
+      "0191b2a0-0000-7000-8000-0000000c0003"
+     ],
+     "promise_refs": [
+      "0191b2a0-0000-7000-8000-0000000d0011"
+     ]
+    }
+   ],
+   "promises_opened": [
+    "0191b2a0-0000-7000-8000-0000000d0011"
+   ],
+   "promises_advanced": [],
+   "promises_paid": [],
+   "cadence_check": {
+    "cider_interval_ok": true,
+    "progression_interval_ok": true,
+    "frustration_streak_ok": true,
+    "notes": []
+   },
+   "risks": [
+    "Hindsight monologue overrunning 20% of the chapter."
+   ],
+   "must_not": [
+    "Do-yoon stating the regression aloud.",
+    "Mu-jin dying."
+   ],
+   "status": "validated"
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:chapter_contract:1": {
+  "json": {
+   "id": "0191b2a0-0000-7000-8000-000000070001",
+   "project_id": "{{project}}",
+   "chapter_number": 1,
+   "arc_id": "0191b2a0-0000-7000-8000-0000000e0001",
+   "season_id": "0191b2a0-0000-7000-8000-0000000f0001",
+   "timeline_id": "{{main_timeline}}",
+   "status": "draft",
+   "pinned": {
+    "spec_version": "{{int:spec_version}}",
+    "bible_version": 1,
+    "narrative_identity_version_id": "0191b2a0-0000-7000-8000-000000060001",
+    "canon_version": "{{int:canon_version}}",
+    "template_version": "pack.chapter_planner@1.0.0"
+   },
+   "narrative_identity_version_id": "0191b2a0-0000-7000-8000-000000060001",
+   "active_constraints_ref": {
+    "id": "{{acs.1.id}}",
+    "content_hash": "{{acs.1.hash}}",
+    "token_count": "{{int:acs.1.tokens}}"
+   },
+   "version": 1,
+   "beat_refs": [
+    "arc1.beat.01",
+    "arc1.beat.02",
+    "arc1.beat.03"
+   ],
+   "purpose": "Open the series on the F reading Do-yoon has seen before, put him beside Park Mu-jin on purpose this time, and plant the gate-run threat he intends to defuse.",
+   "reader_experience": "A cold, quiet certainty: this man has done this before.",
+   "arc_objective_contribution": "Registers Do-yoon as a porter and attaches him to Mu-jin's run.",
+   "must_happen": [
+    {
+     "id": "MH-1",
+     "kind": "required_scene",
+     "description": "The measurement device shows F for Kang Do-yoon.",
+     "entity_ids": [
+      "0191b2a0-0000-7000-8000-0000000c0001"
+     ],
+     "requirement_id": "REQ-005",
+     "verifiable_by": "extraction"
+    },
+    {
+     "id": "MH-2",
+     "kind": "event",
+     "description": "Do-yoon registers as an F-class porter with the Association.",
+     "entity_ids": [
+      "0191b2a0-0000-7000-8000-0000000c0001",
+      "0191b2a0-0000-7000-8000-000000011001"
+     ],
+     "verifiable_by": "extraction"
+    },
+    {
+     "id": "MH-3",
+     "kind": "relationship",
+     "description": "Do-yoon approaches Park Mu-jin and is taken on as porter for tomorrow's Mapo gate run.",
+     "entity_ids": [
+      "0191b2a0-0000-7000-8000-0000000c0001",
+      "0191b2a0-0000-7000-8000-0000000c0003"
+     ],
+     "verifiable_by": "extraction"
+    }
+   ],
+   "must_not_happen": [
+    {
+     "id": "MN-1",
+     "description": "Do-yoon stating or implicitly admitting the regression to anyone.",
+     "source": "spec",
+     "requirement_id": "REQ-021",
+     "lexical_patterns": [
+      "I came back from the future",
+      "I'm a regressor"
+     ]
+    },
+    {
+     "id": "MN-2",
+     "description": "Naming Chairman Yoon Jae-kyung as the Watcher on the page.",
+     "source": "spec",
+     "requirement_id": "REQ-025"
+    },
+    {
+     "id": "MN-3",
+     "description": "Any status window or system message.",
+     "source": "arc"
+    }
+   ],
+   "pov": {
+    "character_id": "0191b2a0-0000-7000-8000-0000000c0001",
+    "person": "third_limited"
+   },
+   "participants": [
+    {
+     "character_id": "0191b2a0-0000-7000-8000-0000000c0001",
+     "role_in_chapter": "protagonist",
+     "on_page": true
+    },
+    {
+     "character_id": "0191b2a0-0000-7000-8000-0000000c0003",
+     "role_in_chapter": "mentor",
+     "on_page": true
+    },
+    {
+     "character_id": "0191b2a0-0000-7000-8000-0000000c0008",
+     "role_in_chapter": "cameo",
+     "on_page": true
+    }
+   ],
+   "mentioned_only": [
+    "0191b2a0-0000-7000-8000-0000000c0007"
+   ],
+   "locations": [
+    "0191b2a0-0000-7000-8000-000000010001",
+    "0191b2a0-0000-7000-8000-000000010006"
+   ],
+   "story_time": {
+    "start": {
+     "chapter_no": 1,
+     "ordinal": 0,
+     "precision": "exact",
+     "calendar": "relative_days",
+     "world_date": "D+0"
+    },
+    "end": {
+     "chapter_no": 1,
+     "ordinal": 99,
+     "precision": "exact",
+     "calendar": "relative_days",
+     "world_date": "D+0"
+    }
+   },
+   "knowledge_deltas": [
+    {
+     "knower": {
+      "kind": "reader"
+     },
+     "proposition_id": "{{proposition.P1}}",
+     "from_stance": "unaware",
+     "to_stance": "knows",
+     "how": "Narration makes the regression explicit to the reader (never to a character)",
+     "channel_kind": "witnessed"
+    }
+   ],
+   "state_deltas": [
+    {
+     "entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+     "attribute": "power.rank",
+     "from": null,
+     "to": "F",
+     "when_in_chapter": "early",
+     "description": "Measurement reading"
+    },
+    {
+     "entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+     "attribute": "affiliation.party",
+     "from": null,
+     "to": "Park Mu-jin's gate run",
+     "when_in_chapter": "middle",
+     "description": "Taken on as porter"
+    }
+   ],
+   "relationship_deltas": [
+    {
+     "from_id": "0191b2a0-0000-7000-8000-0000000c0003",
+     "to_id": "0191b2a0-0000-7000-8000-0000000c0001",
+     "axis": "type",
+     "direction": "change",
+     "new_type": "superior",
+     "address_term_change": [
+      "kid"
+     ],
+     "description": "First meeting; gruff downward register"
+    }
+   ],
+   "setups": [
+    {
+     "promise_id": "0191b2a0-0000-7000-8000-0000000d0011",
+     "how": "Mu-jin's message sets the run for 6 a.m.; last time it ended on a stretcher",
+     "kind": "open"
+    }
+   ],
+   "payoffs": [],
+   "emotional_movement": {
+    "start": "Cold certainty",
+    "peak": "Do-yoon's throat closing when he sees Mu-jin alive",
+    "end": "Quiet resolve"
+   },
+   "conflict": {
+    "type": "internal",
+    "description": "Do-yoon must act on what he knows without revealing that he knows it.",
+    "reversal": "The man he came to save calls him 'kid' and does not remember him — because there is nothing to remember."
+   },
+   "local_satisfaction": [
+    {
+     "type": "satisfaction",
+     "description": "Do-yoon reads the porter posting an hour after it went up and gets the job on the spot."
+    }
+   ],
+   "ending_state": "Registered porter; run set for 6 a.m. tomorrow at Mapo Gate 3; Do-yoon walking home toward a morning he intends to change.",
+   "hook": {
+    "type": "quiet_ominous",
+    "description": "Mu-jin's message is word for word the message from last time; last time Do-yoon was late.",
+    "question_raised": "Will the gate run go differently this time?"
+   },
+   "opening": {
+    "type": "in_medias_res",
+    "description": "The measurement device screams; the panel reads F."
+   },
+   "scene_count": 3,
+   "dialogue_density_target": 0.4,
+   "monologue_density_target": 0.15,
+   "length_target": {
+    "unit": "words",
+    "value": 900,
+    "tolerance_ratio": 0.12
+   },
+   "tone_notes": [
+    "short sentences",
+    "hindsight monologue in italics, sparingly"
+   ],
+   "continuity_risks": [
+    {
+     "description": "Do-yoon must read F, not E (E comes at ch.8).",
+     "mitigation": "Locked by the measurement scene."
+    }
+   ],
+   "continuity_anchors": [],
+   "knowledge_guards": [
+    {
+     "character_id": "0191b2a0-0000-7000-8000-0000000c0003",
+     "must_not_know_proposition_ids": [
+      "{{proposition.P1}}"
+     ],
+     "note": "Mu-jin does not know Do-yoon is a regressor."
+    },
+    {
+     "character_id": "0191b2a0-0000-7000-8000-0000000c0008",
+     "must_not_know_proposition_ids": [
+      "{{proposition.P1}}"
+     ]
+    }
+   ],
+   "acceptance_criteria": [
+    {
+     "id": "AC-LANG",
+     "kind": "deterministic",
+     "description": "Manuscript is English (output-language check passes)",
+     "check_ref": "EP-LANG-01",
+     "threshold": 0.99
+    },
+    {
+     "id": "AC-LEN",
+     "kind": "deterministic",
+     "description": "Length within tolerance",
+     "check_ref": "LEN-01"
+    },
+    {
+     "id": "AC-MH-1",
+     "kind": "judge",
+     "description": "The F reading opens the chapter",
+     "check_ref": "contract_checker:MH-1"
+    },
+    {
+     "id": "AC-MH-3",
+     "kind": "judge",
+     "description": "Do-yoon is taken on for the Mapo run",
+     "check_ref": "contract_checker:MH-3"
+    }
+   ]
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:scene_plan:1": {
+  "json": {
+   "scenes": [
+    {
+     "scene_no": 1,
+     "objective": "The device reads F; Do-yoon does not flinch; he walks to the porter window.",
+     "pov": {
+      "character_id": "0191b2a0-0000-7000-8000-0000000c0001",
+      "person": "third_limited"
+     },
+     "participants": [
+      "0191b2a0-0000-7000-8000-0000000c0001",
+      "0191b2a0-0000-7000-8000-0000000c0008"
+     ],
+     "location_id": "0191b2a0-0000-7000-8000-000000010001",
+     "beats": [
+      {
+       "type": "action",
+       "description": "The device screams; red F.",
+       "tags": [
+        "tension"
+       ]
+      },
+      {
+       "type": "dialogue",
+       "description": "Officer Jung Min-jae sends him left."
+      },
+      {
+       "type": "emotional",
+       "description": "His hand is not shaking; March twelfth.",
+       "tags": [
+        "emotion"
+       ]
+      }
+     ],
+     "length_target": {
+      "unit": "words",
+      "value": 260
+     },
+     "speaker_pairs": [
+      {
+       "speaker_id": "0191b2a0-0000-7000-8000-0000000c0008",
+       "addressee_id": "0191b2a0-0000-7000-8000-0000000c0001",
+       "register": {
+        "formality": 2,
+        "deference": 1,
+        "familiarity": 0,
+        "directness": 4,
+        "contractions": "neutral",
+        "address_terms": []
+       }
+      }
+     ],
+     "opening_beat_type": "in_medias_res"
+    },
+    {
+     "scene_no": 2,
+     "objective": "Porter registration; Do-yoon approaches Park Mu-jin and is taken on.",
+     "pov": {
+      "character_id": "0191b2a0-0000-7000-8000-0000000c0001",
+      "person": "third_limited"
+     },
+     "participants": [
+      "0191b2a0-0000-7000-8000-0000000c0001",
+      "0191b2a0-0000-7000-8000-0000000c0003"
+     ],
+     "location_id": "0191b2a0-0000-7000-8000-000000010001",
+     "beats": [
+      {
+       "type": "dialogue",
+       "description": "Registration clerk; the card.",
+       "tags": [
+        "information"
+       ]
+      },
+      {
+       "type": "revelation",
+       "description": "Mu-jin on the bench, alive.",
+       "tags": [
+        "emotion"
+       ]
+      },
+      {
+       "type": "dialogue",
+       "description": "'Mister Park.' The job, eight percent, six a.m.",
+       "tags": [
+        "satisfaction"
+       ]
+      }
+     ],
+     "length_target": {
+      "unit": "words",
+      "value": 320
+     },
+     "speaker_pairs": [
+      {
+       "speaker_id": "0191b2a0-0000-7000-8000-0000000c0001",
+       "addressee_id": "0191b2a0-0000-7000-8000-0000000c0003",
+       "register": {
+        "formality": 3,
+        "deference": 3,
+        "familiarity": 0,
+        "directness": 2,
+        "contractions": "neutral",
+        "address_terms": [
+         "Mister Park",
+         "sir"
+        ]
+       }
+      },
+      {
+       "speaker_id": "0191b2a0-0000-7000-8000-0000000c0003",
+       "addressee_id": "0191b2a0-0000-7000-8000-0000000c0001",
+       "register": {
+        "formality": 1,
+        "deference": 0,
+        "familiarity": 0,
+        "directness": 4,
+        "contractions": "free",
+        "address_terms": [
+         "kid"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "scene_no": 3,
+     "objective": "On the steps: the list of three, the third deleted; Mu-jin's message, the same words as last time.",
+     "pov": {
+      "character_id": "0191b2a0-0000-7000-8000-0000000c0001",
+      "person": "third_limited"
+     },
+     "participants": [
+      "0191b2a0-0000-7000-8000-0000000c0001",
+      "0191b2a0-0000-7000-8000-0000000c0003"
+     ],
+     "location_id": "0191b2a0-0000-7000-8000-000000010001",
+     "beats": [
+      {
+       "type": "emotional",
+       "description": "Cold on the steps; day zero.",
+       "tags": [
+        "emotion"
+       ]
+      },
+      {
+       "type": "decision",
+       "description": "Three lines; the Chairman deleted.",
+       "tags": [
+        "tension"
+       ]
+      },
+      {
+       "type": "cliffhanger",
+       "description": "Mu-jin's text: last time he was late.",
+       "tags": [
+        "tension"
+       ]
+      }
+     ],
+     "length_target": {
+      "unit": "words",
+      "value": 320
+     },
+     "speaker_pairs": [
+      {
+       "speaker_id": "0191b2a0-0000-7000-8000-0000000c0003",
+       "addressee_id": "0191b2a0-0000-7000-8000-0000000c0001",
+       "register": {
+        "formality": 1,
+        "deference": 0,
+        "familiarity": 0,
+        "directness": 4,
+        "contractions": "free",
+        "address_terms": [
+         "kid"
+        ]
+       }
+      }
+     ],
+     "ending_beat_type": "quiet_ominous"
+    }
+   ]
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:scene_draft:1:1": {
+  "json": {
+   "scene_no": 1,
+   "language": "en",
+   "text": "The measurement device screamed.\n\n[F]\n\nRed letters. The same red letters as ten years ago.\n\n“F-rank. Porter registration is the window on your left.”\n\nThe officer was already calling the next name. Jung Min-jae, according to the badge. He did not look up. He never had.\n\nDo-yoon looked down at his palm. It wasn’t shaking. There was no reason for it to shake. In this whole room, he was the only one who knew how far this hand could go.\n\n*March twelfth.*\n\nGangnam. Three things to finish before then.\n\nBehind him someone laughed, the short bark of a man who had just read a B on the panel and wanted the room to know it. Ten years ago Do-yoon had turned around to look. This time he didn’t. He knew the man’s name, knew the guild that would sign him, knew the gate that would swallow him in year four.\n\nNone of that was his problem today.\n\n“Next. Kang Do-yoon, step away from the device.”\n\n“Yes, sir.”\n\nHe stepped away. The panel went dark behind him, and a nineteen-year-old with dyed hair took his place and held her breath the way everyone did.\n\nDo-yoon walked toward the window on the left. His legs remembered the route better than his head did; he had walked it once before, on the worst morning of a life that had ended badly.\n\nThe morning was the same. The building was the same. The letter on the panel was the same.\n\nHe was not.",
+   "paragraphs": [
+    {
+     "id": "p1",
+     "start": 0,
+     "end": 32,
+     "kind": "narration"
+    },
+    {
+     "id": "p2",
+     "start": 34,
+     "end": 37,
+     "kind": "system_block"
+    },
+    {
+     "id": "p3",
+     "start": 39,
+     "end": 90,
+     "kind": "narration"
+    },
+    {
+     "id": "p4",
+     "start": 92,
+     "end": 149,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p5",
+     "start": 151,
+     "end": 269,
+     "kind": "narration"
+    },
+    {
+     "id": "p6",
+     "start": 271,
+     "end": 436,
+     "kind": "narration"
+    },
+    {
+     "id": "p7",
+     "start": 438,
+     "end": 454,
+     "kind": "monologue"
+    },
+    {
+     "id": "p8",
+     "start": 456,
+     "end": 500,
+     "kind": "narration"
+    },
+    {
+     "id": "p9",
+     "start": 502,
+     "end": 801,
+     "kind": "narration"
+    },
+    {
+     "id": "p10",
+     "start": 803,
+     "end": 838,
+     "kind": "narration"
+    },
+    {
+     "id": "p11",
+     "start": 840,
+     "end": 888,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p12",
+     "start": 890,
+     "end": 901,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p13",
+     "start": 903,
+     "end": 1047,
+     "kind": "narration"
+    },
+    {
+     "id": "p14",
+     "start": 1049,
+     "end": 1233,
+     "kind": "narration"
+    },
+    {
+     "id": "p15",
+     "start": 1235,
+     "end": 1325,
+     "kind": "narration"
+    },
+    {
+     "id": "p16",
+     "start": 1327,
+     "end": 1338,
+     "kind": "narration"
+    }
+   ],
+   "speaker_annotations": [
+    {
+     "utterance_start": 92,
+     "utterance_end": 149,
+     "speaker_id": "0191b2a0-0000-7000-8000-0000000c0008"
+    },
+    {
+     "utterance_start": 840,
+     "utterance_end": 888,
+     "speaker_id": "0191b2a0-0000-7000-8000-0000000c0008"
+    },
+    {
+     "utterance_start": 890,
+     "utterance_end": 901,
+     "speaker_id": "0191b2a0-0000-7000-8000-0000000c0001"
+    }
+   ],
+   "claims": [
+    {
+     "statement": "The measurement device reads F for Kang Do-yoon.",
+     "paragraph_id": "p2",
+     "entity_ids": [
+      "0191b2a0-0000-7000-8000-0000000c0001"
+     ],
+     "frame": "canonical"
+    },
+    {
+     "statement": "Jung Min-jae is the measurement officer.",
+     "paragraph_id": "p5",
+     "entity_ids": [
+      "0191b2a0-0000-7000-8000-0000000c0008"
+     ],
+     "frame": "canonical"
+    }
+   ]
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:scene_draft:1:2": {
+  "json": {
+   "scene_no": 2,
+   "language": "en",
+   "text": "The porter registration window had a line of three. All of them F-rank. All of them avoiding each other’s eyes.\n\n“Name.”\n\n“Kang Do-yoon.”\n\n“Age.”\n\n“Twenty-seven.”\n\nThe clerk typed, stamped, slid a laminated card across the counter without looking at it. PORTER — CLASS F. Association Registry No. 88-0412. Do-yoon knew the number before he read it.\n\n“You’ll want a party,” the clerk said. “Porters who go in alone don’t come out.”\n\n“I know.”\n\n“Board’s on the wall. Good luck.”\n\nThe board was a corkboard. Paper slips, phone numbers, the occasional photo. Ten years ago he had stood in front of it for forty minutes and picked wrong.\n\nHe didn’t look at the board. He looked at the bench beside it.\n\nPark Mu-jin sat with his arms crossed and his boots planted like he was daring the floor to move. Forty-five, C-rank, a jaw that had been broken once and set badly. He was reading a folded newspaper and not reading it at all.\n\nDo-yoon’s throat closed for exactly one second. Then he made it open.\n\n“Mister Park.”\n\nMu-jin looked up. “Do I know you, kid?”\n\n“No, sir. The Association posted that you’re looking for a porter. D-gate, Mapo, tomorrow.”\n\n“I posted that an hour ago.” Mu-jin folded the paper. “You read fast for an F.”\n\n“I carry fast, too.”\n\nThe older man looked at him for a long moment—at the card in his hand, the letter on it, the hands that were not shaking.\n\n“Pay is eight percent of the stones. You carry what I tell you and you run when I tell you.”\n\n“Yes, sir.”\n\n“Six a.m. Don’t be late.” Mu-jin stood, and he was shorter than Do-yoon remembered. “What did you say your name was?”\n\n“Kang Do-yoon.”\n\n“Mister Park,” Mu-jin repeated, tasting it, and snorted. “Nobody’s called me that in twenty years. Fine. Kid.”",
+   "paragraphs": [
+    {
+     "id": "p1",
+     "start": 0,
+     "end": 111,
+     "kind": "narration"
+    },
+    {
+     "id": "p2",
+     "start": 113,
+     "end": 120,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p3",
+     "start": 122,
+     "end": 137,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p4",
+     "start": 139,
+     "end": 145,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p5",
+     "start": 147,
+     "end": 162,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p6",
+     "start": 164,
+     "end": 348,
+     "kind": "narration"
+    },
+    {
+     "id": "p7",
+     "start": 350,
+     "end": 430,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p8",
+     "start": 432,
+     "end": 441,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p9",
+     "start": 443,
+     "end": 476,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p10",
+     "start": 478,
+     "end": 632,
+     "kind": "narration"
+    },
+    {
+     "id": "p11",
+     "start": 634,
+     "end": 696,
+     "kind": "narration"
+    },
+    {
+     "id": "p12",
+     "start": 698,
+     "end": 923,
+     "kind": "narration"
+    },
+    {
+     "id": "p13",
+     "start": 925,
+     "end": 994,
+     "kind": "narration"
+    },
+    {
+     "id": "p14",
+     "start": 996,
+     "end": 1010,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p15",
+     "start": 1012,
+     "end": 1051,
+     "kind": "mixed"
+    },
+    {
+     "id": "p16",
+     "start": 1053,
+     "end": 1144,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p17",
+     "start": 1146,
+     "end": 1225,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p18",
+     "start": 1227,
+     "end": 1247,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p19",
+     "start": 1249,
+     "end": 1370,
+     "kind": "narration"
+    },
+    {
+     "id": "p20",
+     "start": 1372,
+     "end": 1464,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p21",
+     "start": 1466,
+     "end": 1477,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p22",
+     "start": 1479,
+     "end": 1596,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p23",
+     "start": 1598,
+     "end": 1613,
+     "kind": "dialogue"
+    },
+    {
+     "id": "p24",
+     "start": 1615,
+     "end": 1725,
+     "kind": "dialogue"
+    }
+   ],
+   "speaker_annotations": [
+    {
+     "utterance_start": 122,
+     "utterance_end": 137,
+     "speaker_id": "0191b2a0-0000-7000-8000-0000000c0001"
+    },
+    {
+     "utterance_start": 147,
+     "utterance_end": 162,
+     "speaker_id": "0191b2a0-0000-7000-8000-0000000c0001"
+    },
+    {
+     "utterance_start": 432,
+     "utterance_end": 441,
+     "speaker_id": "0191b2a0-0000-7000-8000-0000000c0001"
+    },
+    {
+     "utterance_start": 996,
+     "utterance_end": 1010,
+     "speaker_id": "0191b2a0-0000-7000-8000-0000000c0001"
+    },
+    {
+     "utterance_start": 1053,
+     "utterance_end": 1144,
+     "speaker_id": "0191b2a0-0000-7000-8000-0000000c0001"
+    },
+    {
+     "utterance_start": 1146,
+     "utterance_end": 1174,
+     "speaker_id": "0191b2a0-0000-7000-8000-0000000c0003"
+    },
+    {
+     "utterance_start": 1227,
+     "utterance_end": 1247,
+     "speaker_id": "0191b2a0-0000-7000-8000-0000000c0001"
+    },
+    {
+     "utterance_start": 1372,
+     "utterance_end": 1464,
+     "speaker_id": "0191b2a0-0000-7000-8000-0000000c0003"
+    },
+    {
+     "utterance_start": 1466,
+     "utterance_end": 1477,
+     "speaker_id": "0191b2a0-0000-7000-8000-0000000c0001"
+    },
+    {
+     "utterance_start": 1479,
+     "utterance_end": 1504,
+     "speaker_id": "0191b2a0-0000-7000-8000-0000000c0003"
+    },
+    {
+     "utterance_start": 1598,
+     "utterance_end": 1613,
+     "speaker_id": "0191b2a0-0000-7000-8000-0000000c0001"
+    },
+    {
+     "utterance_start": 1615,
+     "utterance_end": 1629,
+     "speaker_id": "0191b2a0-0000-7000-8000-0000000c0003"
+    }
+   ],
+   "claims": [
+    {
+     "statement": "Do-yoon registers as a Class F porter, registry number 88-0412.",
+     "paragraph_id": "p6",
+     "entity_ids": [
+      "0191b2a0-0000-7000-8000-0000000c0001"
+     ],
+     "frame": "canonical"
+    },
+    {
+     "statement": "Park Mu-jin takes Do-yoon on as porter for the Mapo D-gate run at 6 a.m. tomorrow, eight percent of the stones.",
+     "paragraph_id": "p20",
+     "entity_ids": [
+      "0191b2a0-0000-7000-8000-0000000c0001",
+      "0191b2a0-0000-7000-8000-0000000c0003"
+     ],
+     "frame": "canonical"
+    }
+   ]
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:scene_draft:1:3": {
+  "json": {
+   "scene_no": 3,
+   "language": "en",
+   "text": "Outside, the Mapo sky was the color of a wet sidewalk.\n\nDo-yoon stood on the steps of the measurement hall and let the cold get into his jacket. It was exactly same feeling with ten years ago. That was the point. He needed to feel it and not flinch.\n\nHe took out his phone. The date on the lock screen was the date he expected. Day zero.\n\nHe opened a blank note and typed three lines.\n\n*1. The gate run. Do not let him take the left corridor.*\n\n*2. The compass.*\n\n*3. The Chairman.*\n\nHe stared at the third line for a while. Then he deleted it. Some things were safer as memory than as text, even on a phone nobody would ever search.\n\nTwo lines. That was enough to start with.\n\nA bus hissed past. A girl on the steps below him was crying into her sleeve, an F-card crushed in her fist. Ten years ago he had done the same thing, three steps to the left. He had cried for an hour and then gone home and not come back for two weeks.\n\nHe walked down past her. He did not say anything. There was nothing anyone could have said to him, either.\n\nAt the bottom of the steps his phone buzzed.\n\nPark Mu-jin: Tomorrow. 6 a.m. Gate 3, Mapo. Don’t be late, kid.\n\nDo-yoon read it twice.\n\nLast time, Mu-jin had sent the same message. The same words, the same time. Last time, Do-yoon had been late, and Mu-jin had gone in without a porter, and had come out on a stretcher with the left leg of his trousers cut away.\n\nHe typed back one word.\n\n*Understood.*\n\nThen he put the phone in his pocket and started walking toward the station, toward a room he had not seen in ten years, toward a morning he was going to spend making sure an old man did not die for him a second time.\n\nThe first thing on the list was tomorrow.",
+   "paragraphs": [
+    {
+     "id": "p1",
+     "start": 0,
+     "end": 54,
+     "kind": "narration"
+    },
+    {
+     "id": "p2",
+     "start": 56,
+     "end": 249,
+     "kind": "narration"
+    },
+    {
+     "id": "p3",
+     "start": 251,
+     "end": 337,
+     "kind": "narration"
+    },
+    {
+     "id": "p4",
+     "start": 339,
+     "end": 384,
+     "kind": "narration"
+    },
+    {
+     "id": "p5",
+     "start": 386,
+     "end": 443,
+     "kind": "monologue"
+    },
+    {
+     "id": "p6",
+     "start": 445,
+     "end": 462,
+     "kind": "monologue"
+    },
+    {
+     "id": "p7",
+     "start": 464,
+     "end": 482,
+     "kind": "monologue"
+    },
+    {
+     "id": "p8",
+     "start": 484,
+     "end": 633,
+     "kind": "narration"
+    },
+    {
+     "id": "p9",
+     "start": 635,
+     "end": 676,
+     "kind": "narration"
+    },
+    {
+     "id": "p10",
+     "start": 678,
+     "end": 929,
+     "kind": "narration"
+    },
+    {
+     "id": "p11",
+     "start": 931,
+     "end": 1037,
+     "kind": "narration"
+    },
+    {
+     "id": "p12",
+     "start": 1039,
+     "end": 1083,
+     "kind": "narration"
+    },
+    {
+     "id": "p13",
+     "start": 1085,
+     "end": 1148,
+     "kind": "narration"
+    },
+    {
+     "id": "p14",
+     "start": 1150,
+     "end": 1172,
+     "kind": "narration"
+    },
+    {
+     "id": "p15",
+     "start": 1174,
+     "end": 1400,
+     "kind": "narration"
+    },
+    {
+     "id": "p16",
+     "start": 1402,
+     "end": 1425,
+     "kind": "narration"
+    },
+    {
+     "id": "p17",
+     "start": 1427,
+     "end": 1440,
+     "kind": "monologue"
+    },
+    {
+     "id": "p18",
+     "start": 1442,
+     "end": 1658,
+     "kind": "narration"
+    },
+    {
+     "id": "p19",
+     "start": 1660,
+     "end": 1701,
+     "kind": "narration"
+    }
+   ],
+   "speaker_annotations": [],
+   "claims": [
+    {
+     "statement": "Mu-jin messages Do-yoon: Gate 3, Mapo, 6 a.m.",
+     "paragraph_id": "p13",
+     "entity_ids": [
+      "0191b2a0-0000-7000-8000-0000000c0001",
+      "0191b2a0-0000-7000-8000-0000000c0003"
+     ],
+     "frame": "canonical"
+    }
+   ]
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:contract_check:1:r0": {
+  "json": {
+   "criteria": [
+    {
+     "criterion_id": "AC-MH-1",
+     "passed": true,
+     "evidence_paragraph_ids": [
+      "p1",
+      "p2"
+     ],
+     "note": "Opens on the device and the F."
+    },
+    {
+     "criterion_id": "AC-MH-3",
+     "passed": true,
+     "evidence_paragraph_ids": [
+      "p36"
+     ],
+     "note": "Eight percent, six a.m."
+    }
+   ]
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:continuity:1:r0": {
+  "json": {
+   "issues": []
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:knowledge_leak:1:r0": {
+  "json": {
+   "issues": []
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:prose_judge:1:r0": {
+  "json": {
+   "dimension_scores": {
+    "idiomatic_english": 3,
+    "readability": 4,
+    "register_fidelity": 4,
+    "translation_markers": 2
+   },
+   "judge_score": 74,
+   "drift_flags": [
+    "translation_like"
+   ],
+   "issues": [
+    {
+     "kind": "translation_like_english",
+     "severity": "major",
+     "confidence": 0.92,
+     "claim": "“It was exactly same feeling with ten years ago” is calqued English (missing article, wrong preposition).",
+     "chapter_span": {
+      "paragraph_ids": [
+       "p42"
+      ],
+      "start": 3212,
+      "end": 3259,
+      "quote": "It was exactly same feeling with ten years ago."
+     },
+     "repair": {
+      "scope": "sentence",
+      "suggestion": "Rewrite as natural English: 'It felt exactly the way it had ten years ago.'",
+      "must_preserve_fact_ids": []
+     }
+    }
+   ]
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:structure_judge:1:r0": {
+  "json": {
+   "dimension_scores": {
+    "hook_timing": 5,
+    "dialogue_forwardness": 4,
+    "local_payoff": 4,
+    "ending_pull": 5,
+    "exposition_control": 4
+   },
+   "judge_score": 88,
+   "hook_sentence_index": 1,
+   "local_payoff_present": true,
+   "ending_type_detected": "quiet_ominous",
+   "drift_flags": [],
+   "issues": []
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:revise:1:prose:r1": {
+  "json": {
+   "id": "{{patch.1.r1}}",
+   "from_version_id": "{{version.1.current}}",
+   "issue_ids": [
+    "{{issue.prose.0}}"
+   ],
+   "scope": "sentence",
+   "span": {
+    "start": 3212,
+    "end": 3259,
+    "paragraph_ids": [
+     "p42"
+    ],
+    "original_quote": "It was exactly same feeling with ten years ago."
+   },
+   "new_text": "It felt exactly the way it had ten years ago.",
+   "changed_claims": [],
+   "preserved_facts_ack": []
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:contract_check:1:r1": {
+  "json": {
+   "criteria": [
+    {
+     "criterion_id": "AC-MH-1",
+     "passed": true,
+     "evidence_paragraph_ids": [
+      "p1",
+      "p2"
+     ],
+     "note": "Opens on the device and the F."
+    },
+    {
+     "criterion_id": "AC-MH-3",
+     "passed": true,
+     "evidence_paragraph_ids": [
+      "p36"
+     ],
+     "note": "Eight percent, six a.m."
+    }
+   ]
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:continuity:1:r1": {
+  "json": {
+   "issues": []
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:knowledge_leak:1:r1": {
+  "json": {
+   "issues": []
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:prose_judge:1:r1": {
+  "json": {
+   "dimension_scores": {
+    "idiomatic_english": 4,
+    "readability": 4,
+    "register_fidelity": 4,
+    "translation_markers": 5
+   },
+   "judge_score": 86,
+   "drift_flags": [],
+   "issues": []
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:structure_judge:1:r1": {
+  "json": {
+   "dimension_scores": {
+    "hook_timing": 5,
+    "dialogue_forwardness": 4,
+    "local_payoff": 4,
+    "ending_pull": 5,
+    "exposition_control": 4
+   },
+   "judge_score": 88,
+   "hook_sentence_index": 1,
+   "local_payoff_present": true,
+   "ending_type_detected": "quiet_ominous",
+   "drift_flags": [],
+   "issues": []
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:extract:1": {
+  "json": {
+   "project_id": "{{project}}",
+   "chapter_id": "{{chapter.1}}",
+   "manuscript_version_id": "{{version.1.approved}}",
+   "base_canon_version": "{{int:canon_version}}",
+   "stage": "extracted_a",
+   "items": [
+    {
+     "local_id": "ev-measure",
+     "type": "event",
+     "op": "assert",
+     "frame": "canonical",
+     "confidence": 1,
+     "importance": "core",
+     "story_clock": {
+      "chapter_no": 1,
+      "ordinal": 2,
+      "precision": "exact",
+      "calendar": "relative_days",
+      "world_date": "D+0"
+     },
+     "payload": {
+      "type": "rank_change",
+      "summary": "The Association measurement device reads F for Kang Do-yoon; officer Jung Min-jae sends him to porter registration.",
+      "location_id": "0191b2a0-0000-7000-8000-000000010001",
+      "participants": [
+       {
+        "entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+        "role": "patient"
+       },
+       {
+        "entity_id": "0191b2a0-0000-7000-8000-0000000c0008",
+        "role": "agent"
+       }
+      ],
+      "importance": "core"
+     },
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p4",
+       "start": 92,
+       "end": 149,
+       "quote": "“F-rank. Porter registration is the window on your left.”"
+      }
+     ]
+    },
+    {
+     "local_id": "f-rank",
+     "type": "fact",
+     "op": "assert",
+     "frame": "canonical",
+     "confidence": 1,
+     "importance": "core",
+     "story_clock": {
+      "chapter_no": 1,
+      "ordinal": 2,
+      "precision": "exact",
+      "calendar": "relative_days",
+      "world_date": "D+0"
+     },
+     "payload": {
+      "entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+      "attribute": "power.rank",
+      "value": "F",
+      "value_text": "F-rank (ch.1 measurement)",
+      "valid_from": {
+       "chapter_no": 1,
+       "ordinal": 2,
+       "precision": "exact",
+       "calendar": "relative_days",
+       "world_date": "D+0"
+      },
+      "valid_to": null
+     },
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p3",
+       "start": 39,
+       "end": 90,
+       "quote": "Red letters. The same red letters as ten years ago."
+      }
+     ]
+    },
+    {
+     "local_id": "f-location",
+     "type": "fact",
+     "op": "assert",
+     "frame": "canonical",
+     "confidence": 1,
+     "importance": "minor",
+     "story_clock": {
+      "chapter_no": 1,
+      "ordinal": 1,
+      "precision": "exact",
+      "calendar": "relative_days",
+      "world_date": "D+0"
+     },
+     "payload": {
+      "entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+      "attribute": "status.location",
+      "value": "measurement_hall",
+      "value_text": "Association measurement hall, Mapo",
+      "valid_from": {
+       "chapter_no": 1,
+       "ordinal": 1,
+       "precision": "exact",
+       "calendar": "relative_days",
+       "world_date": "D+0"
+      },
+      "valid_to": null
+     },
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p42",
+       "start": 3123,
+       "end": 3173,
+       "quote": "Do-yoon stood on the steps of the measurement hall"
+      }
+     ]
+    },
+    {
+     "local_id": "ev-register",
+     "type": "event",
+     "op": "assert",
+     "frame": "canonical",
+     "confidence": 1,
+     "importance": "major",
+     "story_clock": {
+      "chapter_no": 1,
+      "ordinal": 10,
+      "precision": "exact",
+      "calendar": "relative_days",
+      "world_date": "D+0"
+     },
+     "payload": {
+      "type": "transaction",
+      "summary": "Do-yoon registers with the Association as a Class F porter, registry number 88-0412.",
+      "location_id": "0191b2a0-0000-7000-8000-000000010001",
+      "participants": [
+       {
+        "entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+        "role": "agent"
+       }
+      ],
+      "importance": "major"
+     },
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p22",
+       "start": 1594,
+       "end": 1645,
+       "quote": "PORTER — CLASS F. Association Registry No. 88-0412."
+      }
+     ]
+    },
+    {
+     "local_id": "f-porter",
+     "type": "fact",
+     "op": "assert",
+     "frame": "canonical",
+     "confidence": 1,
+     "importance": "major",
+     "story_clock": {
+      "chapter_no": 1,
+      "ordinal": 10,
+      "precision": "exact",
+      "calendar": "relative_days",
+      "world_date": "D+0"
+     },
+     "payload": {
+      "entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+      "attribute": "affiliation.registration",
+      "key": "porter",
+      "value": {
+       "class": "F",
+       "registry_no": "88-0412"
+      },
+      "value_text": "Registered Association porter, Class F, No. 88-0412",
+      "valid_from": {
+       "chapter_no": 1,
+       "ordinal": 10,
+       "precision": "exact",
+       "calendar": "relative_days",
+       "world_date": "D+0"
+      },
+      "valid_to": null
+     },
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p22",
+       "start": 1594,
+       "end": 1645,
+       "quote": "PORTER — CLASS F. Association Registry No. 88-0412."
+      }
+     ]
+    },
+    {
+     "local_id": "ev-hired",
+     "type": "event",
+     "op": "assert",
+     "frame": "canonical",
+     "confidence": 1,
+     "importance": "core",
+     "story_clock": {
+      "chapter_no": 1,
+      "ordinal": 20,
+      "precision": "exact",
+      "calendar": "relative_days",
+      "world_date": "D+0"
+     },
+     "payload": {
+      "type": "meeting",
+      "summary": "Do-yoon approaches Park Mu-jin at the porter board and is taken on as porter for the Mapo D-gate run at 6 a.m. the next day, for eight percent of the stones.",
+      "location_id": "0191b2a0-0000-7000-8000-000000010001",
+      "participants": [
+       {
+        "entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+        "role": "agent"
+       },
+       {
+        "entity_id": "0191b2a0-0000-7000-8000-0000000c0003",
+        "role": "agent"
+       }
+      ],
+      "importance": "core"
+     },
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p36",
+       "start": 2712,
+       "end": 2804,
+       "quote": "“Pay is eight percent of the stones. You carry what I tell you and you run when I tell you.”"
+      }
+     ]
+    },
+    {
+     "local_id": "f-party",
+     "type": "fact",
+     "op": "assert",
+     "frame": "canonical",
+     "confidence": 1,
+     "importance": "core",
+     "story_clock": {
+      "chapter_no": 1,
+      "ordinal": 20,
+      "precision": "exact",
+      "calendar": "relative_days",
+      "world_date": "D+0"
+     },
+     "payload": {
+      "entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+      "attribute": "affiliation.party",
+      "value": "mujin_run",
+      "value_text": "Porter on Park Mu-jin's Mapo Gate 3 run (6 a.m., D+1)",
+      "valid_from": {
+       "chapter_no": 1,
+       "ordinal": 20,
+       "precision": "exact",
+       "calendar": "relative_days",
+       "world_date": "D+0"
+      },
+      "valid_to": null
+     },
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p38",
+       "start": 2819,
+       "end": 2844,
+       "quote": "“Six a.m. Don’t be late.”"
+      }
+     ]
+    },
+    {
+     "local_id": "r-md",
+     "type": "relationship_state",
+     "op": "supersede",
+     "frame": "canonical",
+     "confidence": 0.95,
+     "importance": "major",
+     "story_clock": {
+      "chapter_no": 1,
+      "ordinal": 21,
+      "precision": "exact",
+      "calendar": "relative_days",
+      "world_date": "D+0"
+     },
+     "supersedes_ref": "{{bible.r-mujin-doyoon}}",
+     "payload": {
+      "from_entity_id": "0191b2a0-0000-7000-8000-0000000c0003",
+      "to_entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+      "type": "superior",
+      "axes": {
+       "trust": 1,
+       "affection": 0,
+       "respect": 0,
+       "hostility": 0,
+       "dependency": 0
+      },
+      "power_dynamic": "from_dominant",
+      "register": {
+       "formality": 1,
+       "deference": 0,
+       "familiarity": 1,
+       "directness": 4,
+       "contractions": "free",
+       "address_terms": [
+        "kid"
+       ]
+      },
+      "note": "Hired him on the spot; 'Fine. Kid.'",
+      "valid_from": {
+       "chapter_no": 1,
+       "ordinal": 21,
+       "precision": "exact",
+       "calendar": "relative_days",
+       "world_date": "D+0"
+      },
+      "valid_to": null
+     },
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p40",
+       "start": 2955,
+       "end": 3065,
+       "quote": "“Mister Park,” Mu-jin repeated, tasting it, and snorted. “Nobody’s called me that in twenty years. Fine. Kid.”"
+      }
+     ]
+    },
+    {
+     "local_id": "r-dm",
+     "type": "relationship_state",
+     "op": "supersede",
+     "frame": "canonical",
+     "confidence": 0.95,
+     "importance": "major",
+     "story_clock": {
+      "chapter_no": 1,
+      "ordinal": 21,
+      "precision": "exact",
+      "calendar": "relative_days",
+      "world_date": "D+0"
+     },
+     "supersedes_ref": "{{bible.r-doyoon-mujin}}",
+     "payload": {
+      "from_entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+      "to_entity_id": "0191b2a0-0000-7000-8000-0000000c0003",
+      "type": "subordinate",
+      "axes": {
+       "trust": 3,
+       "affection": 2,
+       "respect": 3,
+       "hostility": 0,
+       "dependency": 1
+      },
+      "power_dynamic": "to_dominant",
+      "register": {
+       "formality": 3,
+       "deference": 3,
+       "familiarity": 0,
+       "directness": 2,
+       "contractions": "neutral",
+       "address_terms": [
+        "Mister Park",
+        "sir"
+       ]
+      },
+      "valid_from": {
+       "chapter_no": 1,
+       "ordinal": 21,
+       "precision": "exact",
+       "calendar": "relative_days",
+       "world_date": "D+0"
+      },
+      "valid_to": null
+     },
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p31",
+       "start": 2352,
+       "end": 2391,
+       "quote": "Mu-jin looked up. “Do I know you, kid?”"
+      }
+     ]
+    },
+    {
+     "local_id": "k-reader-p1",
+     "type": "knowledge_state",
+     "op": "assert",
+     "frame": "canonical",
+     "confidence": 1,
+     "importance": "core",
+     "story_clock": {
+      "chapter_no": 1,
+      "ordinal": 3,
+      "precision": "exact",
+      "calendar": "relative_days",
+      "world_date": "D+0"
+     },
+     "payload": {
+      "knower": {
+       "kind": "reader"
+      },
+      "proposition_id": "{{proposition.P1}}",
+      "stance": "knows",
+      "source": {
+       "kind": "narration",
+       "chapter_id": "{{chapter.1}}"
+      },
+      "valid_from": {
+       "chapter_no": 1,
+       "ordinal": 3,
+       "precision": "exact",
+       "calendar": "relative_days",
+       "world_date": "D+0"
+      },
+      "valid_to": null
+     },
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p6",
+       "start": 360,
+       "end": 436,
+       "quote": "In this whole room, he was the only one who knew how far this hand could go."
+      }
+     ]
+    },
+    {
+     "local_id": "pr-run",
+     "type": "promise_event",
+     "op": "open",
+     "frame": "canonical",
+     "confidence": 1,
+     "importance": "core",
+     "story_clock": {
+      "chapter_no": 1,
+      "ordinal": 40,
+      "precision": "exact",
+      "calendar": "relative_days",
+      "world_date": "D+0"
+     },
+     "payload": {
+      "promise_id": "0191b2a0-0000-7000-8000-0000000d0011",
+      "kind": "opened",
+      "note": "Mu-jin's message: same words as last time; last time Do-yoon was late and Mu-jin came out on a stretcher."
+     },
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p55",
+       "start": 4315,
+       "end": 4465,
+       "quote": "Last time, Do-yoon had been late, and Mu-jin had gone in without a porter, and had come out on a stretcher with the left leg of his trousers cut away."
+      }
+     ]
+    }
+   ],
+   "unresolved_questions": [],
+   "hypothesis_results": [
+    {
+     "hypothesis_ref": "MH-1",
+     "result": "realized",
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p2",
+       "start": 34,
+       "end": 37,
+       "quote": "[F]"
+      }
+     ]
+    },
+    {
+     "hypothesis_ref": "MH-2",
+     "result": "realized",
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p22",
+       "start": 1594,
+       "end": 1645,
+       "quote": "PORTER — CLASS F. Association Registry No. 88-0412."
+      }
+     ]
+    },
+    {
+     "hypothesis_ref": "MH-3",
+     "result": "realized",
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p36",
+       "start": 2712,
+       "end": 2804,
+       "quote": "“Pay is eight percent of the stones. You carry what I tell you and you run when I tell you.”"
+      }
+     ]
+    },
+    {
+     "hypothesis_ref": "state:affiliation.party",
+     "result": "realized"
+    }
+   ],
+   "summary_l1": "Measurement morning, day zero. The device reads F for Kang Do-yoon, as it did ten years ago; he does not flinch. He registers as a Class F porter (No. 88-0412), finds Park Mu-jin at the porter board and is taken on for tomorrow's Mapo Gate 3 run at 6 a.m. for eight percent of the stones. On the steps he writes a three-item list and deletes the third. Mu-jin's message arrives with the same words as last time — when Do-yoon was late and Mu-jin came out on a stretcher.",
+   "ending_hook": "The first thing on the list was tomorrow."
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:summarize:1": {
+  "json": {
+   "summary_l1": "Measurement morning, day zero. The device reads F for Kang Do-yoon, as it did ten years ago; he does not flinch. He registers as a Class F porter (No. 88-0412), finds Park Mu-jin at the porter board and is taken on for tomorrow's Mapo Gate 3 run at 6 a.m. for eight percent of the stones. On the steps he writes a three-item list and deletes the third. Mu-jin's message arrives with the same words as last time — when Do-yoon was late and Mu-jin came out on a stretcher.",
+   "ending_hook": "The first thing on the list was tomorrow.",
+   "state_changes": [
+    "Kang Do-yoon: power.rank = F",
+    "Kang Do-yoon: registered Class F porter No. 88-0412",
+    "Kang Do-yoon: porter on Park Mu-jin's Mapo Gate 3 run"
+   ],
+   "knowledge_changes": [
+    "reader knows Kang Do-yoon is a regressor"
+   ]
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "activity:chapter_contract:2": {
+  "json": {
+   "id": "0191b2a0-0000-7000-8000-000000070002",
+   "project_id": "{{project}}",
+   "chapter_number": 2,
+   "arc_id": "0191b2a0-0000-7000-8000-0000000e0001",
+   "season_id": "0191b2a0-0000-7000-8000-0000000f0001",
+   "timeline_id": "{{main_timeline}}",
+   "status": "draft",
+   "pinned": {
+    "spec_version": "{{int:spec_version}}",
+    "bible_version": 1,
+    "narrative_identity_version_id": "0191b2a0-0000-7000-8000-000000060001",
+    "canon_version": "{{int:canon_version}}",
+    "template_version": "pack.chapter_planner@1.0.0"
+   },
+   "narrative_identity_version_id": "0191b2a0-0000-7000-8000-000000060001",
+   "active_constraints_ref": {
+    "id": "{{acs.2.id}}",
+    "content_hash": "{{acs.2.hash}}",
+    "token_count": "{{int:acs.2.tokens}}"
+   },
+   "version": 1,
+   "beat_refs": [
+    "arc1.beat.04"
+   ],
+   "purpose": "The Mapo gate run: Do-yoon keeps Mu-jin out of the left corridor and the first death he remembers does not happen.",
+   "must_happen": [
+    {
+     "id": "MH-1",
+     "kind": "event",
+     "description": "Do-yoon and Mu-jin enter Mapo Gate 3 at 6 a.m.",
+     "entity_ids": [
+      "0191b2a0-0000-7000-8000-0000000c0001",
+      "0191b2a0-0000-7000-8000-0000000c0003"
+     ],
+     "verifiable_by": "extraction"
+    },
+    {
+     "id": "MH-2",
+     "kind": "decision",
+     "description": "Do-yoon steers Mu-jin away from the left corridor.",
+     "entity_ids": [
+      "0191b2a0-0000-7000-8000-0000000c0001",
+      "0191b2a0-0000-7000-8000-0000000c0003"
+     ],
+     "verifiable_by": "judge"
+    }
+   ],
+   "must_not_happen": [
+    {
+     "id": "MN-1",
+     "description": "Do-yoon stating or implicitly admitting the regression.",
+     "source": "spec",
+     "requirement_id": "REQ-021"
+    },
+    {
+     "id": "MN-2",
+     "description": "Mu-jin dying or being maimed.",
+     "source": "spec",
+     "requirement_id": "REQ-022"
+    }
+   ],
+   "pov": {
+    "character_id": "0191b2a0-0000-7000-8000-0000000c0001",
+    "person": "third_limited"
+   },
+   "participants": [
+    {
+     "character_id": "0191b2a0-0000-7000-8000-0000000c0001",
+     "role_in_chapter": "protagonist",
+     "on_page": true
+    },
+    {
+     "character_id": "0191b2a0-0000-7000-8000-0000000c0003",
+     "role_in_chapter": "mentor",
+     "on_page": true
+    }
+   ],
+   "locations": [
+    "0191b2a0-0000-7000-8000-000000010006"
+   ],
+   "story_time": {
+    "start": {
+     "chapter_no": 2,
+     "ordinal": 0,
+     "precision": "exact",
+     "calendar": "relative_days",
+     "world_date": "D+1"
+    },
+    "end": {
+     "chapter_no": 2,
+     "ordinal": 99,
+     "precision": "exact",
+     "calendar": "relative_days",
+     "world_date": "D+1"
+    },
+    "elapsed_since_previous": "The next morning, 6 a.m."
+   },
+   "knowledge_deltas": [],
+   "state_deltas": [
+    {
+     "entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+     "attribute": "status.location",
+     "from": null,
+     "to": "Mapo Gate 3",
+     "when_in_chapter": "early"
+    }
+   ],
+   "relationship_deltas": [
+    {
+     "from_id": "0191b2a0-0000-7000-8000-0000000c0003",
+     "to_id": "0191b2a0-0000-7000-8000-0000000c0001",
+     "axis": "trust",
+     "direction": "up",
+     "magnitude": 1,
+     "description": "The kid was not late."
+    }
+   ],
+   "setups": [],
+   "payoffs": [
+    {
+     "promise_id": "0191b2a0-0000-7000-8000-0000000d0011",
+     "how": "The run happens; the corridor is avoided.",
+     "kind": "advance"
+    }
+   ],
+   "emotional_movement": {
+    "start": "Held breath",
+    "end": "First small proof the future can move"
+   },
+   "conflict": {
+    "type": "external",
+    "description": "The gate, and Mu-jin's habit of taking the left corridor."
+   },
+   "local_satisfaction": [
+    {
+     "type": "growth_confirmed",
+     "description": "Do-yoon's knowledge pays off once, quietly."
+    }
+   ],
+   "ending_state": "Out of the gate; Mu-jin unhurt.",
+   "hook": {
+    "type": "reveal",
+    "description": "The stones they carry out are two grades higher than a D-gate should yield."
+   },
+   "opening": {
+    "type": "continue_cliffhanger",
+    "description": "5:52 a.m., Gate 3. Do-yoon is early."
+   },
+   "scene_count": 2,
+   "dialogue_density_target": 0.45,
+   "length_target": {
+    "unit": "words",
+    "value": 900,
+    "tolerance_ratio": 0.12
+   },
+   "continuity_risks": [
+    {
+     "description": "Do-yoon's rank is F (ch.1). Mu-jin calls him 'kid'; Do-yoon says 'Mister Park'/'sir'."
+    }
+   ],
+   "continuity_anchors": [
+    {
+     "fact_id": "{{canon.f-rank}}",
+     "statement": "Kang Do-yoon's Association rank is F (ch.1 measurement).",
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p4",
+       "start": 92,
+       "end": 149,
+       "quote": "“F-rank. Porter registration is the window on your left.”"
+      }
+     ]
+    }
+   ],
+   "knowledge_guards": [
+    {
+     "character_id": "0191b2a0-0000-7000-8000-0000000c0003",
+     "must_not_know_proposition_ids": [
+      "{{proposition.P1}}"
+     ]
+    }
+   ],
+   "acceptance_criteria": [
+    {
+     "id": "AC-LANG",
+     "kind": "deterministic",
+     "description": "Manuscript is English",
+     "check_ref": "EP-LANG-01",
+     "threshold": 0.99
+    },
+    {
+     "id": "AC-MH-1",
+     "kind": "judge",
+     "description": "They enter the gate",
+     "check_ref": "contract_checker:MH-1"
+    }
+   ]
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "variant:extract:1:unsupported": {
+  "json": {
+   "project_id": "{{project}}",
+   "chapter_id": "{{chapter.1}}",
+   "manuscript_version_id": "{{version.1.approved}}",
+   "base_canon_version": "{{int:canon_version}}",
+   "stage": "extracted_a",
+   "items": [
+    {
+     "local_id": "f-rank-bad",
+     "type": "fact",
+     "op": "assert",
+     "frame": "canonical",
+     "confidence": 1,
+     "importance": "core",
+     "story_clock": {
+      "chapter_no": 1,
+      "ordinal": 2,
+      "precision": "exact",
+      "calendar": "relative_days",
+      "world_date": "D+0"
+     },
+     "payload": {
+      "entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+      "attribute": "power.rank",
+      "value": "F",
+      "value_text": "F-rank (ch.1 measurement)",
+      "valid_from": {
+       "chapter_no": 1,
+       "ordinal": 2,
+       "precision": "exact",
+       "calendar": "relative_days",
+       "world_date": "D+0"
+      },
+      "valid_to": null
+     },
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p1",
+       "start": 0,
+       "end": 27,
+       "quote": "The measurement device sang."
+      }
+     ]
+    }
+   ],
+   "unresolved_questions": [],
+   "hypothesis_results": [],
+   "summary_l1": "x"
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "variant:extract:1:planned": {
+  "json": {
+   "project_id": "{{project}}",
+   "chapter_id": "{{chapter.1}}",
+   "manuscript_version_id": "{{version.1.approved}}",
+   "base_canon_version": "{{int:canon_version}}",
+   "stage": "extracted_a",
+   "items": [
+    {
+     "local_id": "f-plan",
+     "type": "fact",
+     "op": "assert",
+     "frame": "plan",
+     "confidence": 1,
+     "importance": "core",
+     "story_clock": {
+      "chapter_no": 1,
+      "ordinal": 2,
+      "precision": "exact",
+      "calendar": "relative_days",
+      "world_date": "D+0"
+     },
+     "payload": {
+      "entity_id": "0191b2a0-0000-7000-8000-0000000c0001",
+      "attribute": "power.rank",
+      "value": "E",
+      "value_text": "E-rank (planned for ch.8)",
+      "valid_from": {
+       "chapter_no": 8,
+       "ordinal": 0,
+       "precision": "exact",
+       "calendar": "relative_days",
+       "world_date": "D+7"
+      },
+      "valid_to": null
+     },
+     "evidence": [
+      {
+       "manuscript_version_id": "{{version.1.approved}}",
+       "chapter_no": 1,
+       "paragraph_id": "p3",
+       "start": 39,
+       "end": 90,
+       "quote": "Red letters. The same red letters as ten years ago."
+      }
+     ]
+    }
+   ],
+   "unresolved_questions": [],
+   "hypothesis_results": [],
+   "summary_l1": "x"
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "variant:prose_judge:1:r1:still_failing": {
+  "json": {
+   "dimension_scores": {
+    "idiomatic_english": 3,
+    "readability": 4,
+    "register_fidelity": 4,
+    "translation_markers": 2
+   },
+   "judge_score": 74,
+   "drift_flags": [
+    "translation_like"
+   ],
+   "issues": [
+    {
+     "kind": "translation_like_english",
+     "severity": "major",
+     "confidence": 0.92,
+     "claim": "“It was exactly same feeling with ten years ago” is calqued English (missing article, wrong preposition).",
+     "chapter_span": {
+      "paragraph_ids": [
+       "p42"
+      ],
+      "start": 3212,
+      "end": 3259,
+      "quote": "It was exactly same feeling with ten years ago."
+     },
+     "repair": {
+      "scope": "sentence",
+      "suggestion": "Rewrite as natural English: 'It felt exactly the way it had ten years ago.'",
+      "must_preserve_fact_ids": []
+     }
+    }
+   ]
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ },
+ "variant:scene_draft:1:3:korean": {
+  "json": {
+   "scene_no": 3,
+   "language": "en",
+   "text": "Outside, the Mapo sky was the color of a wet sidewalk.\n\nDo-yoon stood on the steps of the measurement hall and let the cold get into his jacket. It was exactly same feeling with ten years ago. That was the point. He needed to feel it and not flinch.\n\nHe took out his phone. The date on the lock screen was the date he expected. Day zero.\n\nHe opened a blank note and typed three lines.\n\n*1. The gate run. Do not let him take the left corridor.*\n\n*2. The compass.*\n\n*3. The Chairman.*\n\nHe stared at the third line for a while. Then he deleted it. Some things were safer as memory than as text, even on a phone nobody would ever search.\n\n두 줄. That was enough to start with.\n\nA bus hissed past. A girl on the steps below him was crying into her sleeve, an F-card crushed in her fist. Ten years ago he had done the same thing, three steps to the left. He had cried for an hour and then gone home and not come back for two weeks.\n\nHe walked down past her. He did not say anything. There was nothing anyone could have said to him, either.\n\nAt the bottom of the steps his phone buzzed.\n\nPark Mu-jin: Tomorrow. 6 a.m. Gate 3, Mapo. Don’t be late, kid.\n\nDo-yoon read it twice.\n\nLast time, Mu-jin had sent the same message. The same words, the same time. Last time, Do-yoon had been late, and Mu-jin had gone in without a porter, and had come out on a stretcher with the left leg of his trousers cut away.\n\nHe typed back one word.\n\n*Understood.*\n\nThen he put the phone in his pocket and started walking toward the station, toward a room he had not seen in ten years, toward a morning he was going to spend making sure an old man did not die for him a second time.\n\nThe first thing on the list was tomorrow.",
+   "paragraphs": [
+    {
+     "id": "p1",
+     "start": 0,
+     "end": 54,
+     "kind": "narration"
+    },
+    {
+     "id": "p2",
+     "start": 56,
+     "end": 249,
+     "kind": "narration"
+    },
+    {
+     "id": "p3",
+     "start": 251,
+     "end": 337,
+     "kind": "narration"
+    },
+    {
+     "id": "p4",
+     "start": 339,
+     "end": 384,
+     "kind": "narration"
+    },
+    {
+     "id": "p5",
+     "start": 386,
+     "end": 443,
+     "kind": "monologue"
+    },
+    {
+     "id": "p6",
+     "start": 445,
+     "end": 462,
+     "kind": "monologue"
+    },
+    {
+     "id": "p7",
+     "start": 464,
+     "end": 482,
+     "kind": "monologue"
+    },
+    {
+     "id": "p8",
+     "start": 484,
+     "end": 633,
+     "kind": "narration"
+    },
+    {
+     "id": "p9",
+     "start": 635,
+     "end": 676,
+     "kind": "narration"
+    },
+    {
+     "id": "p10",
+     "start": 678,
+     "end": 929,
+     "kind": "narration"
+    },
+    {
+     "id": "p11",
+     "start": 931,
+     "end": 1037,
+     "kind": "narration"
+    },
+    {
+     "id": "p12",
+     "start": 1039,
+     "end": 1083,
+     "kind": "narration"
+    },
+    {
+     "id": "p13",
+     "start": 1085,
+     "end": 1148,
+     "kind": "narration"
+    },
+    {
+     "id": "p14",
+     "start": 1150,
+     "end": 1172,
+     "kind": "narration"
+    },
+    {
+     "id": "p15",
+     "start": 1174,
+     "end": 1400,
+     "kind": "narration"
+    },
+    {
+     "id": "p16",
+     "start": 1402,
+     "end": 1425,
+     "kind": "narration"
+    },
+    {
+     "id": "p17",
+     "start": 1427,
+     "end": 1440,
+     "kind": "monologue"
+    },
+    {
+     "id": "p18",
+     "start": 1442,
+     "end": 1658,
+     "kind": "narration"
+    },
+    {
+     "id": "p19",
+     "start": 1660,
+     "end": 1701,
+     "kind": "narration"
+    }
+   ],
+   "speaker_annotations": [],
+   "claims": [
+    {
+     "statement": "Mu-jin messages Do-yoon: Gate 3, Mapo, 6 a.m.",
+     "paragraph_id": "p13",
+     "entity_ids": [
+      "0191b2a0-0000-7000-8000-0000000c0001",
+      "0191b2a0-0000-7000-8000-0000000c0003"
+     ],
+     "frame": "canonical"
+    }
+   ]
+  },
+  "modelId": "replay-model",
+  "usage": {
+   "input": 1000,
+   "output": 500,
+   "cached": 0
+  }
+ }
+}

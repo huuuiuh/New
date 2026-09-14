@@ -8,10 +8,5 @@
     "declarationMap": false
   },
   "include": ["src/**/*.ts"],
-  "exclude": [],
-  "references": [
-    {
-      "path": "../../packages/workflows"
-    }
-  ]
+  "exclude": []
 }

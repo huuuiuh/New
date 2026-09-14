@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "rootDir": "src", "outDir": "dist" },
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.test.ts"],
+  "references": [
+    { "path": "../canon" },
+    { "path": "../context" },
+    { "path": "../db" },
+    { "path": "../domain" },
+    { "path": "../gateway" },
+    { "path": "../narrative" },
+    { "path": "../prompts" },
+    { "path": "../prose" }
+  ]
+}

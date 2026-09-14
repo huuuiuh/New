@@ -3,6 +3,7 @@
  * recorded spend per project against the project's hard limit.
  */
 import { type Pool } from './client.js';
+import { asUuid, type Uuid } from '@yeonjae/domain';
 
 export interface LlmCallRow {
   id: string;
@@ -202,8 +203,9 @@ export async function upsertPromptVersions(
 
 /** Minimal shape of the gateway's audit record we persist (kept structural to avoid a db → gateway dependency). */
 export interface GatewayAuditLike {
-  id: string;
+  id: Uuid;
   idempotency_key: string;
+  activity_id?: string | undefined;
   role: string;
   prompt_version_id: string;
   prompt_hash: string;
@@ -214,17 +216,25 @@ export interface GatewayAuditLike {
   narrative_block_hash?: string | undefined;
   output_language_contract_hash?: string | undefined;
   tradition_contract_hash?: string | undefined;
-  output_language_check?: unknown;
+  output_language_check?:
+    | { performed: boolean; passed?: boolean | undefined; english_confidence?: number | undefined }
+    | undefined;
   model_id: string;
-  model_class: string;
+  model_class: 'R' | 'P' | 'M' | 'C' | 'E';
   provider: string;
-  params: unknown;
+  params: {
+    temperature: number;
+    max_tokens: number;
+    top_p: number;
+    seed: number;
+    json_schema_mode: boolean;
+  };
   usage: { input: number; output: number; cached: number };
   cost_cents: number;
   latency_ms: number;
   attempt: number;
   status: 'succeeded' | 'failed' | 'fallback_succeeded' | 'budget_blocked';
-  finish_reason: string;
+  finish_reason: 'stop' | 'length' | 'content_filter' | 'error';
   schema_valid: boolean;
   repair_attempts: number;
   fallback_from_model_id?: string | undefined;
@@ -240,21 +250,54 @@ export interface GatewayAuditLike {
  * enters operational tables); replay of an idempotent call therefore requires the artifact store, which the
  * workflow layer owns. The row records everything NFR-A needs: hashes, versions, contract hashes, cost.
  */
+/** Where successful call outputs live (never llm_calls). The workflow layer supplies an artifact-backed store. */
+export interface LlmOutputStore {
+  get(idempotencyKey: string): Promise<{ text?: string | undefined; json?: unknown } | undefined>;
+  set(
+    idempotencyKey: string,
+    output: { text?: string | undefined; json?: unknown },
+    record: GatewayAuditLike,
+  ): Promise<{ artifactRef?: unknown } | undefined>;
+}
+
+export class MemoryLlmOutputStore implements LlmOutputStore {
+  readonly outputs = new Map<string, { text?: string | undefined; json?: unknown }>();
+  async get(key: string) {
+    return this.outputs.get(key);
+  }
+  async set(key: string, output: { text?: string | undefined; json?: unknown }) {
+    this.outputs.set(key, output);
+    return undefined;
+  }
+}
+
 export class PgAuditStore {
+  private readonly outputs: LlmOutputStore;
   constructor(
     private readonly pool: Pool,
     private readonly scope: { workspaceId: string; projectId: string; jobId?: string | undefined },
-    private readonly outputs: Map<
-      string,
-      { text?: string | undefined; json?: unknown }
-    > = new Map(),
-  ) {}
+    outputs:
+      LlmOutputStore | Map<string, { text?: string | undefined; json?: unknown }> = new Map(),
+  ) {
+    if (outputs instanceof Map) {
+      const mem = new MemoryLlmOutputStore();
+      for (const [k, v] of outputs) mem.outputs.set(k, v);
+      this.outputs = mem;
+    } else {
+      this.outputs = outputs;
+    }
+  }
 
   async findByIdempotencyKey(key: string): Promise<GatewayAuditLike | undefined> {
     const row = await findSucceededCall(this.pool, key);
     if (!row) return undefined;
+    const output = await this.outputs.get(key);
+    if (!output)
+      throw new Error(
+        `LLM_OUTPUT_MISSING: call ${row.id} (key ${key}) succeeded but its output artifact is absent; the call cannot be replayed without spend`,
+      );
     return {
-      id: row.id,
+      id: asUuid(row.id),
       idempotency_key: row.idempotency_key,
       role: row.role,
       prompt_version_id: row.prompt_version_id,
@@ -266,28 +309,37 @@ export class PgAuditStore {
       narrative_block_hash: row.narrative_block_hash ?? undefined,
       output_language_contract_hash: row.output_language_contract_hash ?? undefined,
       tradition_contract_hash: row.tradition_contract_hash ?? undefined,
-      output_language_check: row.output_language_check,
+      output_language_check: row.output_language_check as GatewayAuditLike['output_language_check'],
       model_id: row.model_id,
-      model_class: row.model_class,
+      model_class: row.model_class as GatewayAuditLike['model_class'],
       provider: row.provider,
-      params: row.params,
+      params: row.params as GatewayAuditLike['params'],
       usage: row.usage,
       cost_cents: Number(row.cost_cents),
       latency_ms: row.latency_ms,
       attempt: row.attempt,
       status: row.status as GatewayAuditLike['status'],
-      finish_reason: row.finish_reason ?? 'stop',
+      finish_reason: (row.finish_reason ?? 'stop') as GatewayAuditLike['finish_reason'],
       schema_valid: row.schema_valid ?? false,
       repair_attempts: row.repair_attempts,
       fallback_from_model_id: row.fallback_from_model_id ?? undefined,
       input_hash: row.input_hash,
       output_hash: row.output_hash ?? undefined,
-      output: this.outputs.get(key),
+      output,
       created_at: row.created_at.toISOString(),
     };
   }
 
   async append(record: GatewayAuditLike): Promise<void> {
+    let artifactRef: unknown;
+    if (
+      record.output &&
+      (record.status === 'succeeded' || record.status === 'fallback_succeeded')
+    ) {
+      // Output first: an audit row without a retrievable output would be an unreplayable "success".
+      const r = await this.outputs.set(record.idempotency_key, record.output, record);
+      artifactRef = r?.artifactRef;
+    }
     await insertLlmCall(this.pool, {
       id: record.id,
       workspaceId: this.scope.workspaceId,
@@ -321,12 +373,8 @@ export class PgAuditStore {
       repairAttempts: record.repair_attempts,
       error: record.error,
       fallbackFromModelId: record.fallback_from_model_id,
+      activityId: record.activity_id,
+      artifactRef,
     });
-    if (
-      record.output &&
-      (record.status === 'succeeded' || record.status === 'fallback_succeeded')
-    ) {
-      this.outputs.set(record.idempotency_key, record.output);
-    }
   }
 }
