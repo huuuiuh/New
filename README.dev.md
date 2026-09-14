@@ -28,11 +28,17 @@ packages/prose      NFC boundary, code-point addressing, evidence verification, 
                     deterministic output-language check
 packages/domain     schema loader + Ajv validators, generated types, UUIDv7, StoryClock ordering,
                     lifecycle state machines, Production Policy loader
-packages/gateway    gateway request contract, provider interface, MockProvider (Guard/routing/budgets: CP3)
+packages/gateway    fail-closed Narrative Identity Guard, routing table, budget guard, bounded structured-output
+                    repair, truncation handling, output-language discard→regenerate→reroute, idempotent audit;
+                    MockProvider (fault injection) and ReplayProvider (no silent live calls)
 packages/db         migrations (forward-only, hashed), pool/transaction helpers, typed repository over the canon
                     schema; canon.commit_delta / canon.rollback_latest are the only canon write paths
 packages/canon      deterministic delta verification (schema, evidence, change-class, frame × timeline, future
                     validity) and chapter-acceptance orchestration
+packages/narrative  profile store (examples/narrative-profiles), identity composition, Narrative Identity Block
+                    compiler (role variants; both contracts first and never shed; hash + separate contract hashes)
+packages/prompts    prompt registry: families/<family>/vX.Y.Z/{prompt.json,system.md,user.md}, immutable by
+                    content hash, strict template variables, active prompt set
 tools/              gen-types.ts, validate-planning-package.py
 schemas/ examples/  the contracts and fixture data (validated by CI)
 docs/               the plan; status lives only in docs/08-delivery/09-progress.md
@@ -43,4 +49,5 @@ docs/               the plan; status lives only in docs/08-delivery/09-progress.
 - Schemas first: change `schemas/*.schema.json`, run `pnpm gen:types`, then code (AGENTS.md rule 3).
 - All manuscript offsets are Unicode code points into NFC text — use `@yeonjae/prose`, never `string.length`.
 - Numbers come from the pinned Production Policy (`examples/production-policies/`), never from code constants.
-- No inline production prompts, no secrets, no Korean-to-English translation path.
+- No inline production prompts: every call goes through `PromptRegistry` + `Gateway`; new prompt text = new version folder.
+- No secrets, no Korean-to-English translation path.

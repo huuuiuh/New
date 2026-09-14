@@ -28,6 +28,8 @@ import {
   stateAt,
 } from '@yeonjae/db';
 import { acceptChapter, DeltaRejectedError } from '@yeonjae/canon';
+import { compileBlock, composeIdentity, ProfileStore, type RoleVariant } from '@yeonjae/narrative';
+import { PromptRegistry } from '@yeonjae/prompts';
 
 export interface CommandResult {
   readonly ok: boolean;
@@ -273,6 +275,55 @@ export const DB_COMMANDS = new Set([
   'canon:rollback',
 ]);
 
+export function cmdIdentityCompile(
+  composedRef: string,
+  role: string,
+  budget: string | undefined,
+): CommandResult {
+  const store = ProfileStore.fromDirectory();
+  const identity = composeIdentity(store, composedRef, '00000000-0000-7000-8000-000000000000');
+  const block = compileBlock(identity, {
+    role: role as RoleVariant,
+    budgetTokens: Number(budget ?? '6000'),
+  });
+  return {
+    ok: true,
+    output: {
+      identity: identity.ref,
+      role: block.role,
+      hash: block.hash,
+      output_language_contract_hash: block.outputLanguageContractHash,
+      tradition_contract_hash: block.traditionContractHash,
+      sections: block.sections,
+      dropped_sections: block.droppedSections,
+      est_tokens: block.estTokens,
+      conflicts: identity.conflicts,
+      text: block.text,
+    },
+  };
+}
+
+export function cmdPromptsList(): CommandResult {
+  const reg = PromptRegistry.fromDirectory();
+  return {
+    ok: true,
+    output: {
+      prompt_set: reg.activeSet(),
+      versions: reg.list().map((v) => ({
+        id: v.id,
+        role: v.role,
+        model_class: v.model_class,
+        style_sensitive: v.style_sensitive,
+        manuscript_producing: v.manuscript_producing,
+        identity_variant: v.identity_variant,
+        output_schema: v.output_schema,
+        content_hash: v.content_hash,
+        status: v.status,
+      })),
+    },
+  };
+}
+
 export const USAGE = `yeonjae <command> [args]
 
   schemas                              list loaded JSON Schemas
@@ -281,6 +332,9 @@ export const USAGE = `yeonjae <command> [args]
   language-check <text-file> [terms…]  deterministic English output-language check (allowlist terms optional)
   verify-evidence <manuscript> <delta> verify every evidence span of a canon delta against the NFC manuscript
   policies                             list Production Policy versions and their per-dimension gates
+  identity:compile <composed-ref> <role> [budget]
+                                       compile the Narrative Identity Block (both contracts first) for a role variant
+  prompts:list                         list immutable prompt versions and the active prompt set
 
 Database commands (DATABASE_URL required):
   db:migrate                                   apply forward-only migrations
@@ -323,6 +377,13 @@ export function run(argv: readonly string[]): CommandResult {
     }
     case 'policies':
       return cmdPolicies();
+    case 'identity:compile': {
+      const [ref, role, budget] = rest;
+      if (!ref || !role) return { ok: false, output: USAGE };
+      return cmdIdentityCompile(ref, role, budget);
+    }
+    case 'prompts:list':
+      return cmdPromptsList();
     default:
       return { ok: false, output: USAGE };
   }

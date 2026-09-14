@@ -53,6 +53,12 @@ importers:
       '@yeonjae/gateway':
         specifier: workspace:*
         version: link:../../packages/gateway
+      '@yeonjae/narrative':
+        specifier: workspace:*
+        version: link:../../packages/narrative
+      '@yeonjae/prompts':
+        specifier: workspace:*
+        version: link:../../packages/prompts
       '@yeonjae/prose':
         specifier: workspace:*
         version: link:../../packages/prose
@@ -102,9 +108,27 @@ importers:
       '@yeonjae/domain':
         specifier: workspace:*
         version: link:../domain
+      '@yeonjae/narrative':
+        specifier: workspace:*
+        version: link:../narrative
+      '@yeonjae/prompts':
+        specifier: workspace:*
+        version: link:../prompts
       '@yeonjae/prose':
         specifier: workspace:*
         version: link:../prose
+
+  packages/narrative:
+    dependencies:
+      '@yeonjae/domain':
+        specifier: workspace:*
+        version: link:../domain
+
+  packages/prompts:
+    dependencies:
+      '@yeonjae/narrative':
+        specifier: workspace:*
+        version: link:../narrative
 
   packages/prose: {}
 
