@@ -5,6 +5,7 @@ import { run } from './commands.js';
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const ch09 = `${root}examples/fixture/manuscripts/ch09.accepted.txt`;
 const delta = `${root}examples/fixture/canon-delta.ch09.json`;
+const spec = `${root}examples/fixture/story-spec.v3.json`;
 
 describe('cli commands', () => {
   it('lists schemas and policies', () => {
@@ -51,9 +52,22 @@ describe('cli commands', () => {
     expect((p.output as { versions: unknown[] }).versions).toHaveLength(24);
   });
 
+  it('compiles the Active Constraint Set for a chapter and fails on overflow', () => {
+    const r = run(['constraints:compile', '12', spec]);
+    expect(r.ok).toBe(true);
+    const out = r.output as { hard: string[]; excluded: { id: string }[]; content_hash: string };
+    expect(out.hard).toContain('REQ-00021');
+    expect(out.hard).not.toContain('REQ-00061');
+    expect(out.content_hash).toMatch(/^sha256:/);
+    const over = run(['constraints:compile', '12', spec, '100']);
+    expect(over.ok).toBe(false);
+    expect((over.output as { error: string }).error).toBe('CONSTRAINTS_OVERFLOW');
+  });
+
   it('prints usage on unknown commands', () => {
     const r = run(['nope']);
     expect(r.ok).toBe(false);
     expect(String(r.output)).toContain('yeonjae <command>');
+    expect(String(r.output)).toContain('pack:build');
   });
 });

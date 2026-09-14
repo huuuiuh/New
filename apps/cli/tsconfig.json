@@ -27,6 +27,9 @@
     },
     {
       "path": "../../packages/prompts"
+    },
+    {
+      "path": "../../packages/context"
     }
   ]
 }

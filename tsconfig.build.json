@@ -23,6 +23,9 @@
       "path": "packages/canon"
     },
     {
+      "path": "packages/context"
+    },
+    {
       "path": "apps/cli"
     }
   ]
