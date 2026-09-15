@@ -753,6 +753,9 @@ run('chapter production — failure paths (each on a fresh project)', () => {
   });
 
   it('T19 workflow resume skips completed idempotent steps and re-spends nothing', async () => {
+    // NOTE (ADR-0046): resume reuses one project's job: the same project id, the same deterministic
+    // workflow id, no database reset between the interrupted run and its resume. Per-test resets isolate
+    // *tests* from each other (fixed fixture UUIDs); they never substitute for this in-test resume proof.
     const first = await produceChapter(
       { pool, gateway: h.gateway(), bindings: h.bindings },
       h.input(1, { failAfterStep: 'evaluate' }),
@@ -848,6 +851,39 @@ run('chapter production — failure paths (each on a fresh project)', () => {
         (s) => s.step === 'evaluate' && s.key.endsWith(second.versions[0]?.id ?? ''),
       )?.attempt,
     ).toBe(1);
+  });
+
+  it('T19b a second project reusing the same deterministic fixture UUIDs fails loudly (global canon identity)', async () => {
+    // The fixture's entity/promise ids are global primary keys (ADR-0046): two live projects cannot hold
+    // the same deterministic ids. Produce chapter 1 on this test's project first, then attempt the same
+    // fixture on a second live project: the bible step must surface the PK violation rather than silently
+    // sharing or forking canon rows.
+    const first = await produceChapter(
+      { pool, gateway: h.gateway(), bindings: h.bindings },
+      h.input(1),
+    );
+    expect(first.status).toBe('completed');
+    const h2 = await createHarness(pool, 'Second Awakening (collision)');
+    let err: unknown;
+    try {
+      await produceChapter({ pool, gateway: h2.gateway(), bindings: h2.bindings }, h2.input(1));
+    } catch (e) {
+      err = e;
+    }
+    expect(err).toBeInstanceOf(WorkflowError);
+    const wf = err as WorkflowError;
+    // Loud and terminal: either the global PK violation surfaces, or the run fails closed downstream
+    // (extraction cites entities the second project does not own). Either way the second project must
+    // never complete with canon borrowed from the first.
+    expect(['INTERNAL', 'EXTRACTION_REJECTED', 'ACCEPTANCE_FAILED']).toContain(wf.code);
+    expect(JSON.stringify({ code: wf.code, detail: wf.detail })).toMatch(
+      /duplicate key|entities_pkey|not a known entity|UNKNOWN_ENTITY/i,
+    );
+    const secondAccepted = await pool.query<{ n: string }>(
+      `SELECT count(*)::text AS n FROM manuscript_versions WHERE project_id = $1 AND status = 'accepted'`,
+      [h2.projectId],
+    );
+    expect(secondAccepted.rows[0]?.n).toBe('0');
   });
 
   it('T21 a Korean-prose writer output is discarded by the gateway and the step fails closed', async () => {

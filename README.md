@@ -1,6 +1,6 @@
 # Yeonjae Studio (연재 스튜디오) — Planning Package
 
-**Status:** Checkpoint 5 chapter-production vertical slice implemented and verified (177 tests green).
+**Status:** Checkpoint 5 chapter-production vertical slice implemented; local verification green (see `docs/08-delivery/09-progress.md` for the current test inventory and CI evidence per PR).
 Live status: `docs/08-delivery/09-progress.md`.
 **Purpose of this repository state:** a complete, internally consistent, production-level plan for an AI
 serialized-fiction production studio, written so that an engineering agent can implement it without

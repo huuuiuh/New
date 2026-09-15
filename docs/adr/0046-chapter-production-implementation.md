@@ -53,6 +53,9 @@ decision that earlier docs left open or described only as intent:
 ## Consequences
 
 - T17 proves the gate fires before spend; T19 proves crash-resume replays completed steps without
-  re-spend; T5/T7/T10/T11/T13/T21 prove fail-closed boundaries hold.
-- Follow-ups: `chapter:produce` CLI surface (progress doc), per-project name thesaurus (Checkpoint 6),
-  Temporal orchestration from Checkpoint 7 (ADR-0044 unchanged).
+  re-spend on the same project with no reset between interrupt and resume; T19b proves two live projects
+  cannot share deterministic fixture UUIDs (global canon identity fails loudly, never silently); T5/T7/T10/T11/T13/T21 prove fail-closed boundaries hold.
+- Follow-ups: per-project name thesaurus (Checkpoint 6),
+  Temporal orchestration from Checkpoint 7 (ADR-0044 unchanged). The `chapter:produce` / `chapter:status` /
+  `chapter:resume` / `export:accepted` CLI surface over this workflow is delivered (replay-only,
+  `apps/cli`, 5 chapter-surface tests).
