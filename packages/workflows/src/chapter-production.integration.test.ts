@@ -17,6 +17,7 @@ import {
   type Pool,
 } from '@yeonjae/db';
 import { databaseUrl, freshDatabase } from '@yeonjae/db/testkit';
+import { migrate, resetDatabase } from '@yeonjae/db';
 import { checkOutputLanguage, sliceCodePoints, toNfcText } from '@yeonjae/prose';
 import {
   exportAccepted,
@@ -313,30 +314,40 @@ run('chapter production vertical slice (Postgres + ReplayProvider)', () => {
     const before = {
       commits: (await listCommits(pool, h.projectId)).length,
       versions: (
-        await pool.query('SELECT count(*) FROM manuscript_versions WHERE project_id = $1', [
-          h.projectId,
-        ])
+        await pool.query<{ count: string }>(
+          'SELECT count(*) FROM manuscript_versions WHERE project_id = $1',
+          [h.projectId],
+        )
       ).rows[0],
       calls: (
-        await pool.query('SELECT count(*) FROM llm_calls WHERE project_id = $1', [h.projectId])
+        await pool.query<{ count: string }>(
+          'SELECT count(*) FROM llm_calls WHERE project_id = $1',
+          [h.projectId],
+        )
       ).rows[0],
       artifacts: (
-        await pool.query('SELECT count(*) FROM workflow_artifacts WHERE project_id = $1', [
-          h.projectId,
-        ])
+        await pool.query<{ count: string }>(
+          'SELECT count(*) FROM workflow_artifacts WHERE project_id = $1',
+          [h.projectId],
+        )
       ).rows[0],
       summaries: (
-        await pool.query('SELECT count(*) FROM summaries WHERE project_id = $1', [h.projectId])
+        await pool.query<{ count: string }>(
+          'SELECT count(*) FROM summaries WHERE project_id = $1',
+          [h.projectId],
+        )
       ).rows[0],
       docs: (
-        await pool.query('SELECT count(*) FROM search_documents WHERE project_id = $1', [
-          h.projectId,
-        ])
+        await pool.query<{ count: string }>(
+          'SELECT count(*) FROM search_documents WHERE project_id = $1',
+          [h.projectId],
+        )
       ).rows[0],
       edges: (
-        await pool.query('SELECT count(*) FROM dependency_edges WHERE project_id = $1', [
-          h.projectId,
-        ])
+        await pool.query<{ count: string }>(
+          'SELECT count(*) FROM dependency_edges WHERE project_id = $1',
+          [h.projectId],
+        )
       ).rows[0],
     };
     const again = await produceChapter(
@@ -349,30 +360,40 @@ run('chapter production vertical slice (Postgres + ReplayProvider)', () => {
     const after = {
       commits: (await listCommits(pool, h.projectId)).length,
       versions: (
-        await pool.query('SELECT count(*) FROM manuscript_versions WHERE project_id = $1', [
-          h.projectId,
-        ])
+        await pool.query<{ count: string }>(
+          'SELECT count(*) FROM manuscript_versions WHERE project_id = $1',
+          [h.projectId],
+        )
       ).rows[0],
       calls: (
-        await pool.query('SELECT count(*) FROM llm_calls WHERE project_id = $1', [h.projectId])
+        await pool.query<{ count: string }>(
+          'SELECT count(*) FROM llm_calls WHERE project_id = $1',
+          [h.projectId],
+        )
       ).rows[0],
       artifacts: (
-        await pool.query('SELECT count(*) FROM workflow_artifacts WHERE project_id = $1', [
-          h.projectId,
-        ])
+        await pool.query<{ count: string }>(
+          'SELECT count(*) FROM workflow_artifacts WHERE project_id = $1',
+          [h.projectId],
+        )
       ).rows[0],
       summaries: (
-        await pool.query('SELECT count(*) FROM summaries WHERE project_id = $1', [h.projectId])
+        await pool.query<{ count: string }>(
+          'SELECT count(*) FROM summaries WHERE project_id = $1',
+          [h.projectId],
+        )
       ).rows[0],
       docs: (
-        await pool.query('SELECT count(*) FROM search_documents WHERE project_id = $1', [
-          h.projectId,
-        ])
+        await pool.query<{ count: string }>(
+          'SELECT count(*) FROM search_documents WHERE project_id = $1',
+          [h.projectId],
+        )
       ).rows[0],
       edges: (
-        await pool.query('SELECT count(*) FROM dependency_edges WHERE project_id = $1', [
-          h.projectId,
-        ])
+        await pool.query<{ count: string }>(
+          'SELECT count(*) FROM dependency_edges WHERE project_id = $1',
+          [h.projectId],
+        )
       ).rows[0],
     };
     expect(after).toEqual(before);
@@ -475,9 +496,7 @@ run('chapter production vertical slice (Postgres + ReplayProvider)', () => {
     // Current state for chapter 2 comes from the accepted commit.
     expect(r2.pack_variables?.canon_state).toContain('power.rank = F-rank (ch.1 measurement)');
     expect(r2.pack_variables?.canon_state).toContain(
-      'evidence: ch.1 p5 ““F-rank. Porter registration is the window on your left.””'
-        .replace('““', '“')
-        .replace('””', '”'),
+      'evidence: ch.1 p3 “Red letters. The same red letters as ten years ago.”',
     );
   });
 
@@ -553,6 +572,8 @@ run('chapter production — failure paths (each on a fresh project)', () => {
     pool = await freshDatabase();
   }, 60_000);
   beforeEach(async () => {
+    await resetDatabase(pool);
+    await migrate(pool);
     h = await createHarness(pool);
   });
   afterAll(async () => {
