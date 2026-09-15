@@ -32,7 +32,7 @@ packages/domain     schema loader + Ajv validators, generated types, UUIDv7, Sto
 packages/gateway    fail-closed Narrative Identity Guard, routing table, budget guard, bounded structured-output
                     repair, truncation handling, output-language discard→regenerate→reroute, idempotent audit;
                     MockProvider (fault injection) and ReplayProvider (no silent live calls)
-packages/db         migrations (forward-only, hashed; 0003 = summaries, search_documents, active constraint sets,
+packages/db         migrations (forward-only, hashed; 0004 = jobs workflow_id/idempotency/pins, workflow_artifacts,
                     context packs, embedding sets), pool/transaction helpers, typed repository over the canon
                     schema; canon.commit_delta / canon.rollback_latest are the only canon write paths;
                     retrieval.ts = accepted-only reads for context assembly
